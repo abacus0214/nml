@@ -29,3 +29,12 @@ dev = [
     "pre-commit-hooks>=6.0.0",
     "ruff>=0.14.3",
 ]
+
+# Tools
+
+[tool.ruff.lint]
+select = ["D", "D417", "I", "F401"]
+
+[tool.mypy]
+strict = true
+install_types = true

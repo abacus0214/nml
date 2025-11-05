@@ -6,6 +6,9 @@
 !.python-version
 !uv.lock
 
+# Dev configs
+!.pre-commit-config.yaml
+
 # Documentation
 !README.md
 
