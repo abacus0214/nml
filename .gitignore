@@ -1,2 +1,5 @@
-*
+/*
 !.gitignore
+
+# Adding source directory
+!src
