@@ -4,6 +4,7 @@
 # Package meta files
 !pyproject.toml
 !.python-version
+!uv.lock
 
 # Documentation
 !README.md
