@@ -1,5 +1,12 @@
 /*
 !.gitignore
 
+# Package meta files
+!pyproject.toml
+!.python-version
+
+# Documentation
+!README.md
+
 # Adding source directory
 !src

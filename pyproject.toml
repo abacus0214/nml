@@ -1,0 +1,23 @@
+[project]
+
+# Main info
+name = "bkd"
+version = "0.1.0"
+
+description = "Behavioral Knowledge Diffuser"
+readme = "README.md"
+
+authors = [
+  {name = "Davide Barbieri", email="davidebarbieri97@gmail.com"}
+]
+
+# Tags
+keywords = ["diffusion", "rl"]
+
+classifiers = [
+  "Programming Language :: Python :: 3.13",
+]
+
+# Dependencies
+requires-python = ">=3.13"
+dependencies = []
