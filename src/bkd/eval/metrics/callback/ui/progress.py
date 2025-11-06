@@ -8,10 +8,10 @@ from bkd.utils.typing.base.pydantic import StandardBaseModel
 from bkd.utils.typing.eval.metrics import Metric, MetricID, Metrics
 from bkd.utils.typing.events import EpochID
 
-__all__ = ["PorgressCallback"]
+__all__ = ["ProgressCallback"]
 
 
-class PorgressCallback(StandardBaseModel, CallbackStack):
+class ProgressCallback(StandardBaseModel, CallbackStack):
     """Have progress bar for each epoch."""
 
     # Required parameters
