@@ -31,6 +31,10 @@ dev = [
     "pre-commit-hooks>=6.0.0",
     "ruff>=0.14.3",
 ]
+nvim = [
+    "debugpy>=1.8.17",
+    "pynvim>=0.6.0",
+]
 
 # Tools
 
