@@ -9,40 +9,40 @@ repos:
         entry: check-case-conflict
         files: "^(src|test|scripts|configs)"
         language: python
-        types: [ python ]
+        types: [python]
       - id: check-merge-conflict
         name: check-merge-conflict
         entry: check-merge-conflict
         files: "^(src|test|scripts|configs)"
         language: python
-        types: [ python ]
+        types: [python]
       - id: end-of-file-fixer
         name: end-of-file-fixer
         entry: end-of-file-fixer
         files: "^(src|test|scripts|configs)"
         language: python
-        types: [ python ]
+        types: [python]
       - id: fix-byte-order-marker
         name: fix-byte-order-marker
         entry: fix-byte-order-marker
         files: "^(src|test|scripts|configs)"
         language: python
-        types: [ python ]
+        types: [python]
       - id: trailing-whitespace-fixer
         name: trailing-whitespace-fixer
         entry: trailing-whitespace-fixer
         files: "^(src|test|scripts|configs)"
         language: python
-        types: [ python ]
+        types: [python]
       - id: ruff
         name: lint-checking-ruff
-        entry: ruff check src
-        pass_filenames: false
+        entry: ruff check
+        pass_filenames: true
         language: python
-        types: [ python ]
+        types: [python]
       - id: mypy
         name: type-checking
-        entry: mypy src
-        pass_filenames: false
+        entry: mypy
+        pass_filenames: true
         language: python
-        types: [ python ]
+        types: [python]
