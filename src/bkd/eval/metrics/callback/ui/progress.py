@@ -28,15 +28,15 @@ class ProgressCallback(StandardBaseModel, CallbackStack):
         """Call this callback when epoch ends."""
         # If epoch task id has not been created,
         # do so and start progress bar
-        if not self.epoch_task_id:
+        if self.epoch_task_id is None:
             self.progress.start()
             self.epoch_task_id = self.progress.add_task(
-                self.epoch_bar_title, total=self.num_epochs
+                self.epoch_bar_title, total=self.num_epochs - 1
             )
 
     def log_epoch_end_aux(self, eid: EpochID) -> None:
         """Call this callback when epoch ends."""
-        if not self.epoch_task_id:
+        if self.epoch_task_id is None:
             raise RuntimeError("No epoch started.")
 
         # Increment epoch progress bar
