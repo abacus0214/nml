@@ -42,6 +42,9 @@ nvim = [
 
 [tool.ruff.lint]
 select = ["D", "D417", "I", "F401"]
+ignore = [
+  "D104", # docstring in public module
+]
 
 [tool.mypy]
 strict = true

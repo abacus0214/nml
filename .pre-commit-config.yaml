@@ -36,7 +36,7 @@ repos:
         types: [python]
       - id: ruff
         name: lint-checking-ruff
-        entry: ruff check
+        entry: ruff check --fix
         pass_filenames: true
         language: python
         types: [python]
