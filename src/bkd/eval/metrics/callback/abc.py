@@ -9,7 +9,10 @@ __all__ = ["MetricCallback"]
 class MetricCallback:
     """Callback to be executed when metric(s) is/are computed."""
 
-    def log_epoch_start(self, eid: EpochID) -> None:
+    def start(self, num_epochs: None | int = None) -> None:
+        """Call at the start of process."""
+
+    def log_epoch_start(self, eid: EpochID, epoch_size: None | int = None) -> None:
         """Call this callback when epoch starts."""
 
     def log_epoch_end(self, eid: EpochID) -> None:

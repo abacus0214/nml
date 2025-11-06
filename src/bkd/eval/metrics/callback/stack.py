@@ -16,12 +16,20 @@ class CallbackStack(MetricCallback):
 
     callback: MetricCallback = MetricCallback()
 
-    def log_epoch_start(self, eid: EpochID) -> None:
-        """Call this callback when epoch ends."""
-        self.log_epoch_start_aux(eid=eid)
-        self.callback.log_epoch_start(eid=eid)
+    def start(self, num_epochs: None | int = None) -> None:
+        """Call at the start of the process."""
+        self.start_aux(num_epochs=num_epochs)
+        self.callback.start(num_epochs=num_epochs)
 
-    def log_epoch_start_aux(self, eid: EpochID) -> None:
+    def start_aux(self, num_epochs: None | int = None) -> None:
+        """Call at the start of the process."""
+
+    def log_epoch_start(self, eid: EpochID, epoch_size: None | int = None) -> None:
+        """Call this callback when epoch ends."""
+        self.log_epoch_start_aux(eid=eid, epoch_size=epoch_size)
+        self.callback.log_epoch_start(eid=eid, epoch_size=epoch_size)
+
+    def log_epoch_start_aux(self, eid: EpochID, epoch_size: None | int = None) -> None:
         """Call this callback when epoch ends."""
 
     def log_epoch_end(self, eid: EpochID) -> None:

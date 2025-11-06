@@ -13,31 +13,42 @@ __all__ = ["ProgressCallback"]
 class ProgressCallback(StandardBaseModel, CallbackStack):
     """Have progress bar for each epoch."""
 
-    # Required parameters
-    num_epochs: int
-    epoch_size: int
-
     # UI config
     epoch_bar_title: str = "Epochs"
     epoch_inner_bar_title: str = "Running Epoch[{eid}]"
+
+    # Paramegters
+    num_epochs: None | int = Field(default=None)
 
     # Memory
     progress: Progress = Field(default_factory=Progress, init=False)
     epoch_task_id: None | TaskID = Field(init=False, default=None)
     current_epoch_inner_id: None | TaskID = Field(init=False, default=None)
 
-    def log_epoch_start_aux(self, eid: EpochID) -> None:
+    def start_aux(self, num_epochs: None | int = None) -> None:
+        """Log number of epochs."""
+        self.num_epochs = num_epochs
+
+    def log_epoch_start_aux(self, eid: EpochID, epoch_size: None | int = None) -> None:
         """Call this callback when epoch ends."""
         # If epoch task id has not been created,
         # do so and start progress bar
         if self.epoch_task_id is None:
+            if self.num_epochs is None:
+                raise ValueError(
+                    "Must provide number of epochs, either via start or constructor."
+                )
+
             self.progress.start()
             self.epoch_task_id = self.progress.add_task(
-                self.epoch_bar_title, total=self.num_epochs - 1
+                self.epoch_bar_title, total=self.num_epochs
             )
 
+        if epoch_size is None:
+            raise ValueError(f"Must provide valid epoch size, isntead got {epoch_size}")
+
         self.current_epoch_inner_id = self.progress.add_task(
-            self.epoch_inner_bar_title.format(eid=eid), total=self.epoch_size - 1
+            self.epoch_inner_bar_title.format(eid=eid), total=epoch_size
         )
 
     def log_epoch_end_aux(self, eid: EpochID) -> None:

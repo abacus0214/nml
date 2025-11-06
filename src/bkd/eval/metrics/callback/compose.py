@@ -13,10 +13,15 @@ class CallbackCat(RestrictedBaseModel, MetricCallback):
 
     callbacks: tuple[MetricCallback]
 
-    def log_epoch_start(self, eid: EpochID) -> None:
+    def start(self, num_epochs: None | int = None) -> None:
+        """Forward start of process."""
+        for callback in self.callbacks:
+            callback.start(num_epochs=num_epochs)
+
+    def log_epoch_start(self, eid: EpochID, epoch_size: None | int = None) -> None:
         """Call this callback when epoch ends."""
         for callback in self.callbacks:
-            callback.log_epoch_start(eid=eid)
+            callback.log_epoch_start(eid=eid, epoch_size=epoch_size)
 
     def log_epoch_end(self, eid: EpochID) -> None:
         """Call this callback when epoch ends."""
