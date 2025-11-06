@@ -6,7 +6,6 @@ from torch.nn import Module
 from torch.utils.data import DataLoader
 
 from bkd.eval.metrics.callback.abc import MetricCallback
-from bkd.eval.metrics.callback.default import EmptyCallback
 
 __all__ = ["Trainer"]
 
@@ -19,6 +18,6 @@ class Trainer[BatchT](ABC):
         self,
         model: Module,
         dataset: DataLoader[BatchT],
-        callback: MetricCallback = EmptyCallback(),
+        callback: MetricCallback = MetricCallback(),
     ) -> None:
         """Perform training loop."""

@@ -1,0 +1,57 @@
+"""Useful interface for stacking callbacks."""
+
+from bkd.eval.metrics.callback.abc import MetricCallback
+from bkd.utils.typing.eval.metrics import Metric, MetricID, Metrics
+from bkd.utils.typing.events import EpochID
+
+__all__ = ["CallbackStack"]
+
+
+class CallbackStack(MetricCallback):
+    """Stack callback on top of each other.
+
+    Intercept or modify events sent to inner callback.
+
+    """
+
+    callback: MetricCallback
+
+    def log_epoch_start(self, eid: EpochID) -> None:
+        """Call this callback when epoch ends."""
+        self.log_epoch_start_aux(eid=eid)
+        self.callback.log_epoch_start(eid=eid)
+
+    def log_epoch_start_aux(self, eid: EpochID) -> None:
+        """Call this callback when epoch ends."""
+
+    def log_epoch_end(self, eid: EpochID) -> None:
+        """Call this callback when epoch ends."""
+        self.log_epoch_end_aux(eid=eid)
+        self.callback.log_epoch_end(eid=eid)
+
+    def log_epoch_end_aux(self, eid: EpochID) -> None:
+        """Call this callback when epoch ends."""
+
+    def log_metric(self, mid: MetricID, metric: Metric) -> None:
+        """Log metric with given id."""
+        self.log_metric_aux(mid=mid, metric=metric)
+        self.callback.log_metric(mid=mid, metric=metric)
+
+    def log_metric_aux(self, mid: MetricID, metric: Metric) -> None:
+        """Log metric with given id."""
+
+    def log_metrics(self, metrics: Metrics) -> None:
+        """Log multiple metrics at once, by default iterate."""
+        self.log_metrics_aux(metrics=metrics)
+        self.callback.log_metrics(metrics=metrics)
+
+    def log_metrics_aux(self, metrics: Metrics) -> None:
+        """Log multiple metrics at once, by default iterate."""
+
+    def close(self) -> None:
+        """Call at the end of the process."""
+        self.close_aux()
+        self.callback.close()
+
+    def close_aux(self) -> None:
+        """Call at the end of the process."""
