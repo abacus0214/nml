@@ -14,7 +14,7 @@ class CallbackStack(MetricCallback):
 
     """
 
-    callback: MetricCallback
+    callback: MetricCallback = MetricCallback()
 
     def log_epoch_start(self, eid: EpochID) -> None:
         """Call this callback when epoch ends."""
