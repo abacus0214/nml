@@ -10,6 +10,7 @@ class StandardBaseModel(BaseModel):
 
     model_config = ConfigDict(
         extra="forbid",
+        arbitrary_types_allowed=True,
     )
 
 
@@ -19,4 +20,5 @@ class RestrictedBaseModel(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
         frozen=True,
+        arbitrary_types_allowed=True,
     )
