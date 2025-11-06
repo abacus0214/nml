@@ -15,3 +15,5 @@
 # Adding source directory
 !src
 !scripts
+
+*egg-info
