@@ -2,6 +2,7 @@
 
 from typing import TypeAlias
 
-__all__ = ["EpochID"]
+__all__ = ["EpochID", "BatchID"]
 
 EpochID: TypeAlias = int
+BatchID: TypeAlias = int
