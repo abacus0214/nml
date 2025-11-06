@@ -20,7 +20,9 @@ classifiers = [
 
 # Dependencies
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "pydantic>=2.12.4",
+]
 
 [dependency-groups]
 dev = [
