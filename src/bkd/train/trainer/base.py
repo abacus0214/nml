@@ -9,9 +9,7 @@ from bkd.models.container.base import Model
 __all__ = ["Trainer"]
 
 
-class Trainer[ModelT: Model[object, object, object, object], DatasetT: Iterable[Any]](
-    ABC
-):
+class Trainer[ModelT: Model[Any, Any, Any, Any], DatasetT: Iterable[Any]](ABC):
     """Base class that defines the interface for a trainer."""
 
     @abstractmethod
