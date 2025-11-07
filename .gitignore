@@ -18,3 +18,6 @@
 
 *egg-info
 __pycache__
+
+# Add tox.ini
+!tox.ini
