@@ -1,6 +1,6 @@
 """Useful types and type aliases for mlflow."""
 
-from typing import Any, TypeAlias
+from typing import Any
 
 from mlflow.entities import Dataset as MLFlowDataset
 from mlflow.entities import Metric as MLFlowMetric
@@ -18,4 +18,4 @@ __all__ = [
 ]
 
 # Runs
-MLFlowTagsDict: TypeAlias = dict[str, Any]
+type MLFlowTagsDict = dict[str, Any]

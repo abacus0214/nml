@@ -1,7 +1,7 @@
 """Useful types for metrics."""
 
 from collections import UserDict
-from typing import Any, TypeAlias
+from typing import Any
 
 import numpy as np
 
@@ -16,16 +16,16 @@ __all__ = [
     "MetricSample",
 ]
 
-MetricID: TypeAlias = str
-MetricStep: TypeAlias = None | int
-MetricSample: TypeAlias = tuple[MetricID, MetricStep]
+type MetricID = str
+type MetricStep = None | int
+type MetricSample = tuple[MetricID, MetricStep]
 
-ScalarMetric: TypeAlias = float
-VectorMetric: TypeAlias = np.ndarray[Any, np.dtype[np.float32]]
+type ScalarMetric = float
+type VectorMetric = np.ndarray[Any, np.dtype[np.float32]]
 
-Metric: TypeAlias = ScalarMetric | VectorMetric
+type Metric = ScalarMetric | VectorMetric
 
-Metrics: TypeAlias = dict[MetricID, Metric]
+type Metrics = dict[MetricID, Metric]
 
 
 class MetricsBatch(UserDict[MetricSample, Metric]):
