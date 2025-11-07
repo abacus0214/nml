@@ -2,7 +2,6 @@
 
 from abc import ABC, abstractmethod
 
-from torch.nn import Module
 from torch.utils.data import DataLoader
 
 from bkd.eval.metrics.callback.abc import MetricCallback
@@ -10,13 +9,13 @@ from bkd.eval.metrics.callback.abc import MetricCallback
 __all__ = ["Trainer"]
 
 
-class Trainer[BatchT](ABC):
+class Trainer[ModelT, BatchT](ABC):
     """Base class that defines the interface for a trainer."""
 
     @abstractmethod
     def train(
         self,
-        model: Module,
+        model: ModelT,
         dataset: DataLoader[BatchT],
         callback: MetricCallback = MetricCallback(),
     ) -> None:
