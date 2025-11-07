@@ -3,14 +3,14 @@
 from pydantic import Field
 from rich.progress import Progress, TaskID
 
-from bkd.eval.metrics.callback.stack import CallbackStack
+from bkd.eval.metrics.callback.abc import MetricCallback
 from bkd.utils.typing.base.pydantic import StandardBaseModel
 from bkd.utils.typing.events import BatchID, EpochID
 
 __all__ = ["ProgressCallback"]
 
 
-class ProgressCallback(StandardBaseModel, CallbackStack):
+class ProgressCallback(StandardBaseModel, MetricCallback):
     """Have progress bar for each epoch."""
 
     # UI config
@@ -25,11 +25,11 @@ class ProgressCallback(StandardBaseModel, CallbackStack):
     epoch_task_id: None | TaskID = Field(init=False, default=None)
     current_epoch_inner_id: None | TaskID = Field(init=False, default=None)
 
-    def start_aux(self, num_epochs: None | int = None) -> None:
+    def start(self, num_epochs: None | int = None) -> None:
         """Log number of epochs."""
         self.num_epochs = num_epochs
 
-    def log_epoch_start_aux(self, eid: EpochID, epoch_size: None | int = None) -> None:
+    def log_epoch_start(self, eid: EpochID, epoch_size: None | int = None) -> None:
         """Call this callback when epoch ends."""
         # If epoch task id has not been created,
         # do so and start progress bar
@@ -51,7 +51,7 @@ class ProgressCallback(StandardBaseModel, CallbackStack):
             self.epoch_inner_bar_title.format(eid=eid), total=epoch_size
         )
 
-    def log_epoch_end_aux(self, eid: EpochID) -> None:
+    def log_epoch_end(self, eid: EpochID) -> None:
         """Call this callback when epoch ends."""
         if self.epoch_task_id is None:
             raise RuntimeError("No epoch started.")
@@ -59,7 +59,7 @@ class ProgressCallback(StandardBaseModel, CallbackStack):
         # Increment epoch progress bar
         self.progress.update(self.epoch_task_id, advance=1, update=True)
 
-    def log_batch_end_aux(self, bid: BatchID) -> None:
+    def log_batch_end(self, bid: BatchID) -> None:
         """Incremet inner progress bar."""
         if self.current_epoch_inner_id is None:
             raise RuntimeError("No epoch started.")
