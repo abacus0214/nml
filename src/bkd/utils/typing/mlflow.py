@@ -2,42 +2,20 @@
 
 from typing import Any, TypeAlias
 
-from mlflow.entities import Run
+from mlflow.entities import Dataset as MLFlowDataset
+from mlflow.entities import Metric as MLFlowMetric
+from mlflow.entities import Param as MLFlowParam
+from mlflow.entities import Run as MLFlowRun
+from mlflow.entities import RunTag as MLFlowRunTag
 
 __all__ = [
-    "Run",
-    "MLFlowStepType",
-    "MLFlowExperimentID",
-    "MLFlowTimeType",
+    "MLFlowMetric",
+    "MLFlowParam",
+    "MLFlowRunTag",
     "MLFlowTagsDict",
-    "MLFlowRunName",
-    "MLFlowRunID",
-    "MLFlowMetricKey",
-    "MLFlowMetricVal",
-    "MLFlowModelID",
-    "MLFlowDatasetDigest",
-    "MLFlowDatasetName",
+    "MLFlowDataset",
+    "MLFlowRun",
 ]
-
-# Generatl General
-MLFlowTimeType: TypeAlias = int
-MLFlowStepType: TypeAlias = int
-
-# Expriments
-MLFlowExperimentID: TypeAlias = str
 
 # Runs
 MLFlowTagsDict: TypeAlias = dict[str, Any]
-MLFlowRunName: TypeAlias = str
-MLFlowRunID: TypeAlias = str
-
-# Metrics
-MLFlowMetricKey: TypeAlias = str
-MLFlowMetricVal: TypeAlias = Any
-
-# Model
-MLFlowModelID: TypeAlias = str
-
-# Dataset
-MLFlowDatasetName: TypeAlias = str
-MLFlowDatasetDigest: TypeAlias = str

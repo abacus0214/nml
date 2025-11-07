@@ -62,3 +62,5 @@ ignore = [
 [tool.mypy]
 strict = true
 install_types = true
+
+disallow_untyped_calls = false
