@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Iterable
 
 from bkd.eval.metrics.callback.abc import MetricCallback
-from bkd.models.base import Model
+from bkd.models.container.base import Model
 
 __all__ = ["Trainer"]
 
