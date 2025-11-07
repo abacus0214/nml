@@ -2,6 +2,6 @@
 
 from typing import Iterable
 
-__all__ = ["Dataset"]
+__all__ = ["DataLoader"]
 
-type Dataset[BatchT] = Iterable[BatchT]
+type DataLoader[BatchT] = Iterable[BatchT]
