@@ -1,11 +1,19 @@
 """MLFlow metric callback."""
 
+from itertools import groupby
+
 from pydantic import Field
 
 from bkd.eval.metrics.callback.abc import MetricCallback
 from bkd.utils.mlflow.client import ExperimentClient, RunClient
 from bkd.utils.typing.base.pydantic import StandardBaseModel
-from bkd.utils.typing.eval.metrics import Metric, MetricID, Metrics
+from bkd.utils.typing.eval.metrics import (
+    Metric,
+    MetricID,
+    Metrics,
+    MetricsBatch,
+    MetricStep,
+)
 
 
 class MLFlowMetricCallback(StandardBaseModel, MetricCallback):
@@ -28,17 +36,30 @@ class MLFlowMetricCallback(StandardBaseModel, MetricCallback):
         if self.ephimeral_run or self.current_run is None:
             self.current_run = self.client.create_run_client(run_name=self.run_name)
 
-    def log_metric(self, mid: MetricID, metric: Metric) -> None:
+    def log_metric(
+        self, mid: MetricID, metric: Metric, step: MetricStep = None
+    ) -> None:
         """Log metric with given id."""
         if self.current_run is not None:
-            self.current_run.log_metric(key=mid, value=float(metric))
+            self.current_run.log_metric(key=mid, value=float(metric), step=step)
 
-    def log_metrics(self, metrics: Metrics) -> None:
+    def log_metrics(self, metrics: Metrics, step: MetricStep = None) -> None:
         """Log multiple metrics at once, by default iterate."""
         if self.current_run is not None:
             self.current_run.log_metrics(
-                {key: float(value) for key, value in metrics.items()}
+                {key: float(value) for key, value in metrics.items()},
+                step=step,
             )
+
+    def log_batch(self, batch: MetricsBatch) -> None:
+        """Log multiple metrics at once, by default iterate."""
+        # Group samples by step
+        if self.current_run is not None:
+            for step, batch_sub in groupby(batch.items(), lambda it: it[0][1]):
+                self.log_metrics(
+                    {mid: metric for (mid, _), metric in batch_sub},
+                    step=step,
+                )
 
     def close(self) -> None:
         """Call at the end of the process."""

@@ -2,7 +2,13 @@
 
 from bkd.eval.metrics.callback.abc import MetricCallback
 from bkd.utils.typing.base.pydantic import RestrictedBaseModel
-from bkd.utils.typing.eval.metrics import Metric, MetricID, Metrics
+from bkd.utils.typing.eval.metrics import (
+    Metric,
+    MetricID,
+    Metrics,
+    MetricsBatch,
+    MetricStep,
+)
 from bkd.utils.typing.events import BatchID, EpochID
 
 __all__ = ["CallbackCat"]
@@ -38,15 +44,22 @@ class CallbackCat(RestrictedBaseModel, MetricCallback):
         for callback in self.callbacks:
             callback.log_batch_end(bid=bid)
 
-    def log_metric(self, mid: MetricID, metric: Metric) -> None:
+    def log_metric(
+        self, mid: MetricID, metric: Metric, step: MetricStep = None
+    ) -> None:
         """Log metric with given id."""
         for callback in self.callbacks:
             callback.log_metric(mid, metric)
 
-    def log_metrics(self, metrics: Metrics) -> None:
+    def log_metrics(self, metrics: Metrics, step: MetricStep = None) -> None:
         """Log multiple metrics at once, by default iterate."""
         for callback in self.callbacks:
             callback.log_metrics(metrics)
+
+    def log_batch(self, batch: MetricsBatch) -> None:
+        """Log multiple metrics samples at arbitrary timesteps at once, by default iterate."""
+        for callback in self.callbacks:
+            callback.log_batch(batch)
 
     def close(self) -> None:
         """Call at the end of the process."""

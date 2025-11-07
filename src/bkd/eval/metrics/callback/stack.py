@@ -1,7 +1,13 @@
 """Useful interface for stacking callbacks."""
 
 from bkd.eval.metrics.callback.abc import MetricCallback
-from bkd.utils.typing.eval.metrics import Metric, MetricID, Metrics
+from bkd.utils.typing.eval.metrics import (
+    Metric,
+    MetricID,
+    Metrics,
+    MetricsBatch,
+    MetricStep,
+)
 from bkd.utils.typing.events import BatchID, EpochID
 
 __all__ = ["CallbackStack"]
@@ -56,21 +62,33 @@ class CallbackStack(MetricCallback):
     def log_batch_end_aux(self, bid: BatchID) -> None:
         """Call this callback when batch ends."""
 
-    def log_metric(self, mid: MetricID, metric: Metric) -> None:
+    def log_metric(
+        self, mid: MetricID, metric: Metric, step: MetricStep = None
+    ) -> None:
         """Log metric with given id."""
-        self.log_metric_aux(mid=mid, metric=metric)
-        self.callback.log_metric(mid=mid, metric=metric)
+        self.log_metric_aux(mid=mid, metric=metric, step=step)
+        self.callback.log_metric(mid=mid, metric=metric, step=step)
 
-    def log_metric_aux(self, mid: MetricID, metric: Metric) -> None:
+    def log_metric_aux(
+        self, mid: MetricID, metric: Metric, step: MetricStep = None
+    ) -> None:
         """Log metric with given id."""
 
-    def log_metrics(self, metrics: Metrics) -> None:
+    def log_metrics(self, metrics: Metrics, step: MetricStep = None) -> None:
         """Log multiple metrics at once, by default iterate."""
-        self.log_metrics_aux(metrics=metrics)
-        self.callback.log_metrics(metrics=metrics)
+        self.log_metrics_aux(metrics=metrics, step=step)
+        self.callback.log_metrics(metrics=metrics, step=step)
 
-    def log_metrics_aux(self, metrics: Metrics) -> None:
+    def log_metrics_aux(self, metrics: Metrics, step: MetricStep = None) -> None:
         """Log multiple metrics at once, by default iterate."""
+
+    def log_batch(self, batch: MetricsBatch) -> None:
+        """Log multiple metrics samples at arbitrary timesteps at once, by default iterate."""
+        self.log_batch_aux(batch=batch)
+        self.callback.log_batch(batch=batch)
+
+    def log_batch_aux(self, batch: MetricsBatch) -> None:
+        """Log multiple metrics samples at arbitrary timesteps at once, by default iterate."""
 
     def close(self) -> None:
         """Call at the end of the process."""

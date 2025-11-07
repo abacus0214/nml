@@ -1,6 +1,12 @@
 """Interface for evaluation callback."""
 
-from bkd.utils.typing.eval.metrics import Metric, MetricID, Metrics
+from bkd.utils.typing.eval.metrics import (
+    Metric,
+    MetricID,
+    Metrics,
+    MetricsBatch,
+    MetricStep,
+)
 from bkd.utils.typing.events import BatchID, EpochID
 
 __all__ = ["MetricCallback"]
@@ -24,13 +30,20 @@ class MetricCallback:
     def log_batch_end(self, bid: BatchID) -> None:
         """Call this callback when batch ends."""
 
-    def log_metric(self, mid: MetricID, metric: Metric) -> None:
+    def log_metric(
+        self, mid: MetricID, metric: Metric, step: MetricStep = None
+    ) -> None:
         """Log metric with given id."""
 
-    def log_metrics(self, metrics: Metrics) -> None:
+    def log_metrics(self, metrics: Metrics, step: MetricStep = None) -> None:
         """Log multiple metrics at once, by default iterate."""
         for mid, metric in metrics.items():
-            self.log_metric(mid=mid, metric=metric)
+            self.log_metric(mid=mid, metric=metric, step=step)
+
+    def log_batch(self, batch: MetricsBatch) -> None:
+        """Log multiple metrics samples at arbitrary timesteps at once, by default iterate."""
+        for (mid, step), metric in batch.items():
+            self.log_metric(mid=mid, metric=metric, step=step)
 
     def close(self) -> None:
         """Call at the end of the process."""
