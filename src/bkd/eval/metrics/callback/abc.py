@@ -40,7 +40,7 @@ class MetricCallback:
         for mid, metric in metrics.items():
             self.log_metric(mid=mid, metric=metric, step=step)
 
-    def log_batch(self, batch: MetricsBatch) -> None:
+    def log_metrics_batch(self, batch: MetricsBatch) -> None:
         """Log multiple metrics samples at arbitrary timesteps at once, by default iterate."""
         for (mid, step), metric in batch.items():
             self.log_metric(mid=mid, metric=metric, step=step)

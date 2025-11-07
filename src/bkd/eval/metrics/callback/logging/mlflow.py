@@ -51,7 +51,7 @@ class MLFlowMetricCallback(StandardBaseModel, MetricCallback):
                 step=step,
             )
 
-    def log_batch(self, batch: MetricsBatch) -> None:
+    def log_metrics_batch(self, batch: MetricsBatch) -> None:
         """Log multiple metrics at once, by default iterate."""
         # Group samples by step
         if self.current_run is not None:

@@ -82,10 +82,10 @@ class CallbackStack(MetricCallback):
     def log_metrics_aux(self, metrics: Metrics, step: MetricStep = None) -> None:
         """Log multiple metrics at once, by default iterate."""
 
-    def log_batch(self, batch: MetricsBatch) -> None:
+    def log_metrics_batch(self, batch: MetricsBatch) -> None:
         """Log multiple metrics samples at arbitrary timesteps at once, by default iterate."""
         self.log_batch_aux(batch=batch)
-        self.callback.log_batch(batch=batch)
+        self.callback.log_metrics_batch(batch=batch)
 
     def log_batch_aux(self, batch: MetricsBatch) -> None:
         """Log multiple metrics samples at arbitrary timesteps at once, by default iterate."""

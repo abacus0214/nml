@@ -56,10 +56,10 @@ class CallbackCat(RestrictedBaseModel, MetricCallback):
         for callback in self.callbacks:
             callback.log_metrics(metrics)
 
-    def log_batch(self, batch: MetricsBatch) -> None:
+    def log_metrics_batch(self, batch: MetricsBatch) -> None:
         """Log multiple metrics samples at arbitrary timesteps at once, by default iterate."""
         for callback in self.callbacks:
-            callback.log_batch(batch)
+            callback.log_metrics_batch(batch)
 
     def close(self) -> None:
         """Call at the end of the process."""
