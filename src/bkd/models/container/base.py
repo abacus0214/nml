@@ -33,3 +33,10 @@ class ModelABC[InT, OutT, SampleT, LikelihoodT](ABC):
         return self.interpreter.log_likelihood(
             model_out=self.forward(ipt), target_samples=target_samples
         )
+
+    def likelihood_to_float(
+        self,
+        likelihood: LikelihoodT,
+    ) -> float:
+        """Convert likelihood to float."""
+        return self.interpreter.likelihood_to_float(likelihood=likelihood)

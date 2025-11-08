@@ -11,3 +11,7 @@ class TorchModelInterpreter[ParamsT, SampleT](
     ModelInterpreter[ParamsT, SampleT, Tensor]
 ):
     """Parent class for all torch model interpreters."""
+
+    def likelihood_to_float(self, likelihood: Tensor) -> float:
+        """Convert the likelihood to a float."""
+        return float(likelihood)

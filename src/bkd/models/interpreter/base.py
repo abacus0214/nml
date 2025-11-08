@@ -21,3 +21,9 @@ class ModelInterpreter[ModelOutT, SampleT, LikelihoodT]:
         raise NotImplementedError(
             f"{self} does not support log likelihood computation."
         )
+
+    def likelihood_to_float(self, likelihood: LikelihoodT) -> float:
+        """Convert the likelihood to a float."""
+        raise NotImplementedError(
+            f"{self} does not support log likelihood conversion to float."
+        )
