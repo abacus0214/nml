@@ -1,15 +1,12 @@
 """Base torch trainer class."""
 
-from typing import Any
 
-from bkd.itf.torch.loss.runner.base import TorchLossRunner
-from bkd.itf.torch.models.container.base import TorchModel
+from torch import Tensor
+
 from bkd.train.trainer.base import Trainer
 
 __all__ = ["TorchTrainer"]
 
 
-class TorchTrainer[ModelT: TorchModel[Any, Any, Any], BatchT](
-    Trainer[ModelT, BatchT, TorchLossRunner]
-):
+class TorchTrainer(Trainer[Tensor]):
     """Base torch trainer class."""
