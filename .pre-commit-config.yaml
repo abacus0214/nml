@@ -34,19 +34,25 @@ repos:
         files: "^(src|test|scripts|configs)"
         language: python
         types: [python]
-      - id: ruff
-        name: lint-checking-ruff
+      - id: ruff-commit
+        name: lint-checking-ruff-commit
         entry: ruff check --fix
         pass_filenames: true
         language: python
         types: [python]
-      - id: mypy
-        name: type-checking-files
+      - id: ruff-pkg
+        name: lint-checking-ruff-package
+        entry: ruff check --fix src
+        pass_filenames: false
+        language: python
+        types: [python]
+      - id: mypy-commit
+        name: type-checking-commit
         entry: mypy
         pass_filenames: true
         language: python
         types: [python]
-      - id: mypy
+      - id: mypy-pkg
         name: type-checking-package
         entry: mypy -p bkd
         pass_filenames: false
