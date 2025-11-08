@@ -4,10 +4,10 @@ from abc import ABC, abstractmethod
 
 from bkd.models.interpreter.base import ModelInterpreter
 
-__all__ = ["Model"]
+__all__ = ["ModelABC"]
 
 
-class Model[InT, OutT, SampleT, LikelihoodT](ABC):
+class ModelABC[InT, OutT, SampleT, LikelihoodT](ABC):
     """Base model class."""
 
     interpreter: ModelInterpreter[OutT, SampleT, LikelihoodT]

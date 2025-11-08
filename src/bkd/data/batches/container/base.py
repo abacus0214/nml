@@ -2,10 +2,10 @@
 
 from bkd.data.batches.interpreter.base import BatchInterpreter
 
-__all__ = ["BatchContainer"]
+__all__ = ["BatchContainerABC"]
 
 
-class BatchContainer[BatchT, IpT, TgT = None]:
+class BatchContainerABC[BatchT, IpT, TgT = None]:
     """Base class for batch container."""
 
     batch: BatchT
