@@ -2,7 +2,8 @@
 
 from abc import ABC, abstractmethod
 
-from bkd.models.interpreter.base import ModelInterpreter
+from bkd.data.batches.container.base import BatchABC
+from bkd.models.container.base import ModelABC
 
 __all__ = ["LossRunner"]
 
@@ -11,10 +12,9 @@ class LossRunner[LossT](ABC):
     """Wrapper for callacble that computes a loss based on a batch and model."""
 
     @abstractmethod
-    def __call__(
+    def compute[IpT, TgT](
         self,
-        batch: object,
-        model: object,
-        interpreter: ModelInterpreter[object, object, LossT],
+        batch: BatchABC[object, IpT, TgT],
+        model: ModelABC[IpT, object, TgT, LossT],
     ) -> LossT:
         """Compute the loss from a given model and batch."""
