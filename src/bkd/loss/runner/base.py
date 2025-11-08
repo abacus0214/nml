@@ -5,10 +5,10 @@ from abc import ABC, abstractmethod
 from bkd.data.batches.container.base import BatchABC
 from bkd.models.container.base import ModelABC
 
-__all__ = ["LossRunner"]
+__all__ = ["LossRunnerABC"]
 
 
-class LossRunner[LossT](ABC):
+class LossRunnerABC[LossT](ABC):
     """Wrapper for callacble that computes a loss based on a batch and model."""
 
     @abstractmethod

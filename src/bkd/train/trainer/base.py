@@ -5,14 +5,14 @@ from typing import Any
 
 from bkd.callbacks.abc import EventCallback
 from bkd.data.loader.container.base import DataLoader
-from bkd.loss.runner.base import LossRunner
+from bkd.loss.runner.base import LossRunnerABC
 from bkd.models.container.base import ModelABC
 from bkd.utils.typing.events import EpochID
 
 __all__ = ["Trainer"]
 
 
-class Trainer[ModelT: ModelABC[Any, Any, Any, Any], BatchT, LossT: LossRunner[Any]](
+class Trainer[ModelT: ModelABC[Any, Any, Any, Any], BatchT, LossT: LossRunnerABC[Any]](
     ABC
 ):
     """Base class that defines the interface for a trainer."""
