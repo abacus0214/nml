@@ -59,6 +59,7 @@ class Trainer[LossT](ABC):
                         update_model=True,
                         callback=callback,
                     )
+
             # Evaluate model
             self.evaluation(
                 step=eid,
@@ -91,6 +92,7 @@ class Trainer[LossT](ABC):
             update_model=update_model,
             callback=callback,
         )
+
         # Communicate aggregated loss across batches
         loss_metric_id = f"{dataset.name}/{self.loss_metric_name}"
         callback.log_metric(mid=loss_metric_id, metric=agg_loss)
