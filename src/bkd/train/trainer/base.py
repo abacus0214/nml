@@ -68,8 +68,10 @@ class Trainer[LossT](ABC):
         callback: EventCallback = EventCallback(),
     ) -> None:
         """Train for a single epoch."""
+        # TODO: should be able to run in non training mode to compute loss on val split
         callback.log_epoch_start(eid=eid)
         for bid, batch in enumerate(dataset):
+            # TODO: convert loss to float, aggregate, and log
             self.single_batch_update(
                 bid=bid,
                 model=model,
