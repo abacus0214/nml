@@ -1,6 +1,7 @@
 """Base class for loss runners."""
 
 from abc import ABC, abstractmethod
+from typing import Any
 
 from bkd.data.batches.container.base import BatchABC
 from bkd.models.container.base import ModelABC
@@ -14,7 +15,7 @@ class LossRunnerABC[LossT](ABC):
     @abstractmethod
     def compute[IpT, TgT](
         self,
-        batch: BatchABC[object, IpT, TgT],
-        model: ModelABC[IpT, object, TgT, LossT],
+        batch: BatchABC[Any, IpT, TgT],
+        model: ModelABC[IpT, Any, TgT, LossT],
     ) -> LossT:
         """Compute the loss from a given model and batch."""
