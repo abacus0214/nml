@@ -5,10 +5,10 @@ from typing import Any, Iterator
 
 from bkd.data.batches.interpreter.base import BatchInterpreter
 
-__all__ = ["DataLoader"]
+__all__ = ["DataLoaderABC"]
 
 
-class DataLoader[BatchT, IpT = Any, TgT = None](ABC):
+class DataLoaderABC[BatchT, IpT = Any, TgT = None](ABC):
     """Base data loader container."""
 
     @property
@@ -23,4 +23,5 @@ class DataLoader[BatchT, IpT = Any, TgT = None](ABC):
 
     def __iter__(self) -> Iterator[BatchT]:
         """Must be iterable with BatchT types, each iteration is considered an epoch."""
+        # TODO: package inside BatchABC type object while iterating
         return self.epoch_iterator
