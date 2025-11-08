@@ -2,7 +2,7 @@
 
 from torch import Tensor
 
-from bkd.models.loss.runner.base import LossRunner
+from bkd.loss.runner.base import LossRunner
 
 __all__ = ["TorchLossRunner"]
 

@@ -2,8 +2,8 @@
 
 from typing import Any
 
+from bkd.itf.torch.loss.runner.base import TorchLossRunner
 from bkd.itf.torch.models.container.base import TorchModel
-from bkd.itf.torch.models.loss.runner.base import TorchLossRunner
 from bkd.train.trainer.base import Trainer
 
 __all__ = ["TorchTrainer"]
