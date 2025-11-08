@@ -55,35 +55,66 @@ class Trainer[LossT](ABC):
                 model=model,
                 dataset=train_set,
                 loss_runner=loss_runner,
+                update_model=True,
+                split_name=self.train_split_name,
                 callback=callback,
             )
             # Evaluate model
-            self.run_evaluation(
+            self.evaluation(
                 step=eid,
                 model=model,
                 train_set=train_set,
                 val_set=val_set,
+                loss_runner=loss_runner,
                 callback=callback,
             )
 
         callback.close()
 
-    @abstractmethod
     def epoch_step[IpT, TgT](
         self,
         eid: EpochID,
         model: ModelABC[IpT, Any, TgT, LossT],
         dataset: DataLoaderABC[Any, IpT, TgT],
         loss_runner: LossRunnerABC,
+        update_model: bool = True,
+        split_name: None | str = None,
         callback: EventCallback = EventCallback(),
     ) -> None:
         """Train for a single epoch."""
-        # TODO: should be able to run in non training mode to compute loss on val split
         # Communicate start of epoch
         callback.log_epoch_start(eid=eid)
 
         # Compute loss for each batch
-        agg_loss = self.loss_aggregator(
+        agg_loss = self.epoch_loss(
+            model=model,
+            dataset=dataset,
+            loss_runner=loss_runner,
+            update_model=update_model,
+            callback=callback,
+        )
+        # Compute name of metric to log loss
+        loss_metrics_id = (
+            self.loss_metric_name
+            if split_name is None
+            else f"{split_name}/{self.loss_metric_name}"
+        )
+        # Communicate aggregate losses across batches
+        callback.log_metric(mid=loss_metrics_id, metric=agg_loss)
+        # Communicate epoch end
+        callback.log_epoch_end(eid=eid)
+
+    def epoch_loss[IpT, TgT](
+        self,
+        model: ModelABC[IpT, Any, TgT, LossT],
+        dataset: DataLoaderABC[Any, IpT, TgT],
+        loss_runner: LossRunnerABC,
+        update_model: bool = False,
+        callback: EventCallback = EventCallback(),
+    ) -> float:
+        """Compute the loss for a single epoch and update model (if specified)."""
+        # Compute loss for each batch
+        return self.loss_aggregator(
             [
                 model.likelihood_to_float(
                     self.batch_step(
@@ -91,6 +122,7 @@ class Trainer[LossT](ABC):
                         model=model,
                         batch=batch,
                         loss_runner=loss_runner,
+                        update_model=update_model,
                         callback=callback,
                     )
                 )
@@ -98,17 +130,13 @@ class Trainer[LossT](ABC):
             ]
         )
 
-        # Communicate aggregate losses across batches
-        callback.log_metric(mid=self.loss_metric_name, metric=agg_loss)
-        # Communicate epoch end
-        callback.log_epoch_end(eid=eid)
-
     def batch_step[IpT, TgT](
         self,
         bid: BatchID,
         model: ModelABC[IpT, Any, TgT, LossT],
         batch: BatchABC[Any, IpT, TgT],
         loss_runner: LossRunnerABC,
+        update_model: bool = False,
         callback: EventCallback = EventCallback(),
     ) -> LossT:
         """Train for a single batch."""
@@ -116,8 +144,12 @@ class Trainer[LossT](ABC):
         callback.log_batch_start(bid=bid)
 
         # Update model
-        loss = self.compute_loss(
-            loss_runner=loss_runner, model=model, batch=batch, callback=callback
+        loss = self.batch_loss(
+            loss_runner=loss_runner,
+            model=model,
+            batch=batch,
+            update_model=update_model,
+            callback=callback,
         )
 
         # Communicte batch update end
@@ -125,32 +157,34 @@ class Trainer[LossT](ABC):
         return loss
 
     @abstractmethod
-    def compute_loss[IpT, TgT](
+    def batch_loss[IpT, TgT](
         self,
         model: ModelABC[IpT, Any, TgT, LossT],
         batch: BatchABC[Any, IpT, TgT],
         loss_runner: LossRunnerABC,
+        update_model: bool = False,
         callback: EventCallback = EventCallback(),
     ) -> LossT:
         """Compute loss and update model (if required)."""
 
-    def run_evaluation[IpT, TgT](
+    def evaluation[IpT, TgT](
         self,
         model: ModelABC[IpT, Any, TgT, Any],
         train_set: DataLoaderABC[Any, IpT, TgT],
         val_set: DataLoaderABC[Any, IpT, TgT],
+        loss_runner: LossRunnerABC,
         step: None | MetricStep = None,
         callback: EventCallback = EventCallback(),
     ) -> None:
         """Evaluate on trian and validation sets."""
-        self.run_split_evaluation(
+        self.run_and_log_split_evaluation(
             model=model,
             dataset=train_set,
             split_name=self.train_split_name,
             step=step,
             callback=callback,
         )
-        self.run_split_evaluation(
+        self.run_and_log_split_evaluation(
             model=model,
             dataset=val_set,
             split_name=self.val_split_name,
@@ -158,7 +192,20 @@ class Trainer[LossT](ABC):
             callback=callback,
         )
 
-    def run_split_evaluation[IpT, TgT](
+        # Compute loss on validation set
+        val_loss = self.epoch_loss(
+            model=model,
+            dataset=val_set,
+            loss_runner=loss_runner,
+            update_model=False,
+            callback=callback,
+        )
+        # Log validation loss
+        callback.log_metric(
+            mid=f"{self.val_split_name}/{self.loss_metric_name}", metric=val_loss
+        )
+
+    def run_and_log_split_evaluation[IpT, TgT](
         self,
         model: ModelABC[IpT, Any, TgT, Any],
         dataset: DataLoaderABC[Any, IpT, TgT],
