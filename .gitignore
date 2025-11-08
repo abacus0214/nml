@@ -15,6 +15,7 @@
 # Adding source directory
 !src
 !scripts
+!test
 
 *egg-info
 __pycache__
