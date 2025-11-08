@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from bkd.callbacks.abc import EventCallback
-from bkd.data.container.base import DataLoader
+from bkd.data.loader.container.base import DataLoader
 from bkd.loss.runner.base import LossRunner
 from bkd.models.container.base import ModelABC
 from bkd.utils.typing.events import EpochID
