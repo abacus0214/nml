@@ -9,10 +9,10 @@ from bkd.utils.typing.eval.metrics import (
 )
 from bkd.utils.typing.events import BatchID, EpochID
 
-__all__ = ["MetricCallback"]
+__all__ = ["EventCallback"]
 
 
-class MetricCallback:
+class EventCallback:
     """Callback to be executed when metric(s) is/are computed."""
 
     def start(self, num_epochs: None | int = None) -> None:

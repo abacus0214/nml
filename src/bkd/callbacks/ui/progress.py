@@ -3,14 +3,14 @@
 from pydantic import Field
 from rich.progress import Progress, TaskID
 
-from bkd.eval.metrics.callback.abc import MetricCallback
+from bkd.callbacks.abc import EventCallback
 from bkd.utils.typing.base.pydantic import StandardBaseModel
 from bkd.utils.typing.events import BatchID, EpochID
 
 __all__ = ["ProgressCallback"]
 
 
-class ProgressCallback(StandardBaseModel, MetricCallback):
+class ProgressCallback(StandardBaseModel, EventCallback):
     """Have progress bar for each epoch."""
 
     # UI config

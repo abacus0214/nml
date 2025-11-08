@@ -1,6 +1,6 @@
 """Useful interface for stacking callbacks."""
 
-from bkd.eval.metrics.callback.abc import MetricCallback
+from bkd.callbacks.abc import EventCallback
 from bkd.utils.typing.eval.metrics import (
     Metric,
     MetricID,
@@ -13,14 +13,14 @@ from bkd.utils.typing.events import BatchID, EpochID
 __all__ = ["CallbackStack"]
 
 
-class CallbackStack(MetricCallback):
+class CallbackStack(EventCallback):
     """Stack callback on top of each other.
 
     Intercept or modify events sent to inner callback.
 
     """
 
-    callback: MetricCallback = MetricCallback()
+    callback: EventCallback = EventCallback()
 
     def start(self, num_epochs: None | int = None) -> None:
         """Call at the start of the process."""

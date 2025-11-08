@@ -3,8 +3,8 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+from bkd.callbacks.abc import EventCallback
 from bkd.data.container.base import DataLoader
-from bkd.eval.metrics.callback.abc import MetricCallback
 from bkd.models.container.base import Model
 from bkd.models.loss.runner.base import LossRunner
 from bkd.utils.typing.events import EpochID
@@ -22,7 +22,7 @@ class Trainer[ModelT: Model[Any, Any, Any, Any], BatchT, LossT: LossRunner[Any]]
         model: ModelT,
         dataset: DataLoader[BatchT],
         loss_runner: LossT,
-        callback: MetricCallback = MetricCallback(),
+        callback: EventCallback = EventCallback(),
     ) -> None:
         """Perform training loop."""
         # Initialize callback
@@ -49,6 +49,6 @@ class Trainer[ModelT: Model[Any, Any, Any, Any], BatchT, LossT: LossRunner[Any]]
         model: ModelT,
         dataset: DataLoader[BatchT],
         loss_runner: LossT,
-        callback: MetricCallback = MetricCallback(),
+        callback: EventCallback = EventCallback(),
     ) -> None:
         """Train for a single epoch."""

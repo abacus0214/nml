@@ -4,7 +4,7 @@ from itertools import groupby
 
 from pydantic import Field
 
-from bkd.eval.metrics.callback.abc import MetricCallback
+from bkd.callbacks.abc import EventCallback
 from bkd.utils.mlflow.client import ExperimentClient, RunClient
 from bkd.utils.typing.base.pydantic import StandardBaseModel
 from bkd.utils.typing.eval.metrics import (
@@ -16,7 +16,7 @@ from bkd.utils.typing.eval.metrics import (
 )
 
 
-class MLFlowMetricCallback(StandardBaseModel, MetricCallback):
+class MLFlowMetricCallback(StandardBaseModel, EventCallback):
     """Logs metrics to mlflow."""
 
     # Parameters

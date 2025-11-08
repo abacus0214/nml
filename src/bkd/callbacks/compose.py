@@ -1,6 +1,6 @@
 """Callbacks that compose/stack multiple callbkacs on top of each other."""
 
-from bkd.eval.metrics.callback.abc import MetricCallback
+from bkd.callbacks.abc import EventCallback
 from bkd.utils.typing.base.pydantic import RestrictedBaseModel
 from bkd.utils.typing.eval.metrics import (
     Metric,
@@ -14,10 +14,10 @@ from bkd.utils.typing.events import BatchID, EpochID
 __all__ = ["CallbackCat"]
 
 
-class CallbackCat(RestrictedBaseModel, MetricCallback):
+class CallbackCat(RestrictedBaseModel, EventCallback):
     """Given a series of callbacks on construction, run all of them."""
 
-    callbacks: tuple[MetricCallback]
+    callbacks: tuple[EventCallback]
 
     def start(self, num_epochs: None | int = None) -> None:
         """Forward start of process."""
