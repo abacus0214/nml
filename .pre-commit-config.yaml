@@ -41,8 +41,14 @@ repos:
         language: python
         types: [python]
       - id: mypy
-        name: type-checking
+        name: type-checking-files
         entry: mypy
         pass_filenames: true
+        language: python
+        types: [python]
+      - id: mypy
+        name: type-checking-package
+        entry: mypy -p bkd
+        pass_filenames: false
         language: python
         types: [python]
