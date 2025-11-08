@@ -30,7 +30,7 @@ class Trainer[LossT](ABC):
         model: ModelABC[IpT, Any, TgT, LossT],
         train_set: DataLoaderABC[Any, IpT, TgT],
         val_set: DataLoaderABC[Any, IpT, TgT],
-        loss_runner: LossRunnerABC[LossT],
+        loss_runner: LossRunnerABC,
         callback: EventCallback = EventCallback(),
     ) -> None:
         """Perform training loop."""
@@ -64,7 +64,7 @@ class Trainer[LossT](ABC):
         eid: EpochID,
         model: ModelABC[IpT, Any, TgT, LossT],
         dataset: DataLoaderABC[Any, IpT, TgT],
-        loss_runner: LossRunnerABC[LossT],
+        loss_runner: LossRunnerABC,
         callback: EventCallback = EventCallback(),
     ) -> None:
         """Train for a single epoch."""
@@ -84,7 +84,7 @@ class Trainer[LossT](ABC):
         bid: BatchID,
         model: ModelABC[IpT, Any, TgT, LossT],
         batch: BatchABC[Any, IpT, TgT],
-        loss_runner: LossRunnerABC[LossT],
+        loss_runner: LossRunnerABC,
         callback: EventCallback = EventCallback(),
     ) -> LossT:
         """Train for a single batch."""
