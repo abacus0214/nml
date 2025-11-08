@@ -17,7 +17,6 @@ class CallbackStack(EventCallback):
     """Stack callback on top of each other.
 
     Intercept or modify events sent to inner callback.
-
     """
 
     callback: EventCallback = EventCallback()
