@@ -1,5 +1,7 @@
 """Base torch Model child class."""
 
+from typing import Hashable
+
 from torch import Tensor
 from torch.nn import Module
 from torch.optim import Optimizer
@@ -18,3 +20,8 @@ class TorchModelABC[InT, OutT, SampleT](ModelABC[InT, OutT, SampleT, Tensor]):
     def forward(self, ipt: InT) -> OutT:
         """Run model prediction."""
         return self.module.forward(ipt)  # type: ignore
+
+    @property
+    def hash(self) -> Hashable:
+        """Return hash for model."""
+        return hash(str(self.module))
