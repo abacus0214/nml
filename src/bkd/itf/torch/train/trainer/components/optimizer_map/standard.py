@@ -16,6 +16,7 @@ __all__ = [
     "DictOptimizerMap",
     "OptimizerNotFound",
     "DefaultDictOptimizerMap",
+    "get_standard_optimizer_map",
 ]
 
 
@@ -59,9 +60,9 @@ class DictOptimizerMap(
 
     def __init__(
         self,
-        data: dict[ModelABC[Any, Any, Any, Any], Optimizer],
+        data: dict[ModelABC[Any, Any, Any, Any], Optimizer] = {},
         *,
-        optimizer_cls: type[Optimizer],
+        optimizer_cls: type[Optimizer] = Adam,
         optimizer_args: None | dict[str, Any] = None,
     ) -> None:
         """Store arguments."""
@@ -105,3 +106,16 @@ class DefaultDictOptimizerMap(RestrictedBaseModel, OptimizerMapABC):
             return self.torch_optimizer_map.get_optimizer(model=model)
         except OptimizerNotFound:
             return self.dict_optimizer_map.get_optimizer(model=model)
+
+
+def get_standard_optimizer_map(
+    optimizer_cls: type[Optimizer] = Adam,
+    optimizer_args: None | dict[str, Any] = None,
+) -> DefaultDictOptimizerMap:
+    """Syntax sugar to build the standard optimizer."""
+    return DefaultDictOptimizerMap(
+        dict_optimizer_map=DictOptimizerMap(
+            optimizer_args=optimizer_args,
+            optimizer_cls=optimizer_cls,
+        )
+    )
