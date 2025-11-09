@@ -21,9 +21,13 @@ class ModelABC[InT, OutT, SampleT, LikelihoodT](ABC):
     def forward(self, ipt: InT) -> OutT:
         """Run model prediction."""
 
-    def pred(self, ipt: InT) -> OutT:
+    def output(self, ipt: InT) -> OutT:
         """Run forward and pass it to thee interpreter."""
-        return self.interpreter.pred(self.forward(ipt))
+        return self.interpreter.output(self.forward(ipt))
+
+    def ml(self, ipt: InT) -> SampleT:
+        """Run forward and then use interpreter to sample."""
+        return self.interpreter.ml(self.forward(ipt))
 
     def sample(self, ipt: InT) -> SampleT:
         """Run forward and then use interpreter to sample."""
