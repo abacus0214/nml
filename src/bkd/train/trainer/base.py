@@ -1,15 +1,15 @@
 """Main module with bulk of trainer loop."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Iterable
-
-import numpy as np
+from typing import Any
 
 from bkd.callbacks.abc import EventCallback
 from bkd.data.batches.container.base import BatchABC
 from bkd.data.loader.container.base import DataLoaderABC
 from bkd.loss.runner.base import LossRunnerABC
 from bkd.models.container.base import ModelABC
+from bkd.utils.loss.aggregators.base import LossAggregatorABC
+from bkd.utils.loss.aggregators.mean import NPMeanAggregator
 from bkd.utils.typing.eval.metrics import Metrics, MetricStep
 from bkd.utils.typing.events import BatchID, EpochID
 
@@ -18,15 +18,28 @@ __all__ = ["Trainer"]
 DEFAULT_LOSS_METRIC_NAME = "loss"
 
 
-class Trainer[LossT](ABC):
+class TrainerABC[LossT](ABC):
     """Base class that defines the interface for a trainer."""
+
+    @abstractmethod
+    def train[IpT, TgT](
+        self,
+        model: ModelABC[IpT, Any, TgT, LossT],
+        loss_runner: LossRunnerABC,
+        dataset_splits: tuple[DataLoaderABC[Any, IpT, TgT], ...],
+        callback: EventCallback = EventCallback(),
+    ) -> None:
+        """Update the given model."""
+
+
+class Trainer[LossT](TrainerABC[LossT]):
+    """Pre made implementation that uses bkd interfaces to do most of the work."""
 
     # Parameters
     num_epochs: int
     training_splits: tuple[bool, ...] = (True,)
 
-    # TODO: fix the type ignore
-    loss_aggregator: Callable[[Iterable[float]], float] = np.mean  # type: ignore
+    loss_aggregator: LossAggregatorABC[float] = NPMeanAggregator[float]()
 
     # Settings
     loss_metric_name: str = DEFAULT_LOSS_METRIC_NAME
