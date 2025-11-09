@@ -9,9 +9,10 @@ from bkd.data.loader.container.base import DataLoaderABC
 from bkd.loss.runner.base import LossRunnerABC
 from bkd.models.container.base import ModelABC
 from bkd.train.trainer.components.batch_loss.base import BatchLossTrainerABC
+from bkd.train.trainer.components.split_evaluator.base import SplitEvaluator
 from bkd.utils.loss.aggregators.base import LossAggregatorABC
 from bkd.utils.loss.aggregators.mean import NPMeanAggregator
-from bkd.utils.typing.eval.metrics import Metrics, MetricStep
+from bkd.utils.typing.eval.metrics import MetricStep
 from bkd.utils.typing.events import BatchID, EpochID
 
 __all__ = ["Trainer"]
@@ -38,6 +39,8 @@ class Trainer[LossT](TrainerABC[LossT]):
 
     # Parameters
     batch_loss_trainer: BatchLossTrainerABC[LossT]
+
+    split_evaluator: SplitEvaluator = SplitEvaluator()
     loss_aggregator: LossAggregatorABC[float] = NPMeanAggregator[float]()
 
     # Settings
@@ -215,17 +218,9 @@ class Trainer[LossT](TrainerABC[LossT]):
         return callback.log_metrics(
             {
                 f"{dataset.name}/{mid}": metric
-                for mid, metric in self.evaluate_split(
+                for mid, metric in self.split_evaluator.evaluate_split(
                     model=model, dataset=dataset
                 ).items()
             },
             step=step,
         )
-
-    def evaluate_split[IpT, TgT](
-        self,
-        model: ModelABC[IpT, Any, TgT, Any],
-        dataset: DataLoaderABC[Any, IpT, TgT],
-    ) -> Metrics:
-        """Compute metrics ona given set (could be training or validation)."""
-        return {}
