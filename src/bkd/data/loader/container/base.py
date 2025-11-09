@@ -13,11 +13,7 @@ class DataLoaderABC[BatchT, IpT = Any, TgT = None](ABC):
     """Base data loader container."""
 
     name: str
-
-    @property
-    @abstractmethod
-    def batch_interpreter(self) -> BatchInterpreter[BatchT, IpT, TgT]:
-        """Get the batch reader for the batch type contained in this dataset."""
+    batch_interpreter: BatchInterpreter[BatchT, IpT, TgT]
 
     @property
     @abstractmethod
