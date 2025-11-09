@@ -12,7 +12,7 @@ from bkd.utils.loss.aggregators.base import LossAggregatorABC
 class NPMeanAggregator[LossT](LossAggregatorABC[LossT]):
     """Use numpy to compute the mean of the given losses."""
 
-    def __call__(self, losses: Iterable[LossT]) -> LossT:
+    def aggregate(self, losses: Iterable[LossT]) -> LossT:
         """Compute the mean of the losses."""
         return np_mean(losses)  # type: ignore
 
@@ -20,6 +20,6 @@ class NPMeanAggregator[LossT](LossAggregatorABC[LossT]):
 class TorchMeanAggregator[LossT: Tensor](LossAggregatorABC[LossT]):
     """Use torch to compute the mean of the given losses."""
 
-    def __call__(self, losses: Iterable[LossT]) -> LossT:
+    def aggregate(self, losses: Iterable[LossT]) -> LossT:
         """Compute the mean of the losses."""
         return torch_mean(Tensor(losses))  # type: ignore

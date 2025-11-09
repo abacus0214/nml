@@ -41,7 +41,7 @@ class Trainer[LossT](TrainerABC[LossT]):
     batch_loss_trainer: BatchLossTrainerABC[LossT]
 
     split_evaluator: SplitEvaluator = SplitEvaluator()
-    loss_aggregator: LossAggregatorABC[float] = NPMeanAggregator[float]()
+    loss_aggregator: LossAggregatorABC[LossT] = NPMeanAggregator[LossT]()
 
     # Settings
     num_epochs: int
@@ -128,17 +128,15 @@ class Trainer[LossT](TrainerABC[LossT]):
     ) -> float:
         """Compute the loss for a single epoch and update model (if specified)."""
         # Compute loss for each batch
-        return self.loss_aggregator(
+        return self.loss_aggregator.aggregate_f(
             [
-                model.likelihood_to_float(
-                    self.batch_step(
-                        bid=bid,
-                        model=model,
-                        batch=batch,
-                        loss_runner=loss_runner,
-                        update_model=update_model,
-                        callback=callback,
-                    )
+                self.batch_step(
+                    bid=bid,
+                    model=model,
+                    batch=batch,
+                    loss_runner=loss_runner,
+                    update_model=update_model,
+                    callback=callback,
                 )
                 for bid, batch in enumerate(dataset)
             ]
