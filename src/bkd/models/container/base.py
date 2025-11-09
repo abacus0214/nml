@@ -11,6 +11,12 @@ __all__ = ["ModelABC"]
 class ModelABC[InT, OutT, SampleT, LikelihoodT](ABC):
     """Base model class.
 
+    This wrapper should pair a particular model (thorugh the
+    forward method) with a specific intepreter, following the more
+    classical wrapper pattern. The methods in this class just
+    forward to methods of the interpeter by passing the output
+    of `self.forward` as the provided model output.
+
     Models should be hashable so that they can be easily
     identified and linked to other (meta)data.
     """
@@ -46,7 +52,7 @@ class ModelABC[InT, OutT, SampleT, LikelihoodT](ABC):
     @property
     @abstractmethod
     def hash(self) -> Hashable:
-        """Return hash of the model."""
+        """Return what should be used to hash the model."""
 
     def __hash__(self) -> int:
         """Hash model."""
