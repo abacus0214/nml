@@ -163,7 +163,6 @@ class Trainer[LossT](TrainerABC[LossT]):
             model=model,
             batch=batch,
             update_model=update_model,
-            callback=callback,
         )
 
         # Communicte batch update end

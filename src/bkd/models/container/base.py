@@ -1,6 +1,7 @@
 """Base model class."""
 
 from abc import ABC, abstractmethod
+from typing import Hashable
 
 from bkd.models.interpreter.base import ModelInterpreter
 
@@ -8,7 +9,11 @@ __all__ = ["ModelABC"]
 
 
 class ModelABC[InT, OutT, SampleT, LikelihoodT](ABC):
-    """Base model class."""
+    """Base model class.
+
+    Models should be hashable so that they can be easily
+    identified and linked to other (meta)data.
+    """
 
     interpreter: ModelInterpreter[OutT, SampleT, LikelihoodT]
 
@@ -40,3 +45,12 @@ class ModelABC[InT, OutT, SampleT, LikelihoodT](ABC):
     ) -> float:
         """Convert likelihood to float."""
         return self.interpreter.likelihood_to_float(likelihood=likelihood)
+
+    @property
+    @abstractmethod
+    def hash(self) -> Hashable:
+        """Return hash of the model."""
+
+    def __hash__(self) -> int:
+        """Hash model."""
+        return hash(self.hash)
