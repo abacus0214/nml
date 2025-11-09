@@ -4,7 +4,7 @@ from collections import UserDict
 from typing import Any
 
 from pydantic import Field
-from torch.optim import Optimizer
+from torch.optim import Adam, Optimizer
 
 from bkd.itf.torch.models.container.base import TorchModelABC
 from bkd.itf.torch.train.trainer.components.optimizer_map.base import OptimizerMapABC
@@ -54,7 +54,7 @@ class DictOptimizerMap(
 ):
     """Map for model optimizer that will use the hash of the model to map it to an optimizer."""
 
-    optimizer_cls: type[Optimizer]
+    optimizer_cls: type[Optimizer] = Adam
     optimizer_args: dict[str, Any]
 
     def __init__(
