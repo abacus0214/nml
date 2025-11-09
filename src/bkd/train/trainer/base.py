@@ -8,6 +8,7 @@ from bkd.data.batches.container.base import BatchABC
 from bkd.data.loader.container.base import DataLoaderABC
 from bkd.loss.runner.base import LossRunnerABC
 from bkd.models.container.base import ModelABC
+from bkd.train.trainer.components.batch_loss.base import BatchLossTrainerABC
 from bkd.utils.loss.aggregators.base import LossAggregatorABC
 from bkd.utils.loss.aggregators.mean import NPMeanAggregator
 from bkd.utils.typing.eval.metrics import Metrics, MetricStep
@@ -36,12 +37,14 @@ class Trainer[LossT](TrainerABC[LossT]):
     """Pre made implementation that uses bkd interfaces to do most of the work."""
 
     # Parameters
-    num_epochs: int
-    training_splits: tuple[bool, ...] = (True,)
-
+    batch_loss_trainer: BatchLossTrainerABC[LossT]
     loss_aggregator: LossAggregatorABC[float] = NPMeanAggregator[float]()
 
     # Settings
+    num_epochs: int
+    training_splits: tuple[bool, ...] = (True,)
+
+    # UI Settings
     loss_metric_name: str = DEFAULT_LOSS_METRIC_NAME
 
     def is_training_split(self, split_idx: int) -> bool:
@@ -152,7 +155,7 @@ class Trainer[LossT](TrainerABC[LossT]):
         callback.log_batch_start(bid=bid)
 
         # Update model
-        loss = self.batch_loss(
+        loss = self.batch_loss_trainer.batch_loss(
             loss_runner=loss_runner,
             model=model,
             batch=batch,
@@ -163,17 +166,6 @@ class Trainer[LossT](TrainerABC[LossT]):
         # Communicte batch update end
         callback.log_batch_end(bid=bid)
         return loss
-
-    @abstractmethod
-    def batch_loss[IpT, TgT](
-        self,
-        model: ModelABC[IpT, Any, TgT, LossT],
-        batch: BatchABC[Any, IpT, TgT],
-        loss_runner: LossRunnerABC,
-        update_model: bool = False,
-        callback: EventCallback = EventCallback(),
-    ) -> LossT:
-        """Compute loss and update model (if required)."""
 
     def evaluation[IpT, TgT](
         self,
