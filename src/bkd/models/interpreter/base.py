@@ -1,5 +1,7 @@
 """Base class for Model Interpreter interfaces."""
 
+from typing import SupportsFloat
+
 __all__ = ["ModelInterpreter"]
 
 
@@ -24,6 +26,9 @@ class ModelInterpreter[ModelOutT, SampleT, LikelihoodT]:
 
     def likelihood_to_float(self, likelihood: LikelihoodT) -> float:
         """Convert the likelihood to a float."""
-        raise NotImplementedError(
-            f"{self} does not support log likelihood conversion to float."
+        if isinstance(likelihood, SupportsFloat):
+            return float(likelihood)
+
+        raise RuntimeError(
+            f"Could not cast {likelihood} to float with default strategy."
         )
