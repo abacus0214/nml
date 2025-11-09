@@ -14,3 +14,7 @@ class TorchModelABC[InT, OutT, SampleT](ModelABC[InT, OutT, SampleT, Tensor]):
 
     module: Module
     optimizer: None | Optimizer = None
+
+    def forward(self, ipt: InT) -> OutT:
+        """Run model prediction."""
+        return self.module.forward(ipt)  # type: ignore
