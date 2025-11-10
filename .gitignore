@@ -16,6 +16,7 @@
 !packages
 !scripts
 !test
+!stubs
 
 *egg-info
 __pycache__
