@@ -56,7 +56,6 @@ dependencies = [
     { name = "numpy" },
     { name = "pydantic" },
     { name = "rich" },
-    { name = "torch" },
 ]
 
 [package.dev-dependencies]
@@ -85,6 +84,9 @@ nvim = [
     { name = "debugpy" },
     { name = "pynvim" },
 ]
+torch = [
+    { name = "torch" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -92,7 +94,6 @@ requires-dist = [
     { name = "numpy", specifier = ">=2.3.4" },
     { name = "pydantic", specifier = ">=2.12.4" },
     { name = "rich", specifier = ">=14.2.0" },
-    { name = "torch", specifier = ">=2.9.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -121,6 +122,7 @@ nvim = [
     { name = "debugpy", specifier = ">=1.8.17" },
     { name = "pynvim", specifier = ">=0.6.0" },
 ]
+torch = [{ name = "torch", specifier = ">=2.9.0" }]
 
 [[package]]
 name = "blinker"

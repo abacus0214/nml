@@ -21,7 +21,6 @@ dependencies = [
   "numpy>=2.3.4",
   "pydantic>=2.12.4",
   "rich>=14.2.0",
-  "torch>=2.9.0",
 ]
 
 [dependency-groups]
@@ -47,6 +46,9 @@ dev = [
   "types-tqdm>=4.67.0.20250809",
 ]
 nvim = ["debugpy>=1.8.17", "pynvim>=0.6.0"]
+torch = [
+    "torch>=2.9.0",
+]
 
 # Tools
 
