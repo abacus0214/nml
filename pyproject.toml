@@ -32,6 +32,7 @@ dev = [
   "pre-commit>=4.3.0",
   "pre-commit-hooks>=6.0.0",
   "pytest>=8.4.2",
+  "pytest-cov>=7.0.0",
   "ruff>=0.14.3",
   "scipy-stubs>=1.16.3.0",
   "tox>=4.32.0",
@@ -65,3 +66,4 @@ disallow_untyped_calls = false
 
 [tool.pytest.ini_options]
 addopts = "-vv"
+
