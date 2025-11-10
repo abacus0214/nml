@@ -52,9 +52,15 @@ repos:
         pass_filenames: true
         language: python
         types: [python]
-      - id: mypy-pkg
+      - id: mypy-pkg-base
         name: type-checking-package
-        entry: mypy -p bkd
+        entry: mypy -p bkd.base
+        pass_filenames: false
+        language: python
+        types: [python]
+      - id: mypy-pkg-torch
+        name: type-checking-package
+        entry: mypy -p bkd.itf.torch
         pass_filenames: false
         language: python
         types: [python]

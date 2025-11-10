@@ -82,6 +82,11 @@ install_types = true
 
 disallow_untyped_calls = false
 
+files = ["packages/"]
+explicit_package_bases = true
+
+mypy_path = ["packages/bkd-base/src", "packages/bkd-itf-torch/src"]
+
 # Testing
 
 [tool.pytest.ini_options]
