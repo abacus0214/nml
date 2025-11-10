@@ -1,6 +1,6 @@
 """Basic class for batch container."""
 
-from bkd.data.batches.interpreter.base import BatchInterpreter
+from bkd.base.data.batches.interpreter.base import BatchInterpreter
 
 __all__ = ["BatchABC", "Batch"]
 

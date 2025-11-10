@@ -6,7 +6,7 @@ from numpy import mean as np_mean
 from torch import Tensor
 from torch import mean as torch_mean
 
-from bkd.utils.loss.aggregators.base import LossAggregatorABC
+from bkd.base.utils.loss.aggregators.base import LossAggregatorABC
 
 
 class NPMeanAggregator[LossT](LossAggregatorABC[LossT]):

@@ -3,9 +3,9 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from bkd.data.batches.container.base import BatchABC
-from bkd.loss.runner.base import LossRunnerABC
-from bkd.models.container.base import ModelABC
+from bkd.base.data.batches.container.base import BatchABC
+from bkd.base.loss.runner.base import LossRunnerABC
+from bkd.base.models.container.base import ModelABC
 
 __all__ = ["BatchLossTrainerABC"]
 

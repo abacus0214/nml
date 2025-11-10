@@ -3,10 +3,10 @@
 from collections import UserDict
 from typing import Any
 
+from bkd.base.models.container.base import ModelABC
+from bkd.base.utils.typing.base.pydantic import RestrictedBaseModel
 from bkd.itf.torch.models.container.base import TorchModelABC
 from bkd.itf.torch.train.trainer.components.optimizer_map.base import OptimizerMapABC
-from bkd.models.container.base import ModelABC
-from bkd.utils.typing.base.pydantic import RestrictedBaseModel
 from pydantic import Field
 from torch.optim import Adam, Optimizer
 

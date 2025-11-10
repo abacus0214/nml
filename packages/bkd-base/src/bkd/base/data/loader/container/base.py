@@ -3,8 +3,8 @@
 from abc import ABC, abstractmethod
 from typing import Any, Iterator
 
-from bkd.data.batches.container.base import Batch, BatchABC
-from bkd.data.batches.interpreter.base import BatchInterpreter
+from bkd.base.data.batches.container.base import Batch, BatchABC
+from bkd.base.data.batches.interpreter.base import BatchInterpreter
 
 __all__ = ["DataLoaderABC"]
 

@@ -3,9 +3,9 @@
 from pydantic import Field
 from rich.progress import Progress, TaskID
 
-from bkd.callbacks.abc import EventCallback
-from bkd.utils.typing.base.pydantic import StandardBaseModel
-from bkd.utils.typing.events import BatchID, EpochID
+from bkd.base.callbacks.abc import EventCallback
+from bkd.base.utils.typing.base.pydantic import StandardBaseModel
+from bkd.base.utils.typing.events import BatchID, EpochID
 
 __all__ = ["ProgressCallback"]
 

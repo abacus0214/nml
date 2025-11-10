@@ -10,8 +10,8 @@ from mlflow.tracking.fluent import (
 from mlflow.utils.async_logging.run_operations import RunOperations
 from mlflow.utils.time import get_current_time_millis
 
-from bkd.utils.typing.base.pydantic import RestrictedBaseModel
-from bkd.utils.typing.mlflow import (
+from bkd.base.utils.typing.base.pydantic import RestrictedBaseModel
+from bkd.base.utils.typing.mlflow import (
     MLFlowDataset,
     MLFlowMetric,
     MLFlowParam,

@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Hashable
 
-from bkd.models.interpreter.base import ModelInterpreter
+from bkd.base.models.interpreter.base import ModelInterpreter
 
 __all__ = ["ModelABC"]
 

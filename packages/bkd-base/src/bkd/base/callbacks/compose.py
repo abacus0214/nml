@@ -1,15 +1,15 @@
 """Callbacks that compose/stack multiple callbkacs on top of each other."""
 
-from bkd.callbacks.abc import EventCallback
-from bkd.utils.typing.base.pydantic import RestrictedBaseModel
-from bkd.utils.typing.eval.metrics import (
+from bkd.base.callbacks.abc import EventCallback
+from bkd.base.utils.typing.base.pydantic import RestrictedBaseModel
+from bkd.base.utils.typing.eval.metrics import (
     Metric,
     MetricID,
     Metrics,
     MetricsBatch,
     MetricStep,
 )
-from bkd.utils.typing.events import BatchID, EpochID
+from bkd.base.utils.typing.events import BatchID, EpochID
 
 __all__ = ["CallbackCat"]
 

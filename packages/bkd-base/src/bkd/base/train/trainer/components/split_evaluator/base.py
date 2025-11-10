@@ -2,9 +2,9 @@
 
 from typing import Any
 
-from bkd.data.loader.container.base import DataLoaderABC
-from bkd.models.container.base import ModelABC
-from bkd.utils.typing.eval.metrics import Metrics
+from bkd.base.data.loader.container.base import DataLoaderABC
+from bkd.base.models.container.base import ModelABC
+from bkd.base.utils.typing.eval.metrics import Metrics
 
 __all__ = ["SplitEvaluator"]
 

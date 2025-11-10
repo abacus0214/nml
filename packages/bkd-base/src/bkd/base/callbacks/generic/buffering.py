@@ -2,9 +2,9 @@
 
 from pydantic import Field
 
-from bkd.callbacks.stack import CallbackStack
-from bkd.utils.typing.base.pydantic import RestrictedBaseModel
-from bkd.utils.typing.eval.metrics import (
+from bkd.base.callbacks.stack import CallbackStack
+from bkd.base.utils.typing.base.pydantic import RestrictedBaseModel
+from bkd.base.utils.typing.eval.metrics import (
     Metric,
     MetricID,
     Metrics,

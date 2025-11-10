@@ -1,14 +1,14 @@
 """Useful interface for stacking callbacks."""
 
-from bkd.callbacks.abc import EventCallback
-from bkd.utils.typing.eval.metrics import (
+from bkd.base.callbacks.abc import EventCallback
+from bkd.base.utils.typing.eval.metrics import (
     Metric,
     MetricID,
     Metrics,
     MetricsBatch,
     MetricStep,
 )
-from bkd.utils.typing.events import BatchID, EpochID
+from bkd.base.utils.typing.events import BatchID, EpochID
 
 __all__ = ["CallbackStack"]
 
