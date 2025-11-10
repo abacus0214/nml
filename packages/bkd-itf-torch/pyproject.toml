@@ -1,0 +1,19 @@
+[tool.setuptools.packages.find]
+where = ["src/"]
+include = ["bkd.itf.torch"]
+
+[project]
+
+# Main info
+name = "bkd.itf.torch"
+version = "0.1.0"
+
+description = "BKD Torch interface"
+readme = "README.md"
+
+authors = [{ name = "Davide Barbieri", email = "davidebarbieri97@gmail.com" }]
+
+# Tags
+keywords = ["diffusion", "rl"]
+
+classifiers = ["Programming Language :: Python :: 3.13"]

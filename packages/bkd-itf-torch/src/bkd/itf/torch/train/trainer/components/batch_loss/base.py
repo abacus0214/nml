@@ -2,13 +2,12 @@
 
 from typing import Any
 
-from torch import Tensor
-
 from bkd.data.batches.container.base import BatchABC
 from bkd.itf.torch.train.trainer.components.optimizer_map.base import OptimizerMapABC
 from bkd.loss.runner.base import LossRunnerABC
 from bkd.models.container.base import ModelABC
 from bkd.train.trainer.components.batch_loss.base import BatchLossTrainerABC
+from torch import Tensor
 
 __all__ = ["TorchBatchLossTrainer"]
 

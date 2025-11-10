@@ -1,9 +1,8 @@
 """Base torch trainer class."""
 
 
-from torch import Tensor
-
 from bkd.train.trainer.base import Trainer
+from torch import Tensor
 
 __all__ = ["TorchTrainer"]
 

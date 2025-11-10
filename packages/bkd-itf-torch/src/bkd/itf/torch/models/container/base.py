@@ -2,11 +2,10 @@
 
 from typing import Hashable
 
+from bkd.models.container.base import ModelABC
 from torch import Tensor
 from torch.nn import Module
 from torch.optim import Optimizer
-
-from bkd.models.container.base import ModelABC
 
 __all__ = ["TorchModelABC"]
 

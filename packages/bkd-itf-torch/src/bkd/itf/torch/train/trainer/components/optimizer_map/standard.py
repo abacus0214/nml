@@ -3,13 +3,12 @@
 from collections import UserDict
 from typing import Any
 
-from pydantic import Field
-from torch.optim import Adam, Optimizer
-
 from bkd.itf.torch.models.container.base import TorchModelABC
 from bkd.itf.torch.train.trainer.components.optimizer_map.base import OptimizerMapABC
 from bkd.models.container.base import ModelABC
 from bkd.utils.typing.base.pydantic import RestrictedBaseModel
+from pydantic import Field
+from torch.optim import Adam, Optimizer
 
 __all__ = [
     "TorchModelOptimizerMap",

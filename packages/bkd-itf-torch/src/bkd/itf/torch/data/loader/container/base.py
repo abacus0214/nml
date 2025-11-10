@@ -2,10 +2,10 @@
 
 from typing import Iterator
 
+from bkd.data.loader.container.base import DataLoaderABC
+
 from torch import Tensor
 from torch.utils.data import DataLoader as TorchDataLoaderAux
-
-from bkd.data.loader.container.base import DataLoaderABC
 
 
 class TorchDataLoader[BatchT, IpT: Tensor, TgT: None | Tensor = None](
