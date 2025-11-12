@@ -19,7 +19,6 @@ keywords = ["diffusion", "rl"]
 classifiers = ["Programming Language :: Python :: 3.13"]
 
 # Repeating settings of pyright and mypy for typechecking
-#
 [tool.mypy]
 namespace_packages = true
 strict = true
