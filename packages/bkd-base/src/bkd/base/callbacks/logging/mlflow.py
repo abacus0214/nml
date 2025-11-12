@@ -2,8 +2,6 @@
 
 from itertools import groupby
 
-from pydantic import Field
-
 from bkd.base.callbacks.abc import EventCallback
 from bkd.base.utils.mlflow.client import ExperimentClient, RunClient
 from bkd.base.utils.typing.base.pydantic import StandardBaseModel
@@ -14,6 +12,7 @@ from bkd.base.utils.typing.eval.metrics import (
     MetricsBatch,
     MetricStep,
 )
+from pydantic import Field
 
 
 class MLFlowMetricCallback(StandardBaseModel, EventCallback):

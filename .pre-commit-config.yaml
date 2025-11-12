@@ -7,31 +7,31 @@ repos:
       - id: check-case-conflict
         name: check-case-conflict
         entry: check-case-conflict
-        files: "^(src|test|scripts|configs)"
+        files: "^(packages|test|scripts)"
         language: python
         types: [python]
       - id: check-merge-conflict
         name: check-merge-conflict
         entry: check-merge-conflict
-        files: "^(src|test|scripts|configs)"
+        files: "^(packages|test|scripts)"
         language: python
         types: [python]
       - id: end-of-file-fixer
         name: end-of-file-fixer
         entry: end-of-file-fixer
-        files: "^(src|test|scripts|configs)"
+        files: "^(packages|test|scripts)"
         language: python
         types: [python]
       - id: fix-byte-order-marker
         name: fix-byte-order-marker
         entry: fix-byte-order-marker
-        files: "^(src|test|scripts|configs)"
+        files: "^(packages|test|scripts)"
         language: python
         types: [python]
       - id: trailing-whitespace-fixer
         name: trailing-whitespace-fixer
         entry: trailing-whitespace-fixer
-        files: "^(src|test|scripts|configs)"
+        files: "^(packages|test|scripts)"
         language: python
         types: [python]
       - id: ruff-commit
@@ -42,7 +42,8 @@ repos:
         types: [python]
       - id: ruff-pkg
         name: lint-checking-ruff-package
-        entry: ruff check --fix src
+        entry: ruff check --fix packages
+        files: "^(packages)"
         pass_filenames: false
         language: python
         types: [python]
@@ -53,14 +54,16 @@ repos:
         language: python
         types: [python]
       - id: mypy-pkg-base
-        name: type-checking-package
+        name: type-checking-base
         entry: mypy -p bkd.base
+        files: "^(packages/bkd-base)"
         pass_filenames: false
         language: python
         types: [python]
       - id: mypy-pkg-torch
-        name: type-checking-package
+        name: type-checking-itf-torch
         entry: mypy -p bkd.itf.torch
+        files: "^(packages/bkd-itf-torch|packages/bkd-base)"
         pass_filenames: false
         language: python
         types: [python]

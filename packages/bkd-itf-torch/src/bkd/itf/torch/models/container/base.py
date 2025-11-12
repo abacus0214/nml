@@ -11,7 +11,7 @@ __all__ = ["TorchModelABC"]
 
 
 class TorchModelABC[InT, OutT, SampleT](ModelABC[InT, OutT, SampleT, Tensor]):
-    """Base torch Model child class."""
+    """Base torch Model child class. Easy containment of torch.nn.Module."""
 
     module: Module
     optimizer: None | Optimizer = None
