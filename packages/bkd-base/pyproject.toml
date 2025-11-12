@@ -17,3 +17,19 @@ authors = [{ name = "Davide Barbieri", email = "davidebarbieri97@gmail.com" }]
 keywords = ["diffusion", "rl"]
 
 classifiers = ["Programming Language :: Python :: 3.13"]
+
+# Repeating settings of pyright and mypy for typechecking
+[tool.mypy]
+namespace_packages = true
+strict = true
+install_types = true
+
+disallow_untyped_calls = false
+
+files = ["packages/"]
+explicit_package_bases = true
+
+mypy_path = ["src", "../bkd-itf-torch/src"]
+
+[tool.pyright]
+extraPaths = ["src", "../bkd-itf-torch/src"]
