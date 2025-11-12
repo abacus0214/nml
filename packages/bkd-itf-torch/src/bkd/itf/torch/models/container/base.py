@@ -11,7 +11,12 @@ __all__ = ["TorchModelABC"]
 
 
 class TorchModelABC[InT, OutT, SampleT](ModelABC[InT, OutT, SampleT, Tensor]):
-    """Base torch Model child class. Easy containment of torch.nn.Module."""
+    """Base torch Model child class. Easy containment of torch.nn.Module.
+
+    This class allows to wrap a torch.nn.Module as a bkd Model. Also allows the
+    user to specify an optimizer to define a custom optimizer to be used for
+    this model (some optimizer maps can use this to override default behavior).
+    """
 
     module: Module
     optimizer: None | Optimizer = None
