@@ -34,23 +34,11 @@ repos:
         files: "^(packages|test|scripts)"
         language: python
         types: [python]
-      - id: ruff-commit
-        name: lint-checking-ruff-commit
-        entry: ruff check --fix
-        pass_filenames: true
-        language: python
-        types: [python]
       - id: ruff-pkg
         name: lint-checking-ruff-package
         entry: ruff check --fix packages
         files: "^(packages)"
         pass_filenames: false
-        language: python
-        types: [python]
-      - id: mypy-commit
-        name: type-checking-commit
-        entry: mypy
-        pass_filenames: true
         language: python
         types: [python]
       - id: mypy-pkg-base
