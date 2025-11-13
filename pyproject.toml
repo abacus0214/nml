@@ -55,12 +55,13 @@ dev = [
   "types-xlrd>=2.0.0.20251020",
 ]
 nvim = ["debugpy>=1.8.17", "pynvim>=0.6.0"]
-torch = ["bkd-itf-torch", "torch>=2.9.0"]
+torch = ["bkd-itf-torch", "bkd-tools-torch", "torch>=2.9.0"]
 
 # Worskapce settings
 [tool.uv.sources]
-bkd-itf-torch = { workspace = true }
 bkd-base = { workspace = true }
+bkd-itf-torch = { workspace = true }
+bkd-tools-torch = { workspace = true }
 
 [tool.uv.workspace]
 members = ["packages/*"]
@@ -85,10 +86,18 @@ disallow_untyped_calls = false
 files = ["packages/"]
 explicit_package_bases = true
 
-mypy_path = ["packages/bkd-base/src", "packages/bkd-itf-torch/src"]
+mypy_path = [
+  "packages/bkd-base/src",
+  "packages/bkd-itf-torch/src",
+  "packages/bkd-tools-torch",
+]
 
 [tool.pyright]
-extraPaths = ["packages/bkd-base/src", "packages/bkd-itf-torch/src"]
+extraPaths = [
+  "packages/bkd-base/src",
+  "packages/bkd-itf-torch/src",
+  "packages/bkd-tools-torch",
+]
 
 # Testing
 

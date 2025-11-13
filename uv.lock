@@ -7,6 +7,7 @@ members = [
     "bkd",
     "bkd-base",
     "bkd-itf-torch",
+    "bkd-tools-torch",
 ]
 
 [[package]]
@@ -102,6 +103,7 @@ nvim = [
 ]
 torch = [
     { name = "bkd-itf-torch" },
+    { name = "bkd-tools-torch" },
     { name = "torch" },
 ]
 
@@ -150,6 +152,7 @@ nvim = [
 ]
 torch = [
     { name = "bkd-itf-torch", editable = "packages/bkd-itf-torch" },
+    { name = "bkd-tools-torch", editable = "packages/bkd-tools-torch" },
     { name = "torch", specifier = ">=2.9.0" },
 ]
 
@@ -162,6 +165,11 @@ source = { editable = "packages/bkd-base" }
 name = "bkd-itf-torch"
 version = "0.1.0"
 source = { editable = "packages/bkd-itf-torch" }
+
+[[package]]
+name = "bkd-tools-torch"
+version = "0.1.0"
+source = { editable = "packages/bkd-tools-torch" }
 
 [[package]]
 name = "blinker"
