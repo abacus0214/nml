@@ -55,7 +55,7 @@ repos:
         types: [python]
       - id: mypy-pkg-base
         name: type-checking-base
-        entry: mypy -p bkd.base
+        entry: mypy -p bkd.callbacks -p bkd.data -p bkd.loss -p bkd.models -p bkd.train -p bkd.utils
         files: "^(packages/bkd-base)"
         pass_filenames: false
         language: python
@@ -64,6 +64,13 @@ repos:
         name: type-checking-itf-torch
         entry: mypy -p bkd.itf.torch
         files: "^(packages/bkd-itf-torch|packages/bkd-base)"
+        pass_filenames: false
+        language: python
+        types: [python]
+      - id: mypy-pkg-torch
+        name: type-checking-tools-torch
+        entry: mypy -p bkd.tools.torch
+        files: "^(packages/bkd-tools-torch|packages/bkd-base)"
         pass_filenames: false
         language: python
         types: [python]

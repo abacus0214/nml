@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from bkd.base.models.container.base import ModelABC
+from bkd.models.container.base import ModelABC
 from torch.optim import Optimizer
 
 __all__ = ["OptimizerMapABC"]

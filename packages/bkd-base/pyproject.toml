@@ -1,6 +1,13 @@
 [tool.setuptools.packages.find]
 where = ["src/"]
-include = ["bkd.base"]
+include = [
+  "bkd.callbacks",
+  "bkd.data",
+  "bkd.loss",
+  "bkd.models",
+  "bkd.train",
+  "bkd.utils",
+]
 
 [project]
 

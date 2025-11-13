@@ -89,14 +89,14 @@ explicit_package_bases = true
 mypy_path = [
   "packages/bkd-base/src",
   "packages/bkd-itf-torch/src",
-  "packages/bkd-tools-torch",
+  "packages/bkd-tools-torch/src",
 ]
 
 [tool.pyright]
 extraPaths = [
   "packages/bkd-base/src",
   "packages/bkd-itf-torch/src",
-  "packages/bkd-tools-torch",
+  "packages/bkd-tools-torch/src",
 ]
 
 # Testing

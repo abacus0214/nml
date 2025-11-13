@@ -1,6 +1,6 @@
 """Test functional utilities."""
 
-from bkd.base.utils.functional.operator import identity
+from bkd.utils.functional.operator import identity
 from hypothesis import given
 from hypothesis import strategies as st
 
