@@ -1,6 +1,6 @@
 """Some routines to generate linear data."""
 
-from bkd.tools.torch.data.container import ArrayDataset, FloatArray
+from bkd.tools.torch.data.dataset.array import ArrayDataset, FloatArray
 from numpy.random import RandomState
 from sklearn.datasets import make_regression
 from torch.utils.data import Dataset
