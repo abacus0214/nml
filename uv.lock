@@ -6,6 +6,7 @@ requires-python = ">=3.13"
 members = [
     "bkd",
     "bkd-base",
+    "bkd-config-base",
     "bkd-itf-torch",
     "bkd-tools-torch",
 ]
@@ -61,6 +62,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "bkd-base" },
+    { name = "bkd-config-base" },
     { name = "gin-config" },
     { name = "mlflow" },
     { name = "numpy" },
@@ -116,6 +118,7 @@ torch = [
 [package.metadata]
 requires-dist = [
     { name = "bkd-base", editable = "packages/bkd-base" },
+    { name = "bkd-config-base", editable = "packages/bkd-config-base" },
     { name = "gin-config", specifier = ">=0.5.0" },
     { name = "mlflow", specifier = ">=3.5.1" },
     { name = "numpy", specifier = ">=2.3.4" },
@@ -172,6 +175,11 @@ torch = [
 name = "bkd-base"
 version = "0.1.0"
 source = { editable = "packages/bkd-base" }
+
+[[package]]
+name = "bkd-config-base"
+version = "0.1.0"
+source = { editable = "packages/bkd-config-base" }
 
 [[package]]
 name = "bkd-itf-torch"
