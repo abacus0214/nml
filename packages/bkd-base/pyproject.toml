@@ -36,7 +36,7 @@ disallow_untyped_calls = false
 files = ["packages/"]
 explicit_package_bases = true
 
-mypy_path = ["src", "../bkd-itf-torch/src", "../bkd-tools-torch/src/"]
+mypy_path = ["src"]
 
 [tool.pyright]
-extraPaths = ["src", "../bkd-itf-torch/src", "../bkd-tools-torch/src/"]
+extraPaths = ["src"]
