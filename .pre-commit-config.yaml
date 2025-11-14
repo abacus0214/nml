@@ -48,17 +48,24 @@ repos:
         pass_filenames: false
         language: python
         types: [python]
-      - id: mypy-pkg-torch
+      - id: mypy-pkg-itf-torch
         name: type-checking-itf-torch
         entry: mypy -p bkd.itf.torch
         files: "^(packages/bkd-itf-torch|packages/bkd-base)"
         pass_filenames: false
         language: python
         types: [python]
-      - id: mypy-pkg-torch
+      - id: mypy-pkg-tool-torch
         name: type-checking-tools-torch
         entry: mypy -p bkd.tools.torch
-        files: "^(packages/bkd-tools-torch|packages/bkd-base)"
+        files: "^(packages/bkd-tools-torch|packages/bkd-base|packages/bkd-itf-torch)"
+        pass_filenames: false
+        language: python
+        types: [python]
+      - id: mypy-pkg-config
+        name: type-checking-config
+        entry: mypy -p bkd.config.shards
+        files: "^(packages/bkd-config-base|packages/bkd-base)"
         pass_filenames: false
         language: python
         types: [python]
