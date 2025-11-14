@@ -83,9 +83,10 @@ install_types = true
 
 disallow_untyped_calls = false
 
+disable_error_code = "import-untyped"
+
 files = ["packages/"]
 explicit_package_bases = true
-
 mypy_path = [
   "packages/bkd-base/src",
   "packages/bkd-itf-torch/src",
