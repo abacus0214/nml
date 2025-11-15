@@ -1,7 +1,5 @@
 """Stack callbacks that lags metrics logging."""
 
-from pydantic import Field
-
 from bkd.callbacks.stack import CallbackStack
 from bkd.utils.typing.base.pydantic import RestrictedBaseModel
 from bkd.utils.typing.eval.metrics import (
@@ -11,6 +9,7 @@ from bkd.utils.typing.eval.metrics import (
     MetricsBatch,
     MetricStep,
 )
+from pydantic import Field
 
 
 class BufferedMetricsStack(RestrictedBaseModel, CallbackStack):
