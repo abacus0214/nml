@@ -1,8 +1,8 @@
 """Test functional utilities."""
 
-from nml.utils.functional.operator import identity
 from hypothesis import given
 from hypothesis import strategies as st
+from nml.utils.functional.operator import identity
 
 
 @given(num=st.integers(min_value=-1000, max_value=1000))
