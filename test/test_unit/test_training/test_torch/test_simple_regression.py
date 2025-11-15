@@ -87,7 +87,7 @@ def torch_dataset(
     min_num_samples: int,
     max_num_samples: int,
     num_out: int,
-) -> TorchDataLoader[tuple[Any, Any], Any, Any]:
+) -> TorchDataLoader[tuple[Tensor, Tensor], Tensor, Tensor]:
     """Fixture for torch dataset."""
     # Generate dataset
     dataset = generate_regression(
@@ -99,10 +99,10 @@ def torch_dataset(
     )
 
     # Wrap inside loader
-    return TorchDataLoader(
+    return TorchDataLoader[tuple[Tensor, Tensor], Tensor, Tensor](
         name="test_data",
-        torch_loader=DataLoader[Any](dataset),
-        batch_interpreter=TupleBatchInterpreter[Any, Any](),
+        torch_loader=DataLoader[Tensor](dataset),
+        batch_interpreter=TupleBatchInterpreter[Tensor, Tensor](),
     )
 
 

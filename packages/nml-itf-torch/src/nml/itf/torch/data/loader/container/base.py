@@ -1,6 +1,6 @@
 """DataLoader wrapper for torch.utils.data.DataLoader class."""
 
-from typing import Iterator
+from typing import Any, Iterator
 
 from nml.data.batches.interpreter.base import BatchInterpreter
 from nml.data.loader.container.base import DataLoaderABC
@@ -15,7 +15,7 @@ class TorchDataLoader[BatchT, IpT: Tensor, TgT: None | Tensor = None](
     """Base data loader container."""
 
     name: str
-    torch_loader: TorchDataLoaderAux[BatchT]
+    torch_loader: TorchDataLoaderAux[Any]  # TODO: fix this type hint
 
     batch_interpreter: BatchInterpreter[BatchT, IpT, TgT]
 
