@@ -43,29 +43,29 @@ repos:
         types: [python]
       - id: mypy-pkg-base
         name: type-checking-base
-        entry: mypy -p bkd.callbacks -p bkd.data -p bkd.loss -p bkd.models -p bkd.train -p bkd.utils
-        files: "^(packages/bkd-base)"
+        entry: mypy -p nml.callbacks -p nml.data -p nml.loss -p nml.models -p nml.train -p nml.utils
+        files: "^(packages/nml-base)"
         pass_filenames: false
         language: python
         types: [python]
       - id: mypy-pkg-itf-torch
         name: type-checking-itf-torch
-        entry: mypy -p bkd.itf.torch
-        files: "^(packages/bkd-itf-torch|packages/bkd-base)"
+        entry: mypy -p nml.itf.torch
+        files: "^(packages/nml-itf-torch|packages/nml-base)"
         pass_filenames: false
         language: python
         types: [python]
       - id: mypy-pkg-tool-torch
         name: type-checking-tools-torch
-        entry: mypy -p bkd.tools.torch
-        files: "^(packages/bkd-tools-torch|packages/bkd-base|packages/bkd-itf-torch)"
+        entry: mypy -p nml.tools.torch
+        files: "^(packages/nml-tools-torch|packages/nml-base|packages/nml-itf-torch)"
         pass_filenames: false
         language: python
         types: [python]
       - id: mypy-pkg-config
         name: type-checking-config
-        entry: mypy -p bkd.config.shards
-        files: "^(packages/bkd-config-base|packages/bkd-base)"
+        entry: mypy -p nml.config.shards
+        files: "^(packages/nml-config-base|packages/nml-base)"
         pass_filenames: false
         language: python
         types: [python]

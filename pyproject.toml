@@ -1,7 +1,7 @@
 [project]
 
 # Main info
-name = "bkd"
+name = "nml"
 version = "0.1.0"
 
 description = "Behavioral Knowledge Diffuser"
@@ -17,7 +17,7 @@ classifiers = ["Programming Language :: Python :: 3.13"]
 # Dependencies
 requires-python = ">=3.13"
 dependencies = [
-  "bkd-base",
+  "nml-base",
   "mlflow>=3.5.1",
   "numpy>=2.3.4",
   "pydantic>=2.12.4",
@@ -25,7 +25,7 @@ dependencies = [
 ]
 
 [dependency-groups]
-config = ["bkd-config-base"]
+config = ["nml-config-base"]
 dev = [
   "hypothesis>=6.147.0",
   "lxml-stubs>=0.5.1",
@@ -41,8 +41,11 @@ dev = [
   "tox>=4.32.0",
   "types-cachetools>=6.2.0.20251022",
   "types-cffi>=1.17.0.20250915",
+  "types-colorama>=0.4.15.20250801",
   "types-defusedxml>=0.7.0.20250822",
   "types-docker>=7.1.0.20251009",
+  "types-greenlet>=3.2.0.20250915",
+  "types-networkx>=3.5.0.20251106",
   "types-openpyxl>=3.1.5.20250919",
   "types-paramiko>=4.0.0.20250822",
   "types-pexpect>=4.9.0.20250916",
@@ -61,14 +64,14 @@ dev = [
   "types-xlrd>=2.0.0.20251020",
 ]
 nvim = ["debugpy>=1.8.17", "pynvim>=0.6.0"]
-torch = ["bkd-itf-torch", "bkd-tools-torch", "torch>=2.9.0"]
+torch = ["nml-itf-torch", "nml-tools-torch", "torch>=2.9.0"]
 
 # Worskapce settings
 [tool.uv.sources]
-bkd-base = { workspace = true }
-bkd-itf-torch = { workspace = true }
-bkd-tools-torch = { workspace = true }
-bkd-config-base = { workspace = true }
+nml-base = { workspace = true }
+nml-itf-torch = { workspace = true }
+nml-tools-torch = { workspace = true }
+nml-config-base = { workspace = true }
 
 [tool.uv.workspace]
 members = ["packages/*"]
@@ -95,18 +98,18 @@ disable_error_code = "import-untyped"
 files = ["packages/"]
 explicit_package_bases = true
 mypy_path = [
-  "packages/bkd-base/src",
-  "packages/bkd-itf-torch/src",
-  "packages/bkd-tools-torch/src",
-  "packages/bkd-config-base/src",
+  "packages/nml-base/src",
+  "packages/nml-itf-torch/src",
+  "packages/nml-tools-torch/src",
+  "packages/nml-config-base/src",
 ]
 
 [tool.pyright]
 extraPaths = [
-  "packages/bkd-base/src",
-  "packages/bkd-itf-torch/src",
-  "packages/bkd-tools-torch/src",
-  "packages/bkd-config-base/src",
+  "packages/nml-base/src",
+  "packages/nml-itf-torch/src",
+  "packages/nml-tools-torch/src",
+  "packages/nml-config-base/src",
 ]
 
 # Testing

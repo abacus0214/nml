@@ -1,0 +1,42 @@
+[tool.setuptools.packages.find]
+where = ["src/"]
+include = [
+  "nml.callbacks",
+  "nml.data",
+  "nml.loss",
+  "nml.models",
+  "nml.train",
+  "nml.utils",
+]
+
+[project]
+
+# Main info
+name = "nml-base"
+version = "0.1.0"
+
+description = "Behavioral Knowledge Diffuser"
+readme = "README.md"
+
+authors = [{ name = "Davide Barbieri", email = "davidebarbieri97@gmail.com" }]
+
+# Tags
+keywords = ["diffusion", "rl"]
+
+classifiers = ["Programming Language :: Python :: 3.13"]
+
+# Repeating settings of pyright and mypy for typechecking
+[tool.mypy]
+namespace_packages = true
+strict = true
+install_types = true
+
+disallow_untyped_calls = false
+
+files = ["packages/"]
+explicit_package_bases = true
+
+mypy_path = ["src"]
+
+[tool.pyright]
+extraPaths = ["src"]
