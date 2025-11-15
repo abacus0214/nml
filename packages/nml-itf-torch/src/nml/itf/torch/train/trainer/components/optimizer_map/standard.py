@@ -3,7 +3,7 @@
 from collections import UserDict
 from typing import Any
 
-from nml.itf.torch.models.container.base import TorchModelABC
+from nml.itf.torch.models.container.base import TorchModel
 from nml.itf.torch.train.trainer.components.optimizer_map.base import OptimizerMapABC
 from nml.models.container.base import ModelABC
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
@@ -37,7 +37,7 @@ class TorchModelOptimizerMap(OptimizerMapABC):
         # Initialize variable in which to store optimizer
         optimizer: None | Optimizer = None
         # Use optimizer from torch model if available
-        if isinstance(model, TorchModelABC):
+        if isinstance(model, TorchModel):
             optimizer = model.optimizer
 
         # If optimizer is None because the model is not a torch model
@@ -85,7 +85,7 @@ class DictOptimizerMap(
     def construct_optimizer(self, model: ModelABC[Any, Any, Any, Any]) -> Optimizer:
         """Construct the optimizer for the given model."""
         # Only works for torch models.
-        if not isinstance(model, TorchModelABC):
+        if not isinstance(model, TorchModel):
             raise OptimizerNotFound(model=model)
 
         return self.optimizer_cls(model.module.parameters(), **self.optimizer_args)

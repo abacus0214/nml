@@ -15,7 +15,7 @@ type NormalOutType = Tensor | tuple[Tensor, Tensor]
 class TorchNormalInterpeter(RestrictedBaseModel, TorchDistInterpreter[NormalOutType]):
     """Pre packaged interpreter for regression output layers."""
 
-    default_scale: Tensor = Field(default_factory=lambda: Tensor(1.0))
+    default_scale: Tensor = Field(default_factory=lambda: Tensor([1.0]))
 
     def build_dist(self, model_out: NormalOutType) -> Normal:
         """Define how to construct a torch.distribution.Distribution type object from the model output."""
