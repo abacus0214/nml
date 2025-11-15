@@ -138,7 +138,7 @@ class Trainer[LossT](TrainerABC[LossT]):
                     update_model=update_model,
                     callback=callback,
                 )
-                for bid, batch in enumerate(dataset)
+                for bid, batch in enumerate(dataset.epoch_iterator)
             ]
         )
 

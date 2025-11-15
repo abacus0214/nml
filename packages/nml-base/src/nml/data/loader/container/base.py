@@ -17,12 +17,13 @@ class DataLoaderABC[BatchT, IpT = Any, TgT = None](ABC):
 
     @property
     @abstractmethod
-    def epoch_iterator(self) -> Iterator[BatchT]:
+    def raw_epoch_iterator(self) -> Iterator[BatchT]:
         """Return iterator to go through batches for a single epoch."""
 
-    def __iter__(self) -> Iterator[BatchABC[BatchT, IpT, TgT]]:
+    @property
+    def epoch_iterator(self) -> Iterator[BatchABC[BatchT, IpT, TgT]]:
         """Must be iterable with BatchT types, each iteration is considered an epoch."""
-        return map(
-            lambda batch: Batch(batch=batch, interpreter=self.batch_interpreter),
-            self.epoch_iterator,
+        return (
+            Batch(batch=batch, interpreter=self.batch_interpreter)
+            for batch in self.raw_epoch_iterator
         )
