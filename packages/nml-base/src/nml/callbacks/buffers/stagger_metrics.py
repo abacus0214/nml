@@ -12,7 +12,7 @@ from nml.utils.typing.eval.metrics import (
 from pydantic import Field
 
 
-class BufferedMetricsStack(RestrictedBaseModel, CallbackStack):
+class StaggerMetricsStack(RestrictedBaseModel, CallbackStack):
     """buffer all metrics before forwarding them to the sub callback."""
 
     # Settings
