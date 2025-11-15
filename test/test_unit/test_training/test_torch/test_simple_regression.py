@@ -1,20 +1,21 @@
 """Test checking a simple regression."""
 
-from typing import Any, Callable
+from typing import Any
 
 import numpy as np
 import pytest
-from hypothesis import given, settings
+from hypothesis import given
 from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
 from nml.itf.torch.models.container.base import TorchModel
-from nml.models.container.base import ModelABC
+from nml.tools.torch.data.dataset.linear import generate_regression
 from nml.tools.torch.models.interpreter.normal import (
     NormalOutType,
     TorchNormalInterpeter,
 )
 from pytest import fixture
 from torch import Tensor, nn
+from torch.utils.data import Dataset
 
 
 @fixture(scope="class")
@@ -36,6 +37,12 @@ def model(layers: list[int]) -> TorchModel[Tensor, NormalOutType, Tensor]:
             )
         ),
     )
+
+
+@fixture(scope="class")
+def dataset() -> Dataset:
+    """Fixture for torch dataset."""
+    return generate_regression()
 
 
 @pytest.mark.parametrize(

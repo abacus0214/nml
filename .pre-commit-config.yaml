@@ -34,6 +34,13 @@ repos:
         files: "^(packages|test|scripts)"
         language: python
         types: [python]
+      - id: ruff-files
+        name: lint-checking-ruff-staged
+        entry: ruff check --fix
+        exclude: "^(packages)"
+        pass_filenames: true
+        language: python
+        types: [python]
       - id: ruff-pkg
         name: lint-checking-ruff-package
         entry: ruff check --fix packages
