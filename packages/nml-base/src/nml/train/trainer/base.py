@@ -41,7 +41,7 @@ class Trainer[LossT](TrainerABC[LossT]):
     batch_loss_trainer: BatchLossTrainerABC[LossT]
 
     split_evaluator: SplitEvaluator = SplitEvaluator()
-    loss_aggregator: LossAggregatorABC[LossT] = NPMeanAggregator[LossT]()
+    loss_aggregator: LossAggregatorABC[LossT] = NPMeanAggregator[Any]()
 
     # Settings
     num_epochs: int
