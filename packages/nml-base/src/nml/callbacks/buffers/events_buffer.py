@@ -128,7 +128,7 @@ class CallbackBuffer(RestrictedBaseModel, CallbackStack):
             )
         )
 
-    def log_batch_aux(self, batch: MetricsBatch) -> None:
+    def log_metrics_batch_aux(self, batch: MetricsBatch) -> None:
         """Log multiple metrics samples at arbitrary timesteps at once, by default iterate."""
         self.events_buffer.add(
             CallbackEvent(
