@@ -15,13 +15,13 @@ include = [
 name = "nml-base"
 version = "0.1.0"
 
-description = "Behavioral Knowledge Diffuser"
+description = "NML basic suite"
 readme = "README.md"
 
 authors = [{ name = "Davide Barbieri", email = "davidebarbieri97@gmail.com" }]
 
 # Tags
-keywords = ["diffusion", "rl"]
+keywords = ["interface", "rl", "ml"]
 
 classifiers = ["Programming Language :: Python :: 3.13"]
 

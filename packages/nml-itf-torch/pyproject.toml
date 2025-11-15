@@ -8,13 +8,13 @@ include = ["nml.itf.torch"]
 name = "nml-itf-torch"
 version = "0.1.0"
 
-description = "BKD Torch interface"
+description = "NML Torch interface"
 readme = "README.md"
 
 authors = [{ name = "Davide Barbieri", email = "davidebarbieri97@gmail.com" }]
 
 # Tags
-keywords = ["diffusion", "rl"]
+keywords = ["interface", "rl", "ml"]
 
 classifiers = ["Programming Language :: Python :: 3.13"]
 

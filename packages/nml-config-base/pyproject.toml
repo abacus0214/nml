@@ -8,13 +8,13 @@ include = ["nml.config.shards"]
 name = "nml-config-base"
 version = "0.1.0"
 
-description = "Config components for BKD"
+description = "Config components for NML"
 readme = "README.md"
 
 authors = [{ name = "Davide Barbieri", email = "davidebarbieri97@gmail.com" }]
 
 # Tags
-keywords = ["diffusion", "rl"]
+keywords = ["interface", "rl", "ml"]
 
 classifiers = ["Programming Language :: Python :: 3.13"]
 

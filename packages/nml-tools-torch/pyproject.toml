@@ -8,13 +8,13 @@ include = ["nml.tools.torch"]
 name = "nml-tools-torch"
 version = "0.1.0"
 
-description = "BKD Torch utilities"
+description = "NML Torch utilities"
 readme = "README.md"
 
 authors = [{ name = "Davide Barbieri", email = "davidebarbieri97@gmail.com" }]
 
 # Tags
-keywords = ["diffusion", "rl"]
+keywords = ["interface", "rl", "ml"]
 
 classifiers = ["Programming Language :: Python :: 3.13"]
 
