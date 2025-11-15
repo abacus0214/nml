@@ -7,12 +7,13 @@ from nml.itf.torch.train.trainer.components.optimizer_map.base import OptimizerM
 from nml.loss.runner.base import LossRunnerABC
 from nml.models.container.base import ModelABC
 from nml.train.trainer.components.batch_loss.base import BatchLossTrainerABC
+from nml.utils.typing.base.pydantic import RestrictedBaseModel
 from torch import Tensor
 
 __all__ = ["TorchBatchLossTrainer"]
 
 
-class TorchBatchLossTrainer(BatchLossTrainerABC[Tensor]):
+class TorchBatchLossTrainer(RestrictedBaseModel, BatchLossTrainerABC[Tensor]):
     """Base class for batch loss trainer."""
 
     optimizer_map: OptimizerMapABC

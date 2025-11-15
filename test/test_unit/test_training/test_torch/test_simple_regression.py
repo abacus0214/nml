@@ -1,15 +1,23 @@
 """Test checking a simple regression."""
 
+from datetime import timedelta
 from typing import Any
 
 import numpy as np
 import pytest
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
 from nml.data.batches.interpreter.standard import TupleBatchInterpreter
 from nml.itf.torch.data.loader.container.base import TorchDataLoader
 from nml.itf.torch.models.container.base import TorchModel
+from nml.itf.torch.train.trainer.base import TorchTrainer
+from nml.itf.torch.train.trainer.components.batch_loss.base import TorchBatchLossTrainer
+from nml.itf.torch.train.trainer.components.optimizer_map.standard import (
+    get_standard_optimizer_map,
+)
+from nml.itf.torch.utils.loss.aggregators.mean import TorchMeanAggregator
+from nml.loss.runner.standard.ml import MLLossRunner
 from nml.tools.torch.data.dataset.linear import generate_regression
 from nml.tools.torch.models.interpreter.normal import (
     NormalOutType,
@@ -17,6 +25,7 @@ from nml.tools.torch.models.interpreter.normal import (
 )
 from pytest import fixture
 from torch import Tensor, nn
+from torch.optim import Adam
 from torch.utils.data import DataLoader
 
 
@@ -30,6 +39,12 @@ def min_num_samples() -> int:
 def max_num_samples() -> int:
     """Minimum numnber of datapoints."""
     return 150
+
+
+@fixture(scope="class")
+def lr() -> float:
+    """Learning rate to be used."""
+    return 1e-5
 
 
 @fixture(scope="class")
@@ -50,6 +65,18 @@ def model(layers: list[int]) -> TorchModel[Tensor, NormalOutType, Tensor]:
                 for in_ft, out_ft in zip(layers[:-1], layers[1:])
             )
         ),
+    )
+
+
+@fixture(scope="class")
+def trainer(num_epochs: int, lr: float) -> TorchTrainer:
+    """Create torch trainer."""
+    return TorchTrainer(
+        num_epochs=num_epochs,
+        batch_loss_trainer=TorchBatchLossTrainer(
+            optimizer_map=get_standard_optimizer_map(Adam, lr=lr)
+        ),
+        loss_aggregator=TorchMeanAggregator(),
     )
 
 
@@ -80,7 +107,12 @@ def torch_dataset(
 
 
 @pytest.mark.parametrize(
-    ["num_inputs", "num_hidden", "num_out"], [(10, 50, 1)], scope="class"
+    ["num_inputs", "num_hidden", "num_out"],
+    [
+        (5, 20, 1),
+    ],
+    ids=["toy"],
+    scope="class",
 )
 class TestSimpleRegressor:
     """Test suite for simple regression model."""
@@ -143,3 +175,34 @@ class TestSimpleRegressor:
             assert isinstance(tgt, Tensor)
             assert ipt.shape[-1] == num_inputs
             assert tgt.shape[-1] == num_out
+
+    @pytest.mark.parametrize("num_epochs", [10], ids=["short"], scope="class")
+    @given(data=st.data())
+    @settings(deadline=timedelta(minutes=5), max_examples=3)
+    def test_training(
+        self,
+        data: st.DataObject,
+        trainer: TorchTrainer,
+        model: TorchModel[Any, Any, Any],
+        num_inputs: int,
+        min_num_samples: int,
+        max_num_samples: int,
+        num_out: int,
+    ) -> None:
+        """Try to run trainer."""
+        # Generate dataset
+        loader = data.draw(
+            torch_dataset(
+                num_inputs=num_inputs,
+                min_num_samples=min_num_samples,
+                max_num_samples=max_num_samples,
+                num_out=num_out,
+            )
+        )
+
+        # Training loop
+        trainer.train(
+            model=model,
+            loss_runner=MLLossRunner(),
+            dataset_splits=(loader,),
+        )

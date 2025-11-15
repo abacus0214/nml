@@ -62,14 +62,14 @@ class DictOptimizerMap(
         data: dict[ModelABC[Any, Any, Any, Any], Optimizer] = {},
         *,
         optimizer_cls: type[Optimizer] = Adam,
-        optimizer_args: None | dict[str, Any] = None,
+        **optimizer_args: Any,
     ) -> None:
         """Store arguments."""
         UserDict.__init__(self, data)
 
         # Store parameters to generate optimizers.
         self.optimizer_cls = optimizer_cls
-        self.optimizer_args = optimizer_args or {}
+        self.optimizer_args = optimizer_args
 
     def get_optimizer(self, model: ModelABC[Any, Any, Any, Any]) -> Optimizer:
         """Return optimizer for the model."""
@@ -109,12 +109,12 @@ class DefaultDictOptimizerMap(RestrictedBaseModel, OptimizerMapABC):
 
 def get_standard_optimizer_map(
     optimizer_cls: type[Optimizer] = Adam,
-    optimizer_args: None | dict[str, Any] = None,
+    **optimizer_args: Any,
 ) -> DefaultDictOptimizerMap:
     """Syntax sugar to build the standard optimizer."""
     return DefaultDictOptimizerMap(
         dict_optimizer_map=DictOptimizerMap(
-            optimizer_args=optimizer_args,
             optimizer_cls=optimizer_cls,
+            **optimizer_args,
         )
     )

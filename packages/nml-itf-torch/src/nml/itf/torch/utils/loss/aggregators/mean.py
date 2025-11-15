@@ -13,4 +13,4 @@ class TorchMeanAggregator(LossAggregatorABC[Tensor]):
 
     def aggregate(self, losses: Iterable[Tensor]) -> Tensor:
         """Compute the mean of the losses."""
-        return torch_mean(Tensor(losses))  # type: ignore
+        return Tensor(losses).detach().mean()

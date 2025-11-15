@@ -12,6 +12,7 @@ from nml.train.trainer.components.batch_loss.base import BatchLossTrainerABC
 from nml.train.trainer.components.split_evaluator.base import SplitEvaluator
 from nml.utils.loss.aggregators.base import LossAggregatorABC
 from nml.utils.loss.aggregators.mean import NPMeanAggregator
+from nml.utils.typing.base.pydantic import RestrictedBaseModel
 from nml.utils.typing.eval.metrics import MetricStep
 from nml.utils.typing.events import BatchID, EpochID
 
@@ -34,7 +35,7 @@ class TrainerABC[LossT](ABC):
         """Update the given model."""
 
 
-class Trainer[LossT](TrainerABC[LossT]):
+class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
     """Pre made implementation that uses nml interfaces to do most of the work."""
 
     # Parameters
