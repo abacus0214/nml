@@ -1,8 +1,10 @@
 """Utilities for mlflow client(s)."""
 
-from typing import Sequence
+from functools import cached_property
+from typing import Self, Sequence
 
 from mlflow.client import MlflowClient
+from mlflow.entities import Experiment
 from mlflow.tracking.fluent import (
     _get_model_ids_for_new_metric_if_exist,
     get_active_model_id,
@@ -18,6 +20,7 @@ from nml.utils.typing.mlflow import (
     MLFlowRunTag,
     MLFlowTagsDict,
 )
+from pydantic import model_validator
 
 __all__ = ["ExperimentClient", "RunClient"]
 
@@ -25,8 +28,34 @@ __all__ = ["ExperimentClient", "RunClient"]
 class ExperimentClient(RestrictedBaseModel):
     """Wrapper of MLFlow client that fixes the experiment."""
 
-    experiment_id: str
+    in_experiment_name: None | str = None
+    in_experiment_id: None | str = None
     client: MlflowClient
+
+    @model_validator(mode="after")
+    def check_experiment_given(self) -> Self:
+        """Check that either experiment name or id are given."""
+        if self.in_experiment_id is None and self.in_experiment_name is None:
+            raise ValueError("Must provide either experiment name or id.")
+
+        return self
+
+    @cached_property
+    def experiment_id(self) -> str:
+        """Retrieve experiment id."""
+        if self.in_experiment_id is not None:
+            exp: None | Experiment = self.client.get_experiment(self.in_experiment_id)
+        elif self.in_experiment_name is not None:
+            exp = self.client.get_experiment_by_name(self.in_experiment_name)
+        else:
+            raise RuntimeError("Failure to retrieve information about experiment.")
+
+        if exp is not None:
+            return str(exp.experiment_id)
+
+        if self.in_experiment_name is None:
+            raise RuntimeError("No experiment found, could not create without name.")
+        return self.client.create_experiment(self.in_experiment_name)
 
     def create_run(
         self,
@@ -61,7 +90,8 @@ class ExperimentClient(RestrictedBaseModel):
         """Generate RunClient with given run id."""
         return RunClient(
             run_id=run_id,
-            experiment_id=self.experiment_id,
+            in_experiment_name=self.in_experiment_name,
+            in_experiment_id=self.in_experiment_id,
             client=self.client,
         )
 
