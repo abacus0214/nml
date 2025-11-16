@@ -45,13 +45,13 @@ class ModelABC[InT, OutT, SampleT, LikelihoodT](ABC):
         """Run forward and then use interpreter to sample."""
         return self.interpreter.sample(self.forward(ipt))
 
-    def log_likelihood(
+    def nll(
         self,
         ipt: InT,
         target_samples: SampleT,
     ) -> LikelihoodT:
         """Run forward and then use interpreter to compute the log likelihood."""
-        return self.interpreter.log_likelihood(
+        return self.interpreter.nll(
             model_out=self.forward(ipt), target_samples=target_samples
         )
 

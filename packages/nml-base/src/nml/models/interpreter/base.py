@@ -97,7 +97,7 @@ class ModelInterpreter[ModelOutT, SampleT, LikelihoodT]:
         """
         raise NotImplementedError(f"{self} does not support sampling.")
 
-    def log_likelihood(
+    def nll(
         self, target_samples: SampleT, model_out: ModelOutT
     ) -> LikelihoodT:
         """Compute the log likelihood of a given set of sample based on the model output.

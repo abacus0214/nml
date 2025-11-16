@@ -18,4 +18,4 @@ class MLLossRunner(LossRunnerABC):
         model: ModelABC[IpT, Any, TgT, LossT],
     ) -> LossT:
         """Compute the loss from a given model and batch."""
-        return model.log_likelihood(ipt=batch.ipt, target_samples=batch.tgt)
+        return model.nll(ipt=batch.ipt, target_samples=batch.tgt)

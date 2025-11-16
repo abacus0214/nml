@@ -31,7 +31,7 @@ class TorchNormalInterpeter(RestrictedBaseModel, TorchDistInterpreter[NormalOutT
         # Build distribution
         return Normal(loc=loc, scale=scale)
 
-    def log_likelihood(
+    def nll(
         self, target_samples: Tensor, model_out: NormalOutType
     ) -> Tensor:
         """Compute the log likelihood of a given set of sample based on the model output.

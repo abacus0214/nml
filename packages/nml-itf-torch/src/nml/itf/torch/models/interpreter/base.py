@@ -47,7 +47,7 @@ class TorchDistInterpreter[ModelOutT](ABC, TorchModelInterpreter[ModelOutT]):
         """
         return self.build_dist(model_out=model_out).mode
 
-    def log_likelihood(self, target_samples: Tensor, model_out: ModelOutT) -> Tensor:
+    def nll(self, target_samples: Tensor, model_out: ModelOutT) -> Tensor:
         """Compute the log likelihood of a given set of sample based on the model output.
 
         By default, explicitly compute the log_prob from the Distribution class. However,
