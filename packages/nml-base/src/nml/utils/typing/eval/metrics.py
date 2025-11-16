@@ -1,14 +1,10 @@
 """Useful types for metrics."""
 
 from collections import UserDict
-from typing import Any
-
-import numpy as np
 
 __all__ = [
     "MetricID",
     "ScalarMetric",
-    "VectorMetric",
     "Metric",
     "Metrics",
     "MetricsBatch",
@@ -21,9 +17,8 @@ type MetricStep = None | int
 type MetricSample = tuple[MetricID, MetricStep]
 
 type ScalarMetric = float
-type VectorMetric = np.ndarray[Any, np.dtype[np.float32]]
 
-type Metric = ScalarMetric | VectorMetric
+type Metric = ScalarMetric
 
 type Metrics = dict[MetricID, Metric]
 
