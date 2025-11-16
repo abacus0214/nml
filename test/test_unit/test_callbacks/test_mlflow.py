@@ -1,8 +1,11 @@
 """Test mlflow callback."""
 
 from pathlib import Path
+from string import ascii_lowercase, ascii_uppercase
 
 from _pytest.tmpdir import TempPathFactory
+from hypothesis import given, settings
+from hypothesis import strategies as st
 from mlflow.client import MlflowClient
 from nml.callbacks.logging.mlflow import MLFlowMetricCallback
 from nml.utils.mlflow.client import ExperimentClient
@@ -33,6 +36,40 @@ def experiment_client(mlflow_path: Path) -> ExperimentClient:
     )
 
 
+type ExampleMetrics = dict[str, list[float]]
+
+
+@st.composite
+def example_metrics(
+    draw: st.DrawFn,
+    min_metric_val: float = -20.0,
+    max_metric_val: float = 20.0,
+    min_key_size: int = 2,
+    max_key_size: int = 10,
+    min_num_metrics: int = 3,
+    max_num_metrics: int = 10,
+    min_num_steps: int = 3,
+    max_num_steps: int = 10,
+) -> ExampleMetrics:
+    """Generate a metrics dictionary."""
+    return draw(
+        st.dictionaries(
+            keys=st.text(
+                alphabet=ascii_uppercase + ascii_lowercase,
+                min_size=min_key_size,
+                max_size=max_key_size,
+            ),
+            values=st.lists(
+                st.floats(min_value=min_metric_val, max_value=max_metric_val),
+                min_size=min_num_steps,
+                max_size=max_num_steps,
+            ),
+            min_size=min_num_metrics,
+            max_size=max_num_metrics,
+        )
+    )
+
+
 class TestMlflowCallback:
     """Tests for mlflow callback."""
 
@@ -55,8 +92,11 @@ class TestMlflowCallback:
         )
         assert experiment_client_cp.experiment_id == experiment_client.experiment_id
 
-    def test_mlflow_client_result(
+    @given(metrics=example_metrics())
+    @settings(max_examples=20)
+    def test_log_metric(
         self,
+        metrics: ExampleMetrics,
         experiment_client: ExperimentClient,
     ) -> None:
         """Check that mlflow callback via Mlflow.
@@ -69,3 +109,17 @@ class TestMlflowCallback:
         )
 
         # Log some metrics
+        callback.start()
+        for metric_key, metric_vals in metrics.items():
+            for step, metric_val in enumerate(metric_vals):
+                callback.log_metric(mid=metric_key, metric=metric_val, step=step)
+        callback.close()
+
+        # Try to retrieve run id
+        assert callback.current_run
+        run_id = callback.current_run.run_id
+
+        # Check that they match what mlflow sees
+        for metric_key, metric_vals in metrics.items():
+            # Get metrics from mlflow
+            experiment_client.client.get_metric_history(run_id, metric_key)
