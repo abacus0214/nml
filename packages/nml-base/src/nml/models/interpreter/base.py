@@ -1,6 +1,16 @@
 """Base class for Model Interpreter interfaces."""
 
-__all__ = ["ModelInterpreter"]
+from enum import StrEnum, auto
+
+__all__ = ["ModelInterpreter", "PredictionType"]
+
+
+class PredictionType(StrEnum):
+    """Type of method being used over model output."""
+
+    OUTPUT = auto()
+    SAMPLE = auto()
+    ML = auto()
 
 
 class ModelInterpreter[ModelOutT, SampleT, LikelihoodT]:
@@ -22,6 +32,26 @@ class ModelInterpreter[ModelOutT, SampleT, LikelihoodT]:
     common wrapper schema, one can simply have a class pairing a model with its
     interpreter (see ModelContainer).
     """
+
+    def __call__(
+        self, model_out: ModelOutT, tp: PredictionType = PredictionType.OUTPUT
+    ) -> ModelOutT | SampleT:
+        """Call method specified by `tp`.
+
+        This method gives the flexibility of progammaticaly selecting a method,
+        but looses clarity in the typehinting of the output. If this is not
+        an issue, then it is advised to use `PredictionType` to record what
+        method to use and forward to `__call__`
+        """
+        match tp:
+            case PredictionType.OUTPUT:
+                return self.output(model_out=model_out)
+            case PredictionType.SAMPLE:
+                return self.sample(model_out=model_out)
+            case PredictionType.ML:
+                return self.ml(model_out=model_out)
+            case _:
+                raise TypeError(f"Cannot parse type {tp}")
 
     def output(self, model_out: ModelOutT) -> ModelOutT:
         """Get the model prediction.

@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Hashable
 
-from nml.models.interpreter.base import ModelInterpreter
+from nml.models.interpreter.base import ModelInterpreter, PredictionType
 
 __all__ = ["ModelABC"]
 
@@ -26,6 +26,12 @@ class ModelABC[InT, OutT, SampleT, LikelihoodT](ABC):
     @abstractmethod
     def forward(self, ipt: InT) -> OutT:
         """Run model prediction."""
+
+    def predict(
+        self, ipt: InT, tp: PredictionType = PredictionType.OUTPUT
+    ) -> OutT | SampleT:
+        """Forward to interpreter.__call__."""
+        return self.interpreter(model_out=self.forward(ipt=ipt), tp=tp)
 
     def output(self, ipt: InT) -> OutT:
         """Run forward and pass it to thee interpreter."""
