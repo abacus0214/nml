@@ -3,8 +3,6 @@
 from nml.tools.torch.data.dataset.array import ArrayDataset
 from numpy.random import RandomState
 from sklearn.datasets import make_regression
-from torch import Tensor
-from torch.utils.data import Dataset
 
 __all__ = ["generate_regression"]
 
@@ -21,7 +19,7 @@ def generate_regression(
     noise: float = 0.0,
     shuffle: bool = True,
     random_state: None | int | RandomState = None,
-) -> Dataset[tuple[Tensor, Tensor]]:
+) -> ArrayDataset:
     """Generate a linear regressiomn problem with sklearn and then wrap it in a torch Dataset."""
     # Generate the dataset
     X, y = make_regression(

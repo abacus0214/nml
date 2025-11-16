@@ -18,7 +18,9 @@ from nml.itf.torch.train.trainer.components.optimizer_map.standard import (
 )
 from nml.itf.torch.utils.loss.aggregators.mean import TorchMeanAggregator
 from nml.loss.runner.standard.ml import MLLossRunner
+from nml.tools.torch.data.dataset.array import ArrayDataset
 from nml.tools.torch.data.dataset.linear import generate_regression
+from nml.tools.torch.data.loader.container.array import ArrayDataLoader
 from nml.tools.torch.models.interpreter.normal import (
     NormalOutType,
     TorchNormalInterpeter,
@@ -81,16 +83,15 @@ def trainer(num_epochs: int, lr: float) -> TorchTrainer:
 
 
 @st.composite
-def torch_dataset(
+def array_dataset(
     draw: st.DrawFn,
     num_inputs: int,
     min_num_samples: int,
     max_num_samples: int,
     num_out: int,
-) -> TorchDataLoader[tuple[Tensor, Tensor], Tensor, Tensor]:
-    """Fixture for torch dataset."""
-    # Generate dataset
-    dataset = generate_regression(
+) -> ArrayDataset:
+    """Strategy to generate ArrayDataset."""
+    return generate_regression(
         n_samples=draw(
             st.integers(min_value=min_num_samples, max_value=max_num_samples)
         ),
@@ -98,10 +99,42 @@ def torch_dataset(
         n_targets=num_out,
     )
 
-    # Wrap inside loader
+
+@st.composite
+def torch_dataset(
+    draw: st.DrawFn,
+    num_inputs: int,
+    min_num_samples: int,
+    max_num_samples: int,
+    num_out: int,
+    manual: bool = True,
+) -> TorchDataLoader[tuple[Tensor, Tensor], Tensor, Tensor]:
+    """Fixture for torch dataset."""
+    if manual:
+        return ArrayDataLoader.from_torch_dataset(
+            name="test_data",
+            dataset=draw(
+                array_dataset(
+                    num_inputs=num_inputs,
+                    min_num_samples=min_num_samples,
+                    max_num_samples=max_num_samples,
+                    num_out=num_out,
+                )
+            ),
+        )
+
     return TorchDataLoader[tuple[Tensor, Tensor], Tensor, Tensor](
         name="test_data",
-        torch_loader=DataLoader[Tensor](dataset),
+        torch_loader=DataLoader[tuple[Tensor, Tensor]](
+            draw(
+                array_dataset(
+                    num_inputs=num_inputs,
+                    min_num_samples=min_num_samples,
+                    max_num_samples=max_num_samples,
+                    num_out=num_out,
+                )
+            )
+        ),
         batch_interpreter=TupleBatchInterpreter[Tensor, Tensor](),
     )
 
@@ -139,6 +172,9 @@ class TestSimpleRegressor:
         # Try to compute loss
         model.log_likelihood(ipt=input_t, target_samples=target)
 
+    @pytest.mark.parametrize(
+        "manual", [False, True], ids=["manual_loader", "tool_loader"]
+    )
     @given(data=st.data())
     def test_data_reading(
         self,
@@ -147,6 +183,7 @@ class TestSimpleRegressor:
         min_num_samples: int,
         max_num_samples: int,
         num_out: int,
+        manual: bool,
         model: TorchModel[Any, Any, Any],
     ) -> None:
         """Try to run trainer."""
@@ -157,6 +194,7 @@ class TestSimpleRegressor:
                 min_num_samples=min_num_samples,
                 max_num_samples=max_num_samples,
                 num_out=num_out,
+                manual=manual,
             )
         )
 
@@ -176,6 +214,9 @@ class TestSimpleRegressor:
             assert ipt.shape[-1] == num_inputs
             assert tgt.shape[-1] == num_out
 
+    @pytest.mark.parametrize(
+        "manual", [False, True], ids=["manual_loader", "tool_loader"]
+    )
     @pytest.mark.parametrize("num_epochs", [10], ids=["short"], scope="class")
     @given(data=st.data())
     @settings(deadline=timedelta(minutes=5), max_examples=3)
@@ -188,6 +229,7 @@ class TestSimpleRegressor:
         min_num_samples: int,
         max_num_samples: int,
         num_out: int,
+        manual: bool,
     ) -> None:
         """Try to run trainer."""
         # Generate dataset
@@ -197,6 +239,7 @@ class TestSimpleRegressor:
                 min_num_samples=min_num_samples,
                 max_num_samples=max_num_samples,
                 num_out=num_out,
+                manual=manual,
             )
         )
 
