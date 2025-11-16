@@ -9,7 +9,7 @@ from nml.tools.torch.models.interpreter.normal import (
 )
 from torch import Tensor, nn
 
-__all__ = ["ff_regression_model"]
+__all__ = ["ff_regression_model", "ActivationsType", "ActivationsDict"]
 
 type ActivationsType = None | nn.Module | dict[int, nn.Module]
 
@@ -27,10 +27,12 @@ class ActivationsDict(UserDict[int, nn.Module]):
         *,
         activations: ActivationsType = None,
         num_layers: None | int = None,
+        default_output_activation: bool = False,
     ) -> None:
         """Build activation dict."""
         # Store total number of layers (useful to dientify output layer)
         self.out_layer_id = num_layers - 1 if num_layers is not None else -1
+        self.default_output_activation = default_output_activation
         # Store default activation (if one is specified)
         if isinstance(activations, nn.Module):
             self.default_activation = activations
