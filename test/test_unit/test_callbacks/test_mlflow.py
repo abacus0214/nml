@@ -219,7 +219,7 @@ class TestMlflowCallback:
         )
 
         # Convert metrics to batch
-        metrics_batch: MetricsBatch = {}
+        metrics_batch: MetricsBatch = MetricsBatch()
         for metric_key, metric_vals in metrics.items():
             for step, metric_val in metric_vals.items():
                 metrics_batch[(metric_key, step)] = metric_val

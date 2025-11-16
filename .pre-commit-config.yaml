@@ -48,6 +48,13 @@ repos:
         pass_filenames: false
         language: python
         types: [python]
+      - id: mypy-test
+        name: type-checking-test
+        entry: mypy test
+        files: "^(test)"
+        pass_filenames: false
+        language: python
+        types: [python]
       - id: mypy-pkg-base
         name: type-checking-base
         entry: mypy -p nml.callbacks -p nml.data -p nml.loss -p nml.models -p nml.train -p nml.utils
