@@ -64,7 +64,12 @@ dev = [
   "types-xlrd>=2.0.0.20251020",
 ]
 nvim = ["debugpy>=1.8.17", "pynvim>=0.6.0"]
-torch = ["nml-itf-torch", "nml-tools-torch", "torch>=2.9.0"]
+torch = [
+    "nml-itf-torch",
+    "nml-tools-torch",
+    "torch>=2.9.0",
+    "torcheval>=0.0.7",
+]
 
 # Worskapce settings
 [tool.uv.sources]
