@@ -17,7 +17,7 @@ __all__ = ["CallbackCat"]
 class CallbackCat(RestrictedBaseModel, EventCallback):
     """Given a series of callbacks on construction, run all of them."""
 
-    callbacks: tuple[EventCallback]
+    callbacks: tuple[EventCallback, ...]
 
     def start(self, num_epochs: None | int = None) -> None:
         """Forward start of process."""
@@ -49,12 +49,12 @@ class CallbackCat(RestrictedBaseModel, EventCallback):
     ) -> None:
         """Log metric with given id."""
         for callback in self.callbacks:
-            callback.log_metric(mid, metric)
+            callback.log_metric(mid, metric, step=step)
 
     def log_metrics(self, metrics: Metrics, step: MetricStep = None) -> None:
         """Log multiple metrics at once, by default iterate."""
         for callback in self.callbacks:
-            callback.log_metrics(metrics)
+            callback.log_metrics(metrics, step=step)
 
     def log_metrics_batch(self, batch: MetricsBatch) -> None:
         """Log multiple metrics samples at arbitrary timesteps at once, by default iterate."""
