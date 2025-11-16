@@ -1,9 +1,11 @@
 """Base class for running evaluation on a split."""
 
+from collections import defaultdict
 from typing import Any, Iterable
 
 from nml.data.batches.container.base import BatchABC
 from nml.models.container.base import ModelABC
+from nml.models.interpreter.base import PredictionType
 from nml.train.trainer.components.metrics_evaluator.base import MetricsEvaluator
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
 from nml.utils.typing.eval.metrics import Metrics
@@ -19,6 +21,12 @@ class TorchEvalEvaluator(RestrictedBaseModel, MetricsEvaluator):
 
     metrics: dict[str, TorchEvalMetric[Any]] = Field(default_factory=dict)
 
+    # Dictionary that can be used to customize which metric uses which method
+    # to compute its input from the model output
+    pred_type: dict[str, PredictionType] = Field(
+        default_factory=lambda: defaultdict(lambda: PredictionType.OUTPUT)
+    )
+
     def evaluate_batch[IpT, TgT](
         self,
         bid: BatchID,
@@ -30,10 +38,12 @@ class TorchEvalEvaluator(RestrictedBaseModel, MetricsEvaluator):
         pred = model.forward(ipt=batch.ipt)
 
         # Evaluate on each metric
-        for metric in self.metrics.values():
-            # TODO: allow possibility to go through specific intepreter method
+        for mid, metric in self.metrics.items():
             # TODO: add possibility to customize target
-            metric.update(pred, batch.tgt)
+            metric.update(
+                model.interpreter(model_out=pred, tp=self.pred_type[mid]),
+                batch.tgt,
+            )
         return Metrics()
 
     def aggregate_f(
