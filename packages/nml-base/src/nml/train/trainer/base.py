@@ -9,11 +9,11 @@ from nml.data.loader.container.base import DataLoaderABC
 from nml.loss.runner.base import LossRunnerABC
 from nml.models.container.base import ModelABC
 from nml.train.trainer.components.batch_loss.base import BatchLossTrainerABC
-from nml.train.trainer.components.split_evaluator.base import SplitEvaluator
+from nml.train.trainer.components.metrics_evaluator.base import MetricsEvaluator
 from nml.utils.loss.aggregators.base import LossAggregatorABC
 from nml.utils.loss.aggregators.mean import NPMeanAggregator
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
-from nml.utils.typing.eval.metrics import MetricStep
+from nml.utils.typing.eval.metrics import Metrics, MetricStep
 from nml.utils.typing.events import BatchID, EpochID
 
 __all__ = ["Trainer"]
@@ -41,7 +41,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
     # Parameters
     batch_loss_trainer: BatchLossTrainerABC[LossT]
 
-    split_evaluator: SplitEvaluator = SplitEvaluator()
+    metrics_evaluator: MetricsEvaluator = MetricsEvaluator()
     loss_aggregator: LossAggregatorABC[LossT] = NPMeanAggregator[Any]()
 
     # Settings
@@ -105,7 +105,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         callback.log_epoch_start(eid=eid)
 
         # Compute loss for each batch
-        agg_loss = self.epoch_loss(
+        agg_loss, metrics = self.epoch_loss(
             model=model,
             dataset=dataset,
             loss_runner=loss_runner,
@@ -116,6 +116,8 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         # Communicate aggregated loss across batches
         loss_metric_id = f"{dataset.name}/{self.loss_metric_name}"
         callback.log_metric(mid=loss_metric_id, metric=agg_loss)
+        # Log epoch metrics
+        callback.log_metrics(step=eid, metrics=metrics.add_prefix(dataset.name))
         # Communicate epoch end
         callback.log_epoch_end(eid=eid)
 
@@ -126,22 +128,30 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         loss_runner: LossRunnerABC,
         update_model: bool = False,
         callback: EventCallback = EventCallback(),
-    ) -> float:
+    ) -> tuple[float, Metrics]:
         """Compute the loss for a single epoch and update model (if specified)."""
-        # Compute loss for each batch
-        return self.loss_aggregator.aggregate_f(
-            [
-                self.batch_step(
-                    bid=bid,
-                    model=model,
-                    batch=batch,
-                    loss_runner=loss_runner,
-                    update_model=update_model,
-                    callback=callback,
-                )
-                for bid, batch in enumerate(dataset.epoch_iterator)
-            ]
-        )
+        # Compute loss and metrics for each batch
+        batches_results = [
+            self.batch_step(
+                bid=bid,
+                model=model,
+                batch=batch,
+                loss_runner=loss_runner,
+                update_model=update_model,
+                callback=callback,
+            )
+            for bid, batch in dataset.epoch_iterator
+        ]
+
+        # Split losses and metrics
+        losses, metrics = zip(*batches_results)
+
+        # Aggregate losses
+        epoch_loss = self.loss_aggregator.aggregate_f(losses=losses)
+        # Aggregate metrics
+        epoch_metrics = self.metrics_evaluator.aggregate_f(metrics=metrics)
+
+        return epoch_loss, epoch_metrics
 
     def batch_step[IpT, TgT](
         self,
@@ -151,7 +161,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         loss_runner: LossRunnerABC,
         update_model: bool = False,
         callback: EventCallback = EventCallback(),
-    ) -> LossT:
+    ) -> tuple[LossT, Metrics]:
         """Train for a single batch."""
         # Communicate batch update start
         callback.log_batch_start(bid=bid)
@@ -164,9 +174,16 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
             update_model=update_model,
         )
 
+        # Evaluate batch
+        metrics = self.metrics_evaluator.evaluate_batch(
+            bid=bid,
+            model=model,
+            batch=batch,
+        )
+
         # Communicte batch update end
         callback.log_batch_end(bid=bid)
-        return loss
+        return loss, metrics
 
     def evaluation[IpT, TgT](
         self,
@@ -179,17 +196,9 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         """Evaluate on each dataset."""
         # Go through all splits
         for split_idx, dataset in enumerate(dataset_splits):
-            # Compute metrics
-            self.run_and_log_split_evaluation(
-                model=model,
-                dataset=dataset,
-                step=step,
-                callback=callback,
-            )
-
-            # Compute loss on each validation set
             if not self.is_training_split(split_idx):
-                val_loss = self.epoch_loss(
+                # Compute loss on each validation set
+                val_loss, metrics = self.epoch_loss(
                     model=model,
                     dataset=dataset,
                     loss_runner=loss_runner,
@@ -200,25 +209,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
                 callback.log_metric(
                     mid=f"{dataset.name}/{self.loss_metric_name}", metric=val_loss
                 )
-
-    def run_and_log_split_evaluation[IpT, TgT](
-        self,
-        model: ModelABC[IpT, Any, TgT, Any],
-        dataset: DataLoaderABC[Any, IpT, TgT],
-        step: None | MetricStep = None,
-        callback: EventCallback = EventCallback(),
-    ) -> None:
-        """Compute metrics and log them.
-
-        This method also sanitizes metrics names by adding a suffix, useful when calling
-        this method for multiple splits.
-        """
-        return callback.log_metrics(
-            {
-                f"{dataset.name}/{mid}": metric
-                for mid, metric in self.split_evaluator.evaluate_split(
-                    model=model, dataset=dataset
-                ).items()
-            },
-            step=step,
-        )
+                # Log metrics
+                callback.log_metrics(
+                    step=step, metrics=metrics.add_prefix(dataset.name)
+                )

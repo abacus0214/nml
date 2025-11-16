@@ -59,7 +59,7 @@ class MLFlowMetricCallback(StandardBaseModel, EventCallback):
             raise RuntimeError(f"Did you forget to start the mlflow callback?")
         for step, batch_sub in groupby(batch.items(), lambda it: it[0][1]):
             self.log_metrics(
-                {mid: metric for (mid, _), metric in batch_sub},
+                Metrics({mid: metric for (mid, _), metric in batch_sub}),
                 step=step,
             )
 

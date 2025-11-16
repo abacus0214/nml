@@ -23,7 +23,7 @@ class MetricsBufferCallback(RestrictedBaseModel, CallbackStack):
         self, mid: MetricID, metric: Metric, step: MetricStep = None
     ) -> None:
         """Log metric with given id."""
-        self.log_metrics_aux({mid: metric}, step=step)
+        self.log_metrics_aux(Metrics({mid: metric}), step=step)
 
     def log_metrics_aux(self, metrics: Metrics, step: MetricStep = None) -> None:
         """Log multiple metrics at once, by default iterate."""

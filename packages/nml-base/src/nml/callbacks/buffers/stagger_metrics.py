@@ -44,7 +44,7 @@ class StaggerMetricsStack(RestrictedBaseModel, CallbackStack):
         self, mid: MetricID, metric: Metric, step: MetricStep = None
     ) -> None:
         """Log metric with given id."""
-        self.log_metrics({mid: metric}, step=step)
+        self.log_metrics(Metrics({mid: metric}), step=step)
 
     def log_metrics(self, metrics: Metrics, step: MetricStep = None) -> None:
         """Log multiple metrics at once, by default iterate."""
