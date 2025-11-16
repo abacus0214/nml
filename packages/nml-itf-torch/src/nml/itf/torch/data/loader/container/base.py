@@ -23,3 +23,7 @@ class TorchDataLoader[BatchT, IpT: Tensor, TgT: None | Tensor = None](
     def raw_epoch_iterator(self) -> Iterator[BatchT]:
         """Return iterator to go through batches for a single epoch."""
         return iter(self.torch_loader)
+
+    def __len__(self) -> int:
+        """Get length from loader."""
+        return len(self.torch_loader)

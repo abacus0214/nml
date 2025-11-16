@@ -28,3 +28,7 @@ class DataLoaderABC[BatchT, IpT = Any, TgT = None](ABC):
             (bid, Batch(batch=batch, interpreter=self.batch_interpreter))
             for bid, batch in enumerate(self.raw_epoch_iterator)
         )
+
+    @abstractmethod
+    def __len__(self) -> int:
+        """Must be able to provide length."""
