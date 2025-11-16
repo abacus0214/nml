@@ -161,7 +161,7 @@ class TestSimpleRegressor:
         )
 
         # Loop through loader and use reader
-        for batch in loader.epoch_iterator:
+        for _, batch in loader.epoch_iterator:
             ipt_manual = loader.batch_interpreter.get_ipt(batch.batch)
             tgt_manual = loader.batch_interpreter.get_tgt(batch.batch)
 
