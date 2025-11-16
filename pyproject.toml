@@ -120,6 +120,8 @@ addopts = "-vv"
 [tool.coverage.run]
 branch = true
 
+omit = ["packages/nml-base/src/nml/callbacks/ui/*"]
+
 [tool.coverage.report]
 include_namespace_packages = true
 # Regexes for lines to exclude from consideration
