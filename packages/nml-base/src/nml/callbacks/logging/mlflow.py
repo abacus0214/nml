@@ -2,6 +2,7 @@
 
 from itertools import groupby
 
+from mlflow.entities import RunStatus
 from nml.callbacks.abc import EventCallback
 from nml.utils.mlflow.client import ExperimentClient, RunClient
 from nml.utils.typing.base.pydantic import StandardBaseModel
@@ -65,4 +66,5 @@ class MLFlowMetricCallback(StandardBaseModel, EventCallback):
 
     def close(self) -> None:
         """Call at the end of the process."""
-        # TODO: set run as finished/close run
+        if self.current_run is not None:
+            self.current_run.set_status(RunStatus.FINISHED)

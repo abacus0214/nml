@@ -4,7 +4,7 @@ from functools import cached_property
 from typing import Self, Sequence
 
 from mlflow.client import MlflowClient
-from mlflow.entities import Experiment
+from mlflow.entities import Experiment, RunStatus
 from mlflow.tracking.fluent import (
     _get_model_ids_for_new_metric_if_exist,
     get_active_model_id,
@@ -105,6 +105,10 @@ class RunClient(ExperimentClient):
     def run(self) -> MLFlowRun:
         """Get run from id."""
         return self.client.get_run(self.run_id)
+
+    def set_status(self, run_status: int) -> None:
+        """Set the run status."""
+        self.client.update_run(self.run_id, RunStatus.to_string(run_status))
 
     def log_metric(
         self,
