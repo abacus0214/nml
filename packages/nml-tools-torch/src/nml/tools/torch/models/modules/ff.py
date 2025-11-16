@@ -64,8 +64,7 @@ class ActivationsDict(UserDict[int, nn.Module]):
 
     def __missing__(self, key: int) -> nn.Module:
         """Set default activation value."""
-        key = self.sanitize_key(key)
-        if key > 0 or self.default_output_activation:
+        if key >= 0 or self.default_output_activation:
             return self.default_activation
         return nn.Identity()
 
@@ -76,7 +75,9 @@ def ff_regression_model(
 ) -> TorchModel[Tensor, NormalOutType, Tensor]:
     """Generate simple torch model with linear layers and regression output layer."""
     # Build dict for activations
-    activations_dict = ActivationsDict(activations=activations, num_layers=len(layers))
+    activations_dict = ActivationsDict(
+        activations=activations, num_layers=len(layers) - 1
+    )
 
     # Concatenate linear layers
     return TorchModel[Tensor, NormalOutType, Tensor](
