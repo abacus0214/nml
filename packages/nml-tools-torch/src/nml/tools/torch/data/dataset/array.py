@@ -11,7 +11,7 @@ __all__ = ["ArrayDataset", "FloatArray"]
 type FloatArray = ndarray[Any, dtype[float32]]
 
 
-class ArrayDataset(Dataset[Tensor]):
+class ArrayDataset(Dataset[tuple[Tensor, Tensor]]):
     """Custom dataset that gets matrix data and turns it into a torch dataset."""
 
     X: Tensor
@@ -33,6 +33,6 @@ class ArrayDataset(Dataset[Tensor]):
         """Compute length."""
         return int(self.X.shape[0])
 
-    def __getitem__(self, idx: int) -> tuple[Tensor, Tensor]:  # type: ignore
+    def __getitem__(self, idx: int) -> tuple[Tensor, Tensor]:
         """Sample a single element."""
         return self.X[idx], self.y[idx]

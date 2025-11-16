@@ -21,7 +21,7 @@ def generate_regression(
     noise: float = 0.0,
     shuffle: bool = True,
     random_state: None | int | RandomState = None,
-) -> Dataset[Tensor]:
+) -> Dataset[tuple[Tensor, Tensor]]:
     """Generate a linear regressiomn problem with sklearn and then wrap it in a torch Dataset."""
     # Generate the dataset
     X, y = make_regression(
