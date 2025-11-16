@@ -15,6 +15,8 @@ __all__ = ["EventCallback"]
 class EventCallback:
     """Callback to be executed when metric(s) is/are computed."""
 
+    # TODO: turn into context manager to be able to catch exception (e.g. set mlflow run as failed)
+
     def start(self, num_epochs: None | int = None) -> None:
         """Call at the start of process."""
 
