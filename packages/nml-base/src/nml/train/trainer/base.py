@@ -102,7 +102,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
     ) -> None:
         """Train for a single epoch."""
         # Communicate start of epoch
-        callback.log_epoch_start(eid=eid)
+        callback.log_epoch_start(eid=eid, epoch_size=len(dataset))
 
         # Compute loss for each batch
         agg_loss, metrics = self.epoch_loss(
@@ -115,7 +115,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
 
         # Communicate aggregated loss across batches
         loss_metric_id = f"{dataset.name}/{self.loss_metric_name}"
-        callback.log_metric(mid=loss_metric_id, metric=agg_loss)
+        callback.log_metric(mid=loss_metric_id, metric=agg_loss, step=eid)
         # Log epoch metrics
         callback.log_metrics(step=eid, metrics=metrics.add_prefix(dataset.name))
         # Communicate epoch end
@@ -207,7 +207,9 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
                 )
                 # Log validation loss
                 callback.log_metric(
-                    mid=f"{dataset.name}/{self.loss_metric_name}", metric=val_loss
+                    mid=f"{dataset.name}/{self.loss_metric_name}",
+                    metric=val_loss,
+                    step=step,
                 )
                 # Log metrics
                 callback.log_metrics(
