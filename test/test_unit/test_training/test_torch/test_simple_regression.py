@@ -170,7 +170,7 @@ class TestSimpleRegressor:
         assert isinstance(model.module, nn.Module)
 
     @given(data=st.data())
-    def test_model_log_likelihood(
+    def test_model_nll(
         self,
         data: st.DataObject,
         num_inputs: int,
@@ -183,7 +183,7 @@ class TestSimpleRegressor:
         target = Tensor(data.draw(arrays(dtype=np.float32, shape=num_out)))
 
         # Try to compute loss
-        model.log_likelihood(ipt=input_t, target_samples=target)
+        model.nll(ipt=input_t, target_samples=target)
 
     @pytest.mark.parametrize(
         "manual", [False, True], ids=["manual_loader", "tool_loader"]
