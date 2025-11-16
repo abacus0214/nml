@@ -25,6 +25,7 @@ from nml.tools.torch.models.interpreter.normal import (
     NormalOutType,
     TorchNormalInterpeter,
 )
+from nml.tools.torch.models.modules.ff import ff_regression_model
 from pytest import fixture
 from torch import Tensor, nn
 from torch.optim import Adam
@@ -56,17 +57,23 @@ def layers(num_inputs: int, num_hidden: int, num_out: int) -> list[int]:
 
 
 @fixture(scope="class")
-def model(layers: list[int]) -> TorchModel[Tensor, NormalOutType, Tensor]:
+def model(
+    layers: list[int], manual_model_construction: bool
+) -> TorchModel[Tensor, NormalOutType, Tensor]:
     """Manually generate torch model for regression."""
-    # Create container
-    return TorchModel[Tensor, NormalOutType, Tensor](
-        interpreter=TorchNormalInterpeter(),
-        module=nn.Sequential(
-            *(
-                nn.Linear(in_ft, out_ft)
-                for in_ft, out_ft in zip(layers[:-1], layers[1:])
-            )
-        ),
+    if manual_model_construction:
+        return TorchModel[Tensor, NormalOutType, Tensor](
+            interpreter=TorchNormalInterpeter(),
+            module=nn.Sequential(
+                *(
+                    nn.Linear(in_ft, out_ft)
+                    for in_ft, out_ft in zip(layers[:-1], layers[1:])
+                )
+            ),
+        )
+
+    return ff_regression_model(
+        layers=layers,
     )
 
 
@@ -140,11 +147,17 @@ def torch_dataset(
 
 
 @pytest.mark.parametrize(
+    "manual_model_construction",
+    [True, False],
+    ids=["manual_model", "tool_model"],
+    scope="class",
+)
+@pytest.mark.parametrize(
     ["num_inputs", "num_hidden", "num_out"],
     [
         (5, 20, 1),
     ],
-    ids=["toy"],
+    ids=["toy_training"],
     scope="class",
 )
 class TestSimpleRegressor:

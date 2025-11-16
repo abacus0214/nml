@@ -30,6 +30,8 @@ class ActivationsDict(UserDict[int, nn.Module]):
         default_output_activation: bool = False,
     ) -> None:
         """Build activation dict."""
+        # Initi UserDict
+        super().__init__()
         # Store total number of layers (useful to dientify output layer)
         self.out_layer_id = num_layers - 1 if num_layers is not None else -1
         self.default_output_activation = default_output_activation
