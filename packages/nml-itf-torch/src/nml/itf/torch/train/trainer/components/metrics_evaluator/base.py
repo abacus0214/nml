@@ -17,7 +17,7 @@ __all__ = ["TorchEvalEvaluator"]
 class TorchEvalEvaluator(RestrictedBaseModel, MetricsEvaluator):
     """Base class for running evaluation on a split."""
 
-    metrics: tuple[TorchEvalMetric[Any], ...] = Field(default_factory=tuple)
+    metrics: dict[str, TorchEvalMetric[Any]] = Field(default_factory=dict)
 
     def evaluate_batch[IpT, TgT](
         self,
@@ -30,7 +30,7 @@ class TorchEvalEvaluator(RestrictedBaseModel, MetricsEvaluator):
         pred = model.forward(ipt=batch.ipt)
 
         # Evaluate on each metric
-        for metric in self.metrics:
+        for metric in self.metrics.values():
             # TODO: allow possibility to go through specific intepreter method
             # TODO: add possibility to customize target
             metric.update(pred, batch.tgt)
@@ -41,10 +41,6 @@ class TorchEvalEvaluator(RestrictedBaseModel, MetricsEvaluator):
         metrics: Iterable[Metrics],
     ) -> Metrics:
         """Aggregate metrics from multiple batches."""
-        # TODO: better strategy to extract name
         return Metrics(
-            {
-                str(metric.__class__.__name__): metric.compute()
-                for metric in self.metrics
-            }
+            {str(mid): metric.compute() for mid, metric in self.metrics.items()}
         )
