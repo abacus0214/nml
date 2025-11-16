@@ -118,6 +118,7 @@ class RunClient(ExperimentClient):
         model_id: None | str = None,
     ) -> None | RunOperations:
         """Forward to client log metric."""
+        # TODO: sanitize names
         return self.client.log_metric(
             run_id=self.run_id,
             key=key,
@@ -140,6 +141,7 @@ class RunClient(ExperimentClient):
         dataset: None | MLFlowDataset = None,
     ) -> None | RunOperations:
         """Recreate log metrics but for client."""
+        # TODO: sanitize names
         # Get timestamp in milliseconds
         time_millis = timestamp or get_current_time_millis()
         # Initalize step to 0
