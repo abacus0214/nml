@@ -70,6 +70,13 @@ repos:
         language: python
         types: [python]
       - id: mypy-pkg-tool-torch
+        name: type-checking-tools-base
+        entry: mypy -p nml.tools.train
+        files: "^(packages/nml-tools-train|packages/nml-base)"
+        pass_filenames: false
+        language: python
+        types: [python]
+      - id: mypy-pkg-tool-torch
         name: type-checking-tools-torch
         entry: mypy -p nml.tools.torch
         files: "^(packages/nml-tools-torch|packages/nml-base|packages/nml-itf-torch)"

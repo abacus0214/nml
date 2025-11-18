@@ -12,6 +12,7 @@ members = [
     "nml-base",
     "nml-config-base",
     "nml-itf-torch",
+    "nml-tools-base",
     "nml-tools-torch",
 ]
 
@@ -1357,6 +1358,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "mlflow" },
     { name = "nml-base" },
+    { name = "nml-tools-base" },
     { name = "numpy" },
     { name = "pydantic" },
     { name = "rich" },
@@ -1418,6 +1420,7 @@ torch = [
 requires-dist = [
     { name = "mlflow", specifier = ">=3.5.1" },
     { name = "nml-base", editable = "packages/nml-base" },
+    { name = "nml-tools-base", editable = "packages/nml-tools-base" },
     { name = "numpy", specifier = ">=2.3.4" },
     { name = "pydantic", specifier = ">=2.12.4" },
     { name = "rich", specifier = ">=14.2.0" },
@@ -1487,6 +1490,11 @@ source = { editable = "packages/nml-config-base" }
 name = "nml-itf-torch"
 version = "0.1.0"
 source = { editable = "packages/nml-itf-torch" }
+
+[[package]]
+name = "nml-tools-base"
+version = "0.1.0"
+source = { editable = "packages/nml-tools-base" }
 
 [[package]]
 name = "nml-tools-torch"
