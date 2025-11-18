@@ -2,6 +2,9 @@
 
 from collections import UserDict
 
+from matplotlib.figure import Figure as MPLFig
+from plotly.graph_objects import Figure as PLFig
+
 __all__ = [
     "MetricID",
     "ScalarMetric",
@@ -10,6 +13,9 @@ __all__ = [
     "MetricsBatch",
     "MetricStep",
     "MetricSample",
+    "FigureID",
+    "Figure",
+    "Figures",
 ]
 
 type MetricID = str
@@ -36,3 +42,11 @@ class MetricsBatch(UserDict[MetricSample, Metric]):
     def from_metrics(metrics: Metrics, step: MetricStep = None) -> "MetricsBatch":
         """Generate a metrics batch from a dict of metrics by repeating a given step multiple timesint."""
         return MetricsBatch({(mid, step): metric for mid, metric in metrics.items()})
+
+
+type FigureID = str
+type Figure = MPLFig | PLFig
+
+
+class Figures(UserDict[FigureID, Figure]):
+    """Dictionary of figures."""
