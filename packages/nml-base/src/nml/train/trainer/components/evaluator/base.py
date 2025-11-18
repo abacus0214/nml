@@ -16,6 +16,7 @@ class EvaluatorABC[ResultsT: Mapping[str, Any]](ABC):
     """Parent class for evaluators."""
 
     @abstractmethod
+    # TODO: pass prediction/model output so that it does not have to be repeated
     def evaluate_batch[IpT, TgT](
         self,
         eid: EpochID,

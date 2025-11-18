@@ -1,1 +1,0 @@
-"""Evaluator that produces figures."""

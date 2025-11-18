@@ -68,6 +68,7 @@ class ModelInterpreter[ModelOutT, SampleT, LikelihoodT]:
             the output of the model (row or processed if this applies)
 
         """
+        # TODO: add method that assumes that input is detached as well, use this in metrics eval
         return model_out
 
     def sample(self, model_out: ModelOutT) -> SampleT:
@@ -97,9 +98,7 @@ class ModelInterpreter[ModelOutT, SampleT, LikelihoodT]:
         """
         raise NotImplementedError(f"{self} does not support sampling.")
 
-    def nll(
-        self, target_samples: SampleT, model_out: ModelOutT
-    ) -> LikelihoodT:
+    def nll(self, target_samples: SampleT, model_out: ModelOutT) -> LikelihoodT:
         """Compute the log likelihood of a given set of sample based on the model output.
 
         The additive inverse of this is what is often used in Maximum Likelihood optimimization
