@@ -13,7 +13,7 @@ from nml.train.trainer.components.metrics_evaluator.base import MetricsEvaluator
 from nml.utils.loss.aggregators.base import LossAggregatorABC
 from nml.utils.loss.aggregators.mean import NPMeanAggregator
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
-from nml.utils.typing.eval.metrics import Metrics, MetricStep
+from nml.utils.typing.eval.metrics import Metrics
 from nml.utils.typing.events import BatchID, EpochID
 
 __all__ = ["Trainer"]
@@ -82,7 +82,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
 
             # Evaluate model
             self.evaluation(
-                step=eid,
+                eid=eid,
                 model=model,
                 dataset_splits=dataset_splits,
                 loss_runner=loss_runner,
@@ -106,6 +106,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
 
         # Compute loss for each batch
         agg_loss, metrics = self.epoch_loss(
+            eid=eid,
             model=model,
             dataset=dataset,
             loss_runner=loss_runner,
@@ -123,6 +124,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
 
     def epoch_loss[IpT, TgT](
         self,
+        eid: EpochID,
         model: ModelABC[IpT, Any, TgT, LossT],
         dataset: DataLoaderABC[Any, IpT, TgT],
         loss_runner: LossRunnerABC,
@@ -133,6 +135,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         # Compute loss and metrics for each batch
         batches_results = [
             self.batch_step(
+                eid=eid,
                 bid=bid,
                 model=model,
                 batch=batch,
@@ -155,6 +158,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
 
     def batch_step[IpT, TgT](
         self,
+        eid: EpochID,
         bid: BatchID,
         model: ModelABC[IpT, Any, TgT, LossT],
         batch: BatchABC[Any, IpT, TgT],
@@ -176,6 +180,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
 
         # Evaluate batch
         metrics = self.metrics_evaluator.evaluate_batch(
+            eid=eid,
             bid=bid,
             model=model,
             batch=batch,
@@ -187,10 +192,10 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
 
     def evaluation[IpT, TgT](
         self,
+        eid: EpochID,
         model: ModelABC[IpT, Any, TgT, Any],
         dataset_splits: tuple[DataLoaderABC[Any, IpT, TgT], ...],
         loss_runner: LossRunnerABC,
-        step: None | MetricStep = None,
         callback: EventCallback = EventCallback(),
     ) -> None:
         """Evaluate on each dataset."""
@@ -199,6 +204,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
             if not self.is_training_split(split_idx):
                 # Compute loss on each validation set
                 val_loss, metrics = self.epoch_loss(
+                    eid=eid,
                     model=model,
                     dataset=dataset,
                     loss_runner=loss_runner,
@@ -209,9 +215,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
                 callback.log_metric(
                     mid=f"{dataset.name}/{self.loss_metric_name}",
                     metric=val_loss,
-                    step=step,
+                    step=eid,
                 )
                 # Log metrics
-                callback.log_metrics(
-                    step=step, metrics=metrics.add_prefix(dataset.name)
-                )
+                callback.log_metrics(step=eid, metrics=metrics.add_prefix(dataset.name))

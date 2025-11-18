@@ -8,8 +8,8 @@ from nml.models.container.base import ModelABC
 from nml.models.interpreter.base import PredictionType
 from nml.train.trainer.components.metrics_evaluator.base import MetricsEvaluator
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
-from nml.utils.typing.eval.metrics import Metrics
-from nml.utils.typing.events import BatchID
+from nml.utils.typing.eval.metrics import MetricID, Metrics
+from nml.utils.typing.events import BatchID, EpochID
 from pydantic import Field
 from torcheval.metrics import Metric as TorchEvalMetric
 
@@ -19,16 +19,22 @@ __all__ = ["TorchEvalEvaluator"]
 class TorchEvalEvaluator(RestrictedBaseModel, MetricsEvaluator):
     """Base class for running evaluation on a split."""
 
-    metrics: dict[str, TorchEvalMetric[Any]] = Field(default_factory=dict)
+    metrics: dict[MetricID, TorchEvalMetric[Any]] = Field(default_factory=dict)
 
     # Dictionary that can be used to customize which metric uses which method
     # to compute its input from the model output
-    pred_type: dict[str, PredictionType] = Field(
+    pred_type: dict[MetricID, PredictionType] = Field(
         default_factory=lambda: defaultdict(lambda: PredictionType.OUTPUT)
+    )
+
+    # Dictionary determining frequencies of metrics
+    frequency: dict[MetricID, int] = Field(
+        default_factory=lambda: defaultdict(lambda: 1)
     )
 
     def evaluate_batch[IpT, TgT](
         self,
+        eid: EpochID,
         bid: BatchID,
         model: ModelABC[IpT, Any, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],
@@ -39,11 +45,12 @@ class TorchEvalEvaluator(RestrictedBaseModel, MetricsEvaluator):
 
         # Evaluate on each metric
         for mid, metric in self.metrics.items():
-            # TODO: add possibility to customize target
-            metric.update(
-                model.interpreter(model_out=pred, tp=self.pred_type[mid]),
-                batch.tgt,
-            )
+            if (eid % self.frequency[mid]) == 0:
+                # TODO: add possibility to customize target
+                metric.update(
+                    model.interpreter(model_out=pred, tp=self.pred_type[mid]),
+                    batch.tgt,
+                )
         return Metrics()
 
     def aggregate_f(

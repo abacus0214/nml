@@ -5,7 +5,7 @@ from typing import Any, Iterable
 from nml.data.batches.container.base import BatchABC
 from nml.models.container.base import ModelABC
 from nml.utils.typing.eval.metrics import Metrics
-from nml.utils.typing.events import BatchID
+from nml.utils.typing.events import BatchID, EpochID
 
 __all__ = ["MetricsEvaluator"]
 
@@ -15,6 +15,7 @@ class MetricsEvaluator:
 
     def evaluate_batch[IpT, TgT](
         self,
+        eid: EpochID,
         bid: BatchID,
         model: ModelABC[IpT, Any, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],

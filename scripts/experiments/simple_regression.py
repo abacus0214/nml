@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from matplotlib import pyplot as plt
 from mlflow.client import MlflowClient
 from nml.callbacks.compose import CallbackCat
 from nml.callbacks.logging.mlflow import MLFlowMetricCallback
@@ -22,15 +23,16 @@ from torch.optim import Adam
 
 if __name__ == "__main__":
     # Set parameters
-    num_epochs = 10
+    num_epochs = 300
     num_inputs = 5
-    num_targets = 2
-    hidden_layers = [100, 50]
-    n_samples = 200
+    num_targets = 1
+    hidden_layers = [500, 500, 100, 50]
+    n_samples = 2000
 
     layers = [num_inputs] + hidden_layers + [num_targets]
 
-    lr = 1e-5
+    batch_size = 128
+    lr = 1e-3
 
     mlflow_uri = Path("results/mlflow").absolute().as_uri()
 
@@ -42,8 +44,11 @@ if __name__ == "__main__":
     dataset = ArrayDataLoader.from_torch_dataset(
         name="train",
         dataset=generate_regression(
-            n_samples=n_samples, n_features=num_inputs, n_targets=num_targets
+            n_samples=n_samples,
+            n_features=num_inputs,
+            n_targets=num_targets,
         ),
+        batch_size=batch_size,
     )
 
     # Create trainer
@@ -75,3 +80,16 @@ if __name__ == "__main__":
         dataset_splits=(dataset,),
         callback=callback,
     )
+
+    # Generate regression plot
+    preds = []
+    tgts = []
+
+    for _, batch in dataset.epoch_iterator:
+        pred = model.forward(batch.ipt)
+        for p, t in zip(pred, batch.tgt):
+            preds.append(float(p))
+            tgts.append(float(t))
+
+    plt.scatter(preds, tgts)
+    plt.show()
