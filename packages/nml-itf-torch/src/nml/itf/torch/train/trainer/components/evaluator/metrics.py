@@ -6,7 +6,7 @@ from typing import Any, Iterable
 from nml.data.batches.container.base import BatchABC
 from nml.models.container.base import ModelABC
 from nml.models.interpreter.base import PredictionType
-from nml.train.trainer.components.metrics_evaluator.base import MetricsEvaluator
+from nml.train.trainer.components.evaluator.metrics import MetricsEvaluator
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
 from nml.utils.typing.eval.metrics import MetricID, Metrics
 from nml.utils.typing.events import BatchID, EpochID

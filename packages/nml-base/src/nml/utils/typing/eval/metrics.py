@@ -30,10 +30,6 @@ type Metric = ScalarMetric
 class Metrics(UserDict[MetricID, Metric]):
     """Dictionary containing set of metrics (referring to the same timestep)."""
 
-    def add_prefix(self, prefix: str) -> "Metrics":
-        """Add prefix to each metric name."""
-        return Metrics({f"{prefix}/{mid}": metric for mid, metric in self.items()})
-
 
 class MetricsBatch(UserDict[MetricSample, Metric]):
     """Dictionary containing multiple metric values at several steps."""
