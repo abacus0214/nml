@@ -73,7 +73,15 @@ class MLFlowMetricCallback(StandardBaseModel, EventCallback):
         """Log figure with given id."""
         if self.current_run is None:
             raise RuntimeError(f"Did you forget to start the mlflow callback?")
-        self.current_run.log_figure(figure=figure, artifact_file=f"{step}_{fid}.png")
+        # Add png extension to name
+        artifact_name = f"{fid}.png"
+        # Add step in name
+        if "/" in artifact_name:
+            dir_name, file_name = artifact_name.rsplit("/", 1)
+            artifact_name = dir_name + "/" + f"{step}_{file_name}"
+        else:
+            artifact_name = f"{step}_{artifact_name}"
+        self.current_run.log_figure(figure=figure, artifact_file=artifact_name)
 
     def close(self) -> None:
         """Call at the end of the process."""
