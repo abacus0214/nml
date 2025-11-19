@@ -33,7 +33,9 @@ class RegressionPlotGenerator(PlotGengerator):
                     "x0": 0,
                     "x1": 1,
                 }
-            ]
+            ],
+            xaxis={"title": {"text": "prediction"}},
+            yaxis={"title": {"text": "target"}},
         )
 
     def update[IpT, OutT, TgT](
@@ -72,4 +74,9 @@ class RegressionPlotGenerator(PlotGengerator):
         """Return final figure."""
         if self.fig is None:
             raise RuntimeError("No figure was generated.")
+
+        self.fig.update_layout(
+            xaxis=dict(scaleanchor="y", scaleratio=1),  # X-axis anchors to Y, ratio 1:1
+            yaxis=dict(scaleanchor="x", scaleratio=1),  # Y-axis anchors to X, ratio 1:1
+        )
         return self.fig
