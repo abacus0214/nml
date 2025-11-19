@@ -65,7 +65,7 @@ class RegressionPlotGenerator(PlotGengerator):
             ) from exc
 
         # Add points to figure
-        self.fig.add_trace(go.Scatter(x=prd, y=tgt))
+        self.fig.add_trace(go.Scatter(x=prd, y=tgt, mode="markers"))
         return self.fig
 
     def compute(self) -> go.Figure:
