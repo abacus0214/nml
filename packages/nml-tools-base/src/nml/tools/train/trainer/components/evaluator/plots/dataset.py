@@ -21,6 +21,12 @@ class DatasetPlotGenerator(PlotGengerator):
         # Create figure
         self.fig = go.Figure()
 
+        # Set layout
+        self.fig.update_layout(
+            xaxis={"title": {"text": "input"}},
+            yaxis={"title": {"text": "target"}},
+        )
+
     def update[IpT, OutT, TgT](
         self,
         pred: OutT,
