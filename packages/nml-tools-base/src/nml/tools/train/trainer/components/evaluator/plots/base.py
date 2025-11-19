@@ -31,8 +31,14 @@ class PlotGengerator(ABC):
     ) -> None:
         """Update figure with new data."""
 
-    @abstractmethod
     def complete(self) -> go.Figure:
+        """Return final figure."""
+        ret = self.compute()
+        self.reset()
+        return ret
+
+    @abstractmethod
+    def compute(self) -> go.Figure:
         """Return final figure."""
 
     def reset(self) -> None:

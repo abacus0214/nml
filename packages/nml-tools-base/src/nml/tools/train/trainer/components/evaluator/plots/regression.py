@@ -61,7 +61,7 @@ class RegressionPlotGenerator(PlotGengerator):
         # Add points to figure
         self.fig.add_trace(go.Scatter(x=pred, y=tgt))
 
-    def complete(self) -> go.Figure:
+    def compute(self) -> go.Figure:
         """Return final figure."""
         if self.fig is None:
             raise RuntimeError("No figure was generated.")

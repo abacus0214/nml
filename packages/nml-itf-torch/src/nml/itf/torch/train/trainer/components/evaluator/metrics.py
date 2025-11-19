@@ -8,7 +8,7 @@ from nml.models.container.base import ModelABC
 from nml.models.interpreter.base import PredictionType
 from nml.train.trainer.components.evaluator.metrics import MetricsEvaluator
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
-from nml.utils.typing.eval.metrics import MetricID, Metrics
+from nml.utils.typing.eval.metrics import Metric, MetricID, Metrics
 from nml.utils.typing.events import BatchID, EpochID
 from pydantic import Field
 from torcheval.metrics import Metric as TorchEvalMetric
@@ -19,7 +19,7 @@ __all__ = ["TorchEvalEvaluator"]
 class TorchEvalEvaluator(RestrictedBaseModel, MetricsEvaluator):
     """Base class for running evaluation on a split."""
 
-    metrics: dict[MetricID, TorchEvalMetric[Any]] = Field(default_factory=dict)
+    metrics: dict[MetricID, TorchEvalMetric[Metric]] = Field(default_factory=dict)
 
     # Dictionary that can be used to customize which metric uses which method
     # to compute its input from the model output
@@ -53,11 +53,21 @@ class TorchEvalEvaluator(RestrictedBaseModel, MetricsEvaluator):
                 )
         return Metrics()
 
+    @staticmethod
+    def extract_metric(metric: TorchEvalMetric[Metric]) -> Metric:
+        """Compute and reset metric."""
+        ret = metric.compute()
+        metric.reset()
+        return ret
+
     def aggregate_f(
         self,
         results: Iterable[Metrics],
     ) -> Metrics:
         """Aggregate metrics from multiple batches."""
         return Metrics(
-            {str(mid): metric.compute() for mid, metric in self.metrics.items()}
+            {
+                str(mid): self.extract_metric(metric)
+                for mid, metric in self.metrics.items()
+            }
         )
