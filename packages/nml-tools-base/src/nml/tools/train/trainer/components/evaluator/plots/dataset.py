@@ -8,11 +8,11 @@ from nml.models.container.base import ModelABC
 from nml.tools.train.trainer.components.evaluator.plots.base import PlotGengerator
 from plotly import graph_objects as go
 
-__all__ = ["RegressionPlotGenerator"]
+__all__ = ["DatasetPlotGenerator"]
 
 
-class RegressionPlotGenerator(PlotGengerator):
-    """Generator for regression plot."""
+class DatasetPlotGenerator(PlotGengerator):
+    """Generator for 1D dataset plot."""
 
     fig: None | go.Figure = None
 
@@ -20,21 +20,6 @@ class RegressionPlotGenerator(PlotGengerator):
         """Initialize regression plot."""
         # Create figure
         self.fig = go.Figure()
-
-        # Add identity line
-        self.fig.update_layout(
-            shapes=[
-                {
-                    "type": "line",
-                    "yref": "paper",
-                    "xref": "paper",
-                    "y0": 0,
-                    "y1": 1,
-                    "x0": 0,
-                    "x1": 1,
-                }
-            ]
-        )
 
     def update[IpT, OutT, TgT](
         self,
@@ -48,10 +33,10 @@ class RegressionPlotGenerator(PlotGengerator):
         # Get the model predictions and targets
         try:
             # Try to convert to array
-            prd = np.squeeze(np.array(pred))
+            ipt = np.squeeze(np.array(batch.ipt))
             tgt = np.squeeze(np.array(batch.tgt))
             # Check that they are 1D
-            assert len(prd.shape) == 1, "Cannot support multidimentional predictions."
+            assert len(ipt.shape) == 1, "Cannot support multidimentional predictions."
             assert len(tgt.shape) == 1, "Cannot support multidimentional targets."
         except Exception as exc:
             raise TypeError(
@@ -59,7 +44,7 @@ class RegressionPlotGenerator(PlotGengerator):
             ) from exc
 
         # Add points to figure
-        self.fig.add_trace(go.Scatter(x=pred, y=tgt))
+        self.fig.add_trace(go.Scatter(x=ipt, y=tgt))
 
     def compute(self) -> go.Figure:
         """Return final figure."""
