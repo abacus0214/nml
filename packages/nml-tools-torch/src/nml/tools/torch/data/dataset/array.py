@@ -3,6 +3,7 @@
 from typing import Any
 
 from numpy import dtype, float32, ndarray
+
 from torch import FloatTensor, Tensor
 from torch.utils.data import Dataset
 

@@ -2,7 +2,6 @@
 
 from pathlib import Path
 
-from matplotlib import pyplot as plt
 from mlflow.client import MlflowClient
 from nml.callbacks.compose import CallbackCat
 from nml.callbacks.logging.mlflow import MLFlowMetricCallback
@@ -17,6 +16,15 @@ from nml.loss.runner.standard.ml import MLLossRunner
 from nml.tools.torch.data.dataset.linear import generate_regression
 from nml.tools.torch.data.loader.container.array import ArrayDataLoader
 from nml.tools.torch.models.modules.ff import ff_regression_model
+from nml.tools.train.trainer.components import evaluator
+from nml.tools.train.trainer.components.evaluator.plots.base import PlotlyEvaluator
+from nml.tools.train.trainer.components.evaluator.plots.dataset import (
+    DatasetPlotGenerator,
+)
+from nml.tools.train.trainer.components.evaluator.plots.regression import (
+    RegressionPlotGenerator,
+)
+from nml.tools.utils.frequencer.standard import AtEnd, AtStart, Every
 from nml.utils.mlflow.client import ExperimentClient
 from torch import nn
 from torch.optim import Adam
@@ -24,7 +32,7 @@ from torch.optim import Adam
 if __name__ == "__main__":
     # Set parameters
     num_epochs = 300
-    num_inputs = 5
+    num_inputs = 1
     num_targets = 1
     hidden_layers = [500, 500, 100, 50]
     n_samples = 2000
@@ -73,23 +81,20 @@ if __name__ == "__main__":
         )
     )
 
+    # Create evaluator
+    evaluator = PlotlyEvaluator(
+        plots={
+            "data": DatasetPlotGenerator(),
+            "regression": RegressionPlotGenerator(),
+        },
+        frequency={"data": AtStart(), "regression": Every(freq=100) | AtEnd()},
+    )
+
     # Launch training
     trainer.train(
         model=model,
         loss_runner=MLLossRunner(),
         dataset_splits=(dataset,),
+        evaluator=evaluator,
         callback=callback,
     )
-
-    # Generate regression plot
-    preds = []
-    tgts = []
-
-    for _, batch in dataset.epoch_iterator:
-        pred = model.forward(batch.ipt)
-        for p, t in zip(pred, batch.tgt):
-            preds.append(float(p))
-            tgts.append(float(t))
-
-    plt.scatter(preds, tgts)
-    plt.show()

@@ -7,6 +7,7 @@ from nml.tools.torch.models.interpreter.normal import (
     NormalOutType,
     TorchNormalInterpeter,
 )
+
 from torch import Tensor, nn
 
 __all__ = ["ff_regression_model", "ActivationsType", "ActivationsDict"]

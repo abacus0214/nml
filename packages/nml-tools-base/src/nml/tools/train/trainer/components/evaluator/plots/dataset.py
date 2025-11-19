@@ -29,15 +29,21 @@ class DatasetPlotGenerator(PlotGengerator):
     ) -> None:
         """Add regression points from batch to the figure."""
         if self.fig is None:
-            raise RuntimeError("Need to initialize figure before updating")
+            self.init_fig()
+        if self.fig is None:
+            raise RuntimeError("Could not initialize figure.")
         # Get the model predictions and targets
         try:
             # Try to convert to array
             ipt = np.squeeze(np.array(batch.ipt))
             tgt = np.squeeze(np.array(batch.tgt))
             # Check that they are 1D
-            assert len(ipt.shape) == 1, "Cannot support multidimentional predictions."
-            assert len(tgt.shape) == 1, "Cannot support multidimentional targets."
+            assert len(ipt.shape) == 1, (
+                f"Cannot support multidimentional predictions of shape {ipt.shape}"
+            )
+            assert len(tgt.shape) == 1, (
+                f"Cannot support multidimentional targets of shape {tgt.shape}."
+            )
         except Exception as exc:
             raise TypeError(
                 "Could not convert pred or target to scalar numpy array"
