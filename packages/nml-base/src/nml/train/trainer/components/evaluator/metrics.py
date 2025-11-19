@@ -39,3 +39,4 @@ class MetricsEvaluator(EvaluatorABC[Metrics]):
         callback: EventCallback = EventCallback(),
     ) -> None:
         """Define how to log results."""
+        callback.log_metrics(step=step, metrics=results)

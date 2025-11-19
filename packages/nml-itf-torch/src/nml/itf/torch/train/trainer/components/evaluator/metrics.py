@@ -55,7 +55,7 @@ class TorchEvalEvaluator(RestrictedBaseModel, MetricsEvaluator):
 
     def aggregate_f(
         self,
-        metrics: Iterable[Metrics],
+        results: Iterable[Metrics],
     ) -> Metrics:
         """Aggregate metrics from multiple batches."""
         return Metrics(
