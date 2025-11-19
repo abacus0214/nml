@@ -26,12 +26,14 @@ class TorchBatchLossTrainer(RestrictedBaseModel, BatchLossTrainerABC[Tensor]):
         update_model: bool = False,
     ) -> Tensor:
         """Compute loss and update model (if required)."""
+        if update_model:
+            self.optimizer_map.get_optimizer(model=model).zero_grad()
+
         # Compute loss
         loss = loss_runner.compute(batch=batch, model=model)
 
         # Perform update if necessary
         if update_model:
-            self.optimizer_map.get_optimizer(model=model).zero_grad()
             loss.backward()
             self.optimizer_map.get_optimizer(model=model).step()
 
