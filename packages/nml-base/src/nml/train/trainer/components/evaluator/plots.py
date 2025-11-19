@@ -41,3 +41,4 @@ class PlotsEvaluator(EvaluatorABC[Figures]):
         callback: EventCallback = EventCallback(),
     ) -> None:
         """Define how to log results."""
+        callback.log_figures(figures=results, step=step)
