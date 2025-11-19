@@ -193,7 +193,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         results = evaluator.evaluate_batch(
             eid=eid,
             bid=bid,
-            pred=model.forward(batch.ipt),
+            pred=model.inference(batch.ipt),
             model=model,
             batch=batch,
         )

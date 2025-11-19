@@ -31,6 +31,26 @@ class TorchNormalInterpeter(RestrictedBaseModel, TorchDistInterpreter[NormalOutT
         # Build distribution
         return Normal(loc=loc, scale=scale)
 
+    def inference(self, model_out: NormalOutType) -> NormalOutType:
+        """Get the model prediction (for evaluation purposes).
+
+        Detach tensors.
+
+        Args:
+            model_out: the raw output of the model
+
+        Returns:
+            the output of the model (row or processed if this applies)
+
+        """
+        model_out = super().inference(model_out=model_out)
+
+        # Parse the output of the model
+        if isinstance(model_out, tuple):
+            return model_out[0].detach(), model_out[1].detach()
+        else:
+            return model_out.detach()
+
     def nll(self, target_samples: Tensor, model_out: NormalOutType) -> Tensor:
         """Compute the log likelihood of a given set of sample based on the model output.
 

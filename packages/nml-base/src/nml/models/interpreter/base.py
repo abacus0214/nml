@@ -54,7 +54,7 @@ class ModelInterpreter[ModelOutT, SampleT, LikelihoodT]:
                 raise TypeError(f"Cannot parse type {tp}")
 
     def output(self, model_out: ModelOutT) -> ModelOutT:
-        """Get the model prediction.
+        """Get the model prediction (for general purposes).
 
         By default it is just the model output. One should never interact with
         the model directly, but only via the interpreter, even if operation is as simple
@@ -70,6 +70,22 @@ class ModelInterpreter[ModelOutT, SampleT, LikelihoodT]:
         """
         # TODO: add method that assumes that input is detached as well, use this in metrics eval
         return model_out
+
+    def inference(self, model_out: ModelOutT) -> ModelOutT:
+        """Get the model prediction (for evaluation purposes).
+
+        Same as `output` but special bheavior for inference can be added here (for instance
+        for torch models here we can detach the tensor).
+
+        Args:
+            model_out: the raw output of the model
+
+        Returns:
+            the output of the model (row or processed if this applies)
+
+        """
+        # TODO: add method that assumes that input is detached as well, use this in metrics eval
+        return self.output(model_out=model_out)
 
     def sample(self, model_out: ModelOutT) -> SampleT:
         """Get one sample based on the model output.
