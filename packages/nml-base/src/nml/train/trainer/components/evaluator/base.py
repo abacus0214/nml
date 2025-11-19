@@ -17,11 +17,12 @@ class EvaluatorABC[ResultsT: Mapping[str, Any]](ABC):
 
     @abstractmethod
     # TODO: pass prediction/model output so that it does not have to be repeated
-    def evaluate_batch[IpT, TgT](
+    def evaluate_batch[IpT, OutT, TgT](
         self,
         eid: EpochID,
         bid: BatchID,
-        model: ModelABC[IpT, Any, TgT, Any],
+        pred: OutT,
+        model: ModelABC[IpT, OutT, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],
     ) -> ResultsT:
         """Compute results ona given batch (could be training or validation)."""
@@ -46,11 +47,12 @@ class EvaluatorABC[ResultsT: Mapping[str, Any]](ABC):
 class Evaluator(EvaluatorABC[dict[str, Any]]):
     """Default empty evaluator."""
 
-    def evaluate_batch[IpT, TgT](
+    def evaluate_batch[IpT, OutT, TgT](
         self,
         eid: EpochID,
         bid: BatchID,
-        model: ModelABC[IpT, Any, TgT, Any],
+        pred: OutT,
+        model: ModelABC[IpT, OutT, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],
     ) -> dict[str, Any]:
         """Compute results ona given batch (could be training or validation)."""

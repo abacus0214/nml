@@ -15,11 +15,12 @@ __all__ = ["PlotsEvaluator"]
 class PlotsEvaluator(EvaluatorABC[Figures]):
     """Baseclass for generating plots on a split."""
 
-    def evaluate_batch[IpT, TgT](
+    def evaluate_batch[IpT, OutT, TgT](
         self,
         eid: EpochID,
         bid: BatchID,
-        model: ModelABC[IpT, Any, TgT, Any],
+        pred: OutT,
+        model: ModelABC[IpT, OutT, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],
     ) -> Figures:
         """Compute results ona given batch (could be training or validation)."""

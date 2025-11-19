@@ -15,11 +15,12 @@ __all__ = ["MetricsEvaluator"]
 class MetricsEvaluator(EvaluatorABC[Metrics]):
     """Base class for running evaluation on a split."""
 
-    def evaluate_batch[IpT, TgT](
+    def evaluate_batch[IpT, OutT, TgT](
         self,
         eid: EpochID,
         bid: BatchID,
-        model: ModelABC[IpT, Any, TgT, Any],
+        pred: OutT,
+        model: ModelABC[IpT, OutT, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],
     ) -> Metrics:
         """Compute metrics ona given batch (could be training or validation)."""

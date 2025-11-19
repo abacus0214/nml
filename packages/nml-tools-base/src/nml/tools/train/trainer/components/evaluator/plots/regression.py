@@ -37,9 +37,10 @@ class RegressionPlotGenerator(PlotGengerator):
             ]
         )
 
-    def update[IpT, TgT](
+    def update[IpT, OutT, TgT](
         self,
-        model: ModelABC[IpT, Any, TgT, Any],
+        pred: OutT,
+        model: ModelABC[IpT, OutT, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],
     ) -> None:
         """Add regression points from batch to the figure."""
@@ -48,10 +49,10 @@ class RegressionPlotGenerator(PlotGengerator):
         # Get the model predictions and targets
         try:
             # Try to convert to array
-            pred = np.squeeze(np.array(model.forward(batch.ipt)))
+            prd = np.squeeze(np.array(pred))
             tgt = np.squeeze(np.array(batch.tgt))
             # Check that they are 1D
-            assert len(pred.shape) == 1, "Cannot support multidimentional predictions."
+            assert len(prd.shape) == 1, "Cannot support multidimentional predictions."
             assert len(tgt.shape) == 1, "Cannot support multidimentional targets."
         except Exception as exc:
             raise TypeError(

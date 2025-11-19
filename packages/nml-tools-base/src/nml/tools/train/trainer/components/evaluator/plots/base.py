@@ -24,9 +24,10 @@ class PlotGengerator(ABC):
         """Initialize figure to be updated."""
 
     @abstractmethod
-    def update[IpT, TgT](
+    def update[IpT, OutT, TgT](
         self,
-        model: ModelABC[IpT, Any, TgT, Any],
+        pred: OutT,
+        model: ModelABC[IpT, OutT, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],
     ) -> None:
         """Update figure with new data."""
@@ -56,11 +57,12 @@ class PlotlyEvaluator(RestrictedBaseModel, PlotsEvaluator):
         default_factory=lambda: defaultdict(lambda: 1)
     )
 
-    def evaluate_batch[IpT, TgT](
+    def evaluate_batch[IpT, OutT, TgT](
         self,
         eid: EpochID,
         bid: BatchID,
-        model: ModelABC[IpT, Any, TgT, Any],
+        pred: OutT,
+        model: ModelABC[IpT, OutT, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],
     ) -> Figures:
         """Compute results ona given batch (could be training or validation)."""
@@ -68,6 +70,7 @@ class PlotlyEvaluator(RestrictedBaseModel, PlotsEvaluator):
         for mid, plot in self.plots.items():
             if (eid % self.frequency[mid]) == 0:
                 plot.update(
+                    pred=pred,
                     model=model,
                     batch=batch,
                 )

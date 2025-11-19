@@ -32,17 +32,15 @@ class TorchEvalEvaluator(RestrictedBaseModel, MetricsEvaluator):
         default_factory=lambda: defaultdict(lambda: 1)
     )
 
-    def evaluate_batch[IpT, TgT](
+    def evaluate_batch[IpT, OutT, TgT](
         self,
         eid: EpochID,
         bid: BatchID,
-        model: ModelABC[IpT, Any, TgT, Any],
+        pred: OutT,
+        model: ModelABC[IpT, OutT, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],
     ) -> Metrics:
         """Compute metrics ona given batch (could be training or validation)."""
-        # Do inference once
-        pred = model.forward(ipt=batch.ipt)
-
         # Evaluate on each metric
         for mid, metric in self.metrics.items():
             if (eid % self.frequency[mid]) == 0:
