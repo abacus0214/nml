@@ -72,7 +72,7 @@ repos:
       - id: mypy-pkg-tool-base
         name: type-checking-tools-base
         entry: mypy -p nml.tools.train
-        files: "^(packages/nml-tools-train|packages/nml-base)"
+        files: "^(packages/nml-tools-base|packages/nml-base)"
         pass_filenames: false
         language: python
         types: [python]
