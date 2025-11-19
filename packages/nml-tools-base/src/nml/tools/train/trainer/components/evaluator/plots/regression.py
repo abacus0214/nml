@@ -41,7 +41,7 @@ class RegressionPlotGenerator(PlotGengerator):
         pred: OutT,
         model: ModelABC[IpT, OutT, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],
-    ) -> None:
+    ) -> go.Figure:
         """Add regression points from batch to the figure."""
         if self.fig is None:
             self.init_fig()
@@ -66,6 +66,7 @@ class RegressionPlotGenerator(PlotGengerator):
 
         # Add points to figure
         self.fig.add_trace(go.Scatter(x=prd, y=tgt))
+        return self.fig
 
     def compute(self) -> go.Figure:
         """Return final figure."""

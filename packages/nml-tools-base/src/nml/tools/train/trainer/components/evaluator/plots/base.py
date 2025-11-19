@@ -30,7 +30,7 @@ class PlotGengerator(ABC):
         pred: OutT,
         model: ModelABC[IpT, OutT, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],
-    ) -> None:
+    ) -> go.Figure:
         """Update figure with new data."""
 
     def complete(self) -> go.Figure:
@@ -70,16 +70,15 @@ class PlotlyEvaluator(RestrictedBaseModel, PlotsEvaluator):
     ) -> Figures:
         """Compute results ona given batch (could be training or validation)."""
         # Evaluate on each metric
-        for mid, plot in self.plots.items():
-            if self.frequency.get(mid, self.default_frequencer)(
-                eid=eid, eid_max=eid_max
-            ):
-                plot.update(
-                    pred=pred,
-                    model=model,
-                    batch=batch,
+        return Figures(
+            {
+                fid: plot.update(pred=pred, model=model, batch=batch)
+                for fid, plot in self.plots.items()
+                if self.frequency.get(fid, self.default_frequencer)(
+                    eid=eid, eid_max=eid_max
                 )
-        return Figures()
+            }
+        )
 
     def aggregate_f(
         self,
