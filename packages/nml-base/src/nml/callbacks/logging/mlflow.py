@@ -7,6 +7,9 @@ from nml.callbacks.abc import EventCallback
 from nml.utils.mlflow.client import ExperimentClient, RunClient
 from nml.utils.typing.base.pydantic import StandardBaseModel
 from nml.utils.typing.eval.metrics import (
+    Figure,
+    FigureID,
+    FigureStep,
     Metric,
     MetricID,
     Metrics,
@@ -63,6 +66,14 @@ class MLFlowMetricCallback(StandardBaseModel, EventCallback):
                 Metrics({mid: metric for (mid, _), metric in batch_sub}),
                 step=step,
             )
+
+    def log_figure(
+        self, fid: FigureID, figure: Figure, step: FigureStep = None
+    ) -> None:
+        """Log figure with given id."""
+        if self.current_run is None:
+            raise RuntimeError(f"Did you forget to start the mlflow callback?")
+        self.current_run.log_figure(figure=figure, artifact_file=f"{step}_{fid}.png")
 
     def close(self) -> None:
         """Call at the end of the process."""

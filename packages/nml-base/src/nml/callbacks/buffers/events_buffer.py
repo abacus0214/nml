@@ -7,6 +7,11 @@ from typing import Any
 from nml.callbacks.stack import CallbackStack
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
 from nml.utils.typing.eval.metrics import (
+    Figure,
+    FigureID,
+    Figures,
+    FiguresBatch,
+    FigureStep,
     Metric,
     MetricID,
     Metrics,
@@ -30,6 +35,9 @@ class CallbackEventType(StrEnum):
     METRIC = auto()
     METRICS = auto()
     METRIC_BATCH = auto()
+    FIGURE = auto()
+    FIGURES = auto()
+    FIGURE_BATCH = auto()
     CLOSE = auto()
 
 
@@ -133,6 +141,44 @@ class CallbackBuffer(RestrictedBaseModel, CallbackStack):
         self.events_buffer.add(
             CallbackEvent(
                 event_type=CallbackEventType.METRIC_BATCH,
+                extra_args={
+                    "batch": batch,
+                },
+            )
+        )
+
+    def log_figure_aux(
+        self, fid: FigureID, figure: Figure, step: FigureStep = None
+    ) -> None:
+        """Log figure with given id."""
+        self.events_buffer.add(
+            CallbackEvent(
+                event_type=CallbackEventType.FIGURE,
+                step=step,
+                input_id=fid,
+                extra_args={
+                    "figure": figure,
+                },
+            )
+        )
+
+    def log_figures_aux(self, figures: Figures, step: FigureStep = None) -> None:
+        """Log multiple figures at once, by default iterate."""
+        self.events_buffer.add(
+            CallbackEvent(
+                event_type=CallbackEventType.FIGURES,
+                step=step,
+                extra_args={
+                    "figures": figures,
+                },
+            )
+        )
+
+    def log_figure_batch_aux(self, batch: FiguresBatch) -> None:
+        """Log multiple figures samples at arbitrary timesteps at once, by default iterate."""
+        self.events_buffer.add(
+            CallbackEvent(
+                event_type=CallbackEventType.FIGURE_BATCH,
                 extra_args={
                     "batch": batch,
                 },

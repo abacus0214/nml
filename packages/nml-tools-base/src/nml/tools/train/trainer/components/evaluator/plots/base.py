@@ -8,7 +8,7 @@ from nml.data.batches.container.base import BatchABC
 from nml.models.container.base import ModelABC
 from nml.train.trainer.components.evaluator.plots import PlotsEvaluator
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
-from nml.utils.typing.eval.metrics import Figures, MetricID
+from nml.utils.typing.eval.metrics import FigureID, Figures
 from nml.utils.typing.events import BatchID, EpochID
 from plotly import graph_objects as go
 from pydantic import Field
@@ -43,10 +43,10 @@ class PlotGengerator(ABC):
 class PlotlyEvaluator(RestrictedBaseModel, PlotsEvaluator):
     """Base class that generate plots using the PlotGenerator interface."""
 
-    plots: dict[MetricID, PlotGengerator]
+    plots: dict[FigureID, PlotGengerator]
 
     # Dictionary determining frequencies of metrics
-    frequency: dict[MetricID, int] = Field(
+    frequency: dict[FigureID, int] = Field(
         default_factory=lambda: defaultdict(lambda: 1)
     )
 

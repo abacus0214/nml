@@ -1,8 +1,9 @@
 """Utilities for mlflow client(s)."""
 
 from functools import cached_property
-from typing import Self, Sequence
+from typing import Any, Self, Sequence
 
+from matplotlib.figure import Figure as MPLFig
 from mlflow.client import MlflowClient
 from mlflow.entities import Experiment, RunStatus
 from mlflow.tracking.fluent import (
@@ -20,6 +21,7 @@ from nml.utils.typing.mlflow import (
     MLFlowRunTag,
     MLFlowTagsDict,
 )
+from plotly.graph_objects import Figure as PLFig
 from pydantic import model_validator
 
 __all__ = ["ExperimentClient", "RunClient"]
@@ -197,4 +199,19 @@ class RunClient(ExperimentClient):
             params=params,
             tags=tags,
             synchronous=synchronous,
+        )
+
+    def log_figure(
+        self,
+        figure: PLFig | MPLFig,
+        artifact_file: str,
+        *,
+        save_kwargs: dict[str, Any] | None = None,
+    ) -> None:
+        """Forward log figure."""
+        self.client.log_figure(
+            run_id=self.run_id,
+            figure=figure,
+            artifact_file=artifact_file,
+            save_kwargs=save_kwargs,
         )

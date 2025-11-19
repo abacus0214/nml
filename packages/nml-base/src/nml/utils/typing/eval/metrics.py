@@ -16,6 +16,7 @@ __all__ = [
     "FigureID",
     "Figure",
     "Figures",
+    "FiguresBatch",
 ]
 
 type MetricID = str
@@ -41,8 +42,19 @@ class MetricsBatch(UserDict[MetricSample, Metric]):
 
 
 type FigureID = str
+type FigureStep = MetricStep
+type FigureSample = tuple[FigureID, FigureStep]
 type Figure = MPLFig | PLFig
 
 
 class Figures(UserDict[FigureID, Figure]):
     """Dictionary of figures."""
+
+
+class FiguresBatch(UserDict[FigureSample, Figure]):
+    """Dictionary containing multiple figures at several steps."""
+
+    @staticmethod
+    def from_figures(figures: Figures, step: FigureStep = None) -> "FiguresBatch":
+        """Generate a metrics batch from a dict of metrics by repeating a given step multiple timesint."""
+        return FiguresBatch({(fid, step): figure for fid, figure in figures.items()})

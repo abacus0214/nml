@@ -3,6 +3,11 @@
 from nml.callbacks.abc import EventCallback
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
 from nml.utils.typing.eval.metrics import (
+    Figure,
+    FigureID,
+    Figures,
+    FiguresBatch,
+    FigureStep,
     Metric,
     MetricID,
     Metrics,
@@ -60,6 +65,23 @@ class CallbackCat(RestrictedBaseModel, EventCallback):
         """Log multiple metrics samples at arbitrary timesteps at once, by default iterate."""
         for callback in self.callbacks:
             callback.log_metrics_batch(batch)
+
+    def log_figure(
+        self, fid: FigureID, figure: Figure, step: FigureStep = None
+    ) -> None:
+        """Log figure with given id."""
+        for callback in self.callbacks:
+            callback.log_figure(fid, figure, step=step)
+
+    def log_figures(self, figures: Figures, step: FigureStep = None) -> None:
+        """Log multiple figures at once, by default iterate."""
+        for callback in self.callbacks:
+            callback.log_figures(figures, step=step)
+
+    def log_figure_batch(self, batch: FiguresBatch) -> None:
+        """Log multiple figures samples at arbitrary timesteps at once, by default iterate."""
+        for callback in self.callbacks:
+            callback.log_figure_batch(batch)
 
     def close(self) -> None:
         """Call at the end of the process."""
