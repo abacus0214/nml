@@ -63,4 +63,6 @@ class RegressionPlotGenerator(PlotGengerator):
 
     def complete(self) -> go.Figure:
         """Return final figure."""
+        if self.fig is None:
+            raise RuntimeError("No figure was generated.")
         return self.fig
