@@ -29,7 +29,7 @@ disallow_untyped_calls = false
 files = ["packages/"]
 explicit_package_bases = true
 
-mypy_path = ["../nml-base/src", "src"]
+mypy_path = ["../nml-base/src", "src", "../nml-tools-base/src/"]
 
 [tool.pyright]
-extraPaths = ["../nml-base/src", "src"]
+extraPaths = ["../nml-base/src", "src", "../nml-tools-base/src/"]

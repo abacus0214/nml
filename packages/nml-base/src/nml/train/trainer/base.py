@@ -191,6 +191,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
 
         # Evaluate batch
         results = evaluator.evaluate_batch(
+            eid_max=self.num_epochs - 1,
             eid=eid,
             bid=bid,
             pred=model.inference(batch.ipt),

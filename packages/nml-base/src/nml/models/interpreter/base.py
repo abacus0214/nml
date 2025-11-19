@@ -68,7 +68,6 @@ class ModelInterpreter[ModelOutT, SampleT, LikelihoodT]:
             the output of the model (row or processed if this applies)
 
         """
-        # TODO: add method that assumes that input is detached as well, use this in metrics eval
         return model_out
 
     def inference(self, model_out: ModelOutT) -> ModelOutT:
@@ -84,7 +83,6 @@ class ModelInterpreter[ModelOutT, SampleT, LikelihoodT]:
             the output of the model (row or processed if this applies)
 
         """
-        # TODO: add method that assumes that input is detached as well, use this in metrics eval
         return self.output(model_out=model_out)
 
     def sample(self, model_out: ModelOutT) -> SampleT:

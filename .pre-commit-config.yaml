@@ -65,13 +65,13 @@ repos:
       - id: mypy-pkg-itf-torch
         name: type-checking-itf-torch
         entry: mypy -p nml.itf.torch
-        files: "^(packages/nml-itf-torch|packages/nml-base)"
+        files: "^(packages/nml-itf-torch|packages/nml-base|packages/nml-tools-base)"
         pass_filenames: false
         language: python
         types: [python]
       - id: mypy-pkg-tool-base
         name: type-checking-tools-base
-        entry: mypy -p nml.tools.train
+        entry: mypy -p nml.tools.train -p nml.tools.utils
         files: "^(packages/nml-tools-base|packages/nml-base)"
         pass_filenames: false
         language: python

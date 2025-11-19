@@ -1421,6 +1421,7 @@ nvim = [
 ]
 torch = [
     { name = "nml-itf-torch" },
+    { name = "nml-tools-base" },
     { name = "nml-tools-torch" },
     { name = "torch" },
     { name = "torcheval" },
@@ -1482,6 +1483,7 @@ nvim = [
 ]
 torch = [
     { name = "nml-itf-torch", editable = "packages/nml-itf-torch" },
+    { name = "nml-tools-base", editable = "packages/nml-tools-base" },
     { name = "nml-tools-torch", editable = "packages/nml-tools-torch" },
     { name = "torch", specifier = ">=2.9.0" },
     { name = "torcheval", specifier = ">=0.0.7" },

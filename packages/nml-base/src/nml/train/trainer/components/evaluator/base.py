@@ -19,6 +19,7 @@ class EvaluatorABC[ResultsT: Mapping[str, Any]](ABC):
     # TODO: pass prediction/model output so that it does not have to be repeated
     def evaluate_batch[IpT, OutT, TgT](
         self,
+        eid_max: EpochID,
         eid: EpochID,
         bid: BatchID,
         pred: OutT,
@@ -49,6 +50,7 @@ class Evaluator(EvaluatorABC[dict[str, Any]]):
 
     def evaluate_batch[IpT, OutT, TgT](
         self,
+        eid_max: EpochID,
         eid: EpochID,
         bid: BatchID,
         pred: OutT,

@@ -1,6 +1,6 @@
 [tool.setuptools.packages.find]
 where = ["src/"]
-include = ["nml.tools.train"]
+include = ["nml.tools.train", "nml.tools.utils"]
 
 [project]
 

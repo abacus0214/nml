@@ -1,11 +1,12 @@
 """General interface for plots evaluator producing plotly plots."""
 
 from abc import ABC, abstractmethod
-from collections import defaultdict
 from typing import Any, Iterable
 
 from nml.data.batches.container.base import BatchABC
 from nml.models.container.base import ModelABC
+from nml.tools.utils.frequencer.base import FrequencerABC
+from nml.tools.utils.frequencer.standard import Every
 from nml.train.trainer.components.evaluator.plots import PlotsEvaluator
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
 from nml.utils.typing.eval.metrics import FigureID, Figures
@@ -53,12 +54,14 @@ class PlotlyEvaluator(RestrictedBaseModel, PlotsEvaluator):
     plots: dict[FigureID, PlotGengerator]
 
     # Dictionary determining frequencies of metrics
-    frequency: dict[FigureID, int] = Field(
-        default_factory=lambda: defaultdict(lambda: 1)
+    frequency: dict[FigureID, FrequencerABC] = Field(
+        default_factory=dict,
     )
+    default_frequencer: FrequencerABC = Field(default_factory=lambda: Every(freq=1))
 
     def evaluate_batch[IpT, OutT, TgT](
         self,
+        eid_max: EpochID,
         eid: EpochID,
         bid: BatchID,
         pred: OutT,
@@ -68,7 +71,9 @@ class PlotlyEvaluator(RestrictedBaseModel, PlotsEvaluator):
         """Compute results ona given batch (could be training or validation)."""
         # Evaluate on each metric
         for mid, plot in self.plots.items():
-            if (eid % self.frequency[mid]) == 0:
+            if self.frequency.get(mid, self.default_frequencer)(
+                eid=eid, eid_max=eid_max
+            ):
                 plot.update(
                     pred=pred,
                     model=model,
@@ -81,4 +86,14 @@ class PlotlyEvaluator(RestrictedBaseModel, PlotsEvaluator):
         results: Iterable[Figures],
     ) -> Figures:
         """Aggregate results from multiple batches."""
-        return Figures({str(mid): plot.complete() for mid, plot in self.plots.items()})
+        # Get available keys
+        # Assume they are the same for every batch.
+        available_fids = next(iter(results)).keys()
+        # Return plots
+        return Figures(
+            {
+                str(fid): plot.complete()
+                for fid, plot in self.plots.items()
+                if fid in available_fids
+            }
+        )

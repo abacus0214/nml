@@ -17,6 +17,7 @@ class PlotsEvaluator(EvaluatorABC[Figures]):
 
     def evaluate_batch[IpT, OutT, TgT](
         self,
+        eid_max: EpochID,
         eid: EpochID,
         bid: BatchID,
         pred: OutT,
