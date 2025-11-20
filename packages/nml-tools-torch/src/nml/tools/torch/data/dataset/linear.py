@@ -1,8 +1,11 @@
 """Some routines to generate linear data."""
 
-from nml.tools.torch.data.dataset.array import ArrayDataset
+from numpy import typing as npt
 from numpy.random import RandomState
 from sklearn.datasets import make_regression
+
+from torch import float32, from_numpy
+from torch.utils.data import TensorDataset
 
 __all__ = ["generate_regression"]
 
@@ -19,10 +22,10 @@ def generate_regression(
     noise: float = 0.0,
     shuffle: bool = True,
     random_state: None | int | RandomState = None,
-) -> ArrayDataset:
+) -> TensorDataset:
     """Generate a linear regressiomn problem with sklearn and then wrap it in a torch Dataset."""
     # Generate the dataset
-    X, y = make_regression(
+    data: tuple[npt.NDArray, npt.NDArray] = make_regression(  # type: ignore
         n_samples=n_samples,
         n_features=n_features,
         n_informative=n_informative,
@@ -36,5 +39,15 @@ def generate_regression(
         random_state=random_state,
     )
 
+    # Split inputs and outputs
+    npX, npY = data
+
+    # Add extra dimension if necessary
+    if len(npX.shape) < 2:
+        npX = npX[:, None]
+
+    if len(npY.shape) < 2:
+        npY = npY[:, None]
+
     # Generate torch.utils.data.Dataset object
-    return ArrayDataset(X=X, y=y)
+    return TensorDataset(from_numpy(npX).to(float32), from_numpy(npY).to(float32))

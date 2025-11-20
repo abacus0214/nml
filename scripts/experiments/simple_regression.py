@@ -14,7 +14,7 @@ from nml.itf.torch.train.trainer.components.optimizer_map.standard import (
 from nml.itf.torch.utils.loss.aggregators.mean import TorchMeanAggregator
 from nml.loss.runner.standard.ml import MLLossRunner
 from nml.tools.torch.data.dataset.linear import generate_regression
-from nml.tools.torch.data.loader.container.array import ArrayDataLoader
+from nml.tools.torch.data.loader.container.tensor import TensorDataLoader
 from nml.tools.torch.models.modules.ff import ff_regression_model
 from nml.tools.train.trainer.components import evaluator
 from nml.tools.train.trainer.components.evaluator.plots.base import PlotlyEvaluator
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     layers = [num_inputs] + hidden_layers + [num_targets]
 
     batch_size = 128
-    lr = 1e-3
+    lr = 1e-5
 
     mlflow_uri = Path("results/mlflow").absolute().as_uri()
 
@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
     # Cerate dataset
     # TODO: add splitting functionality
-    dataset = ArrayDataLoader.from_torch_dataset(
+    dataset = TensorDataLoader.from_torch_dataset(
         name="train",
         dataset=generate_regression(
             n_samples=n_samples,

@@ -3,16 +3,15 @@
 from nml.data.batches.interpreter.base import BatchInterpreter
 from nml.data.batches.interpreter.standard import TupleBatchInterpreter
 from nml.itf.torch.data.loader.container.base import TorchDataLoader
-from nml.tools.torch.data.dataset.array import ArrayDataset
 from pydantic import Field
 
 from torch import Tensor
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, TensorDataset
 
-__all__ = ["ArrayDataLoader"]
+__all__ = ["TensorDataLoader"]
 
 
-class ArrayDataLoader(TorchDataLoader[tuple[Tensor, Tensor], Tensor, Tensor]):
+class TensorDataLoader(TorchDataLoader[tuple[Tensor, Tensor], Tensor, Tensor]):
     """Premade data loader container for array dataeset."""
 
     batch_interpreter: BatchInterpreter[tuple[Tensor, Tensor], Tensor, Tensor] = Field(
@@ -21,12 +20,14 @@ class ArrayDataLoader(TorchDataLoader[tuple[Tensor, Tensor], Tensor, Tensor]):
 
     @staticmethod
     def from_torch_dataset(
-        name: str, dataset: ArrayDataset, batch_size: int = 1
-    ) -> "ArrayDataLoader":
+        name: str, dataset: TensorDataset, batch_size: int = 1, shuffle: bool = True
+    ) -> "TensorDataLoader":
         """Construct from a dataset instead of a given dataloader."""
-        return ArrayDataLoader(
+        return TensorDataLoader(
             name=name,
             torch_loader=DataLoader[tuple[Tensor, Tensor]](
-                dataset, batch_size=batch_size
+                dataset,  # type: ignore
+                batch_size=batch_size,
+                shuffle=shuffle,
             ),
         )
