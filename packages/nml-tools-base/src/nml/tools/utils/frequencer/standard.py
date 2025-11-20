@@ -2,9 +2,10 @@
 
 from nml.tools.utils.frequencer.base import FrequencerABC
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
+from nml.utils.typing.data.dataset import DatasetID
 from nml.utils.typing.events import EpochID, TrainingStepID
 
-__all__ = ["AtStart", "AtEnd", "Every", "At"]
+__all__ = ["AtStart", "AtEnd", "Every", "At", "For"]
 
 
 class AtStart(FrequencerABC):
@@ -41,3 +42,13 @@ class At(RestrictedBaseModel, FrequencerABC):
     def __call__(self, step_id: TrainingStepID) -> bool:
         """Return `True` if operation should be performed."""
         return step_id.eid in self.eids
+
+
+class For(RestrictedBaseModel, FrequencerABC):
+    """Only perform operation for a specific dataset ids."""
+
+    dids: set[DatasetID]
+
+    def __call__(self, step_id: TrainingStepID) -> bool:
+        """Return `True` if operation should be performed."""
+        return step_id.did in self.dids
