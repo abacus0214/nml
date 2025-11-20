@@ -18,9 +18,8 @@ from nml.itf.torch.train.trainer.components.optimizer_map.standard import (
 )
 from nml.itf.torch.utils.loss.aggregators.mean import TorchMeanAggregator
 from nml.loss.runner.standard.ml import MLLossRunner
-from nml.tools.torch.data.dataset.array import ArrayDataset
 from nml.tools.torch.data.dataset.linear import generate_regression
-from nml.tools.torch.data.loader.container.array import ArrayDataLoader
+from nml.tools.torch.data.loader.container.tensor import TensorDataLoader
 from nml.tools.torch.models.interpreter.normal import (
     NormalOutType,
     TorchNormalInterpeter,
@@ -29,7 +28,7 @@ from nml.tools.torch.models.modules.ff import ff_regression_model
 from pytest import fixture
 from torch import Tensor, nn
 from torch.optim import Adam
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, TensorDataset
 
 
 @fixture(scope="class")
@@ -90,13 +89,13 @@ def trainer(num_epochs: int, lr: float) -> TorchTrainer:
 
 
 @st.composite
-def array_dataset(
+def tensor_dataset(
     draw: st.DrawFn,
     num_inputs: int,
     min_num_samples: int,
     max_num_samples: int,
     num_out: int,
-) -> ArrayDataset:
+) -> TensorDataset:
     """Strategy to generate ArrayDataset."""
     return generate_regression(
         n_samples=draw(
@@ -118,10 +117,9 @@ def torch_dataset(
 ) -> TorchDataLoader[tuple[Tensor, Tensor], Tensor, Tensor]:
     """Fixture for torch dataset."""
     if manual:
-        return ArrayDataLoader.from_torch_dataset(
-            name="test_data",
+        return TensorDataLoader.from_torch_dataset(
             dataset=draw(
-                array_dataset(
+                tensor_dataset(
                     num_inputs=num_inputs,
                     min_num_samples=min_num_samples,
                     max_num_samples=max_num_samples,
@@ -131,10 +129,9 @@ def torch_dataset(
         )
 
     return TorchDataLoader[tuple[Tensor, Tensor], Tensor, Tensor](
-        name="test_data",
         torch_loader=DataLoader[tuple[Tensor, Tensor]](
             draw(
-                array_dataset(
+                tensor_dataset(  # type: ignore
                     num_inputs=num_inputs,
                     min_num_samples=min_num_samples,
                     max_num_samples=max_num_samples,
@@ -260,5 +257,5 @@ class TestSimpleRegressor:
         trainer.train(
             model=model,
             loss_runner=MLLossRunner(),
-            dataset_splits=(loader,),
+            train_splits={"train": loader},
         )
