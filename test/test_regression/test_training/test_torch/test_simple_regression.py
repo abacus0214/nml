@@ -116,12 +116,12 @@ def evaluators() -> tuple[EvaluatorABC[Any], ...]:
         },
         frequency={
             "data": AtStart() & For(dids={"train"}),
-            "regression": (Every(freq=100) | AtEnd()) & For(dids={"val"}),
+            "regression": (Every(freq=300) | AtEnd()) & For(dids={"val"}),
         },
     )
     torcheval_evaluator = TorchEvalEvaluator(
         metrics={"r2": R2Score()},  # type: ignore
-        frequency={"r2": Every(freq=20)},
+        frequency={"r2": Every(freq=5)},
     )
 
     return plot_evaluator, torcheval_evaluator
@@ -169,7 +169,7 @@ def training_run(
     ],
     [
         (
-            300,
+            500,
             1,
             1,
             [500, 100, 50],
@@ -179,7 +179,7 @@ def training_run(
             0.85,
         ),
     ],
-    ids=["big_model_300_ep"],
+    ids=["big_model_500_ep"],
     scope="class",
 )
 class TestTrainingResult:
