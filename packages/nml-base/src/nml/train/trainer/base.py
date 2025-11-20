@@ -14,7 +14,7 @@ from nml.utils.dicts.remap import add_prefix
 from nml.utils.loss.aggregators.base import LossAggregatorABC
 from nml.utils.loss.aggregators.mean import NPMeanAggregator
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
-from nml.utils.typing.events import BatchID, EpochID
+from nml.utils.typing.events import EpochID, TrainingStepID
 
 __all__ = ["Trainer"]
 
@@ -143,8 +143,9 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         # Compute loss and metrics for each batch
         batches_results = [
             self.batch_step(
-                eid=eid,
-                bid=bid,
+                step_id=TrainingStepID(
+                    eid_max=self.num_epochs - 1, eid=eid, bid=bid, did=dataset.name
+                ),
                 model=model,
                 batch=batch,
                 loss_runner=loss_runner,
@@ -167,8 +168,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
 
     def batch_step[IpT, TgT, ResultsT: Mapping[str, Any]](
         self,
-        eid: EpochID,
-        bid: BatchID,
+        step_id: TrainingStepID,
         model: ModelABC[IpT, Any, TgT, LossT],
         batch: BatchABC[Any, IpT, TgT],
         loss_runner: LossRunnerABC,
@@ -179,7 +179,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
     ) -> tuple[LossT, ResultsT]:
         """Train for a single batch."""
         # Communicate batch update start
-        callback.log_batch_start(bid=bid)
+        callback.log_batch_start(bid=step_id.bid)
 
         # Update model
         loss = self.batch_loss_trainer.batch_loss(
@@ -191,16 +191,14 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
 
         # Evaluate batch
         results = evaluator.evaluate_batch(
-            eid_max=self.num_epochs - 1,
-            eid=eid,
-            bid=bid,
+            step_id=step_id,
             pred=model.inference(batch.ipt),
             model=model,
             batch=batch,
         )
 
         # Communicte batch update end
-        callback.log_batch_end(bid=bid)
+        callback.log_batch_end(bid=step_id.bid)
         return loss, results
 
     def evaluation[IpT, TgT](

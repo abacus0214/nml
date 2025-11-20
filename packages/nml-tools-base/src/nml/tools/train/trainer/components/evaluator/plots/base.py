@@ -10,7 +10,7 @@ from nml.tools.utils.frequencer.standard import Every
 from nml.train.trainer.components.evaluator.plots import PlotsEvaluator
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
 from nml.utils.typing.eval.metrics import FigureID, Figures
-from nml.utils.typing.events import BatchID, EpochID
+from nml.utils.typing.events import TrainingStepID
 from plotly import graph_objects as go
 from pydantic import Field
 
@@ -61,9 +61,7 @@ class PlotlyEvaluator(RestrictedBaseModel, PlotsEvaluator):
 
     def evaluate_batch[IpT, OutT, TgT](
         self,
-        eid_max: EpochID,
-        eid: EpochID,
-        bid: BatchID,
+        step_id: TrainingStepID,
         pred: OutT,
         model: ModelABC[IpT, OutT, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],
@@ -74,9 +72,7 @@ class PlotlyEvaluator(RestrictedBaseModel, PlotsEvaluator):
             {
                 fid: plot.update(pred=pred, model=model, batch=batch)
                 for fid, plot in self.plots.items()
-                if self.frequency.get(fid, self.default_frequencer)(
-                    eid=eid, eid_max=eid_max
-                )
+                if self.frequency.get(fid, self.default_frequencer)(step_id=step_id)
             }
         )
 

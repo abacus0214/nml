@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
-from nml.utils.typing.events import EpochID
+from nml.utils.typing.events import TrainingStepID
 
 __all__ = ["FrequencerABC", "ANDFrequencer", "ORFrequencer"]
 
@@ -12,7 +12,7 @@ class FrequencerABC(ABC):
     """Simple object to determine the frequencies of operations."""
 
     @abstractmethod
-    def __call__(self, eid: EpochID, eid_max: None | EpochID = None) -> bool:
+    def __call__(self, step_id: TrainingStepID) -> bool:
         """Return `True` if operation should be performed."""
 
     def __and__(self, other: "FrequencerABC") -> "FrequencerABC":
@@ -29,9 +29,9 @@ class ANDFrequencer(RestrictedBaseModel, FrequencerABC):
 
     frequencers: tuple[FrequencerABC, ...]
 
-    def __call__(self, eid: EpochID, eid_max: None | EpochID = None) -> bool:
+    def __call__(self, step_id: TrainingStepID) -> bool:
         """Return `True` if operation should be performed."""
-        return all((freq(eid, eid_max) for freq in self.frequencers))
+        return all((freq(step_id) for freq in self.frequencers))
 
     def __and__(self, other: "FrequencerABC") -> "FrequencerABC":
         """Connect two frequencers with conjunction."""
@@ -43,9 +43,9 @@ class ORFrequencer(RestrictedBaseModel, FrequencerABC):
 
     frequencers: tuple[FrequencerABC, ...]
 
-    def __call__(self, eid: EpochID, eid_max: None | EpochID = None) -> bool:
+    def __call__(self, step_id: TrainingStepID) -> bool:
         """Return `True` if operation should be performed."""
-        return any((freq(eid, eid_max) for freq in self.frequencers))
+        return any((freq(step_id) for freq in self.frequencers))
 
     def __or__(self, other: "FrequencerABC") -> "FrequencerABC":
         """Connect two frequencers with disjunction."""

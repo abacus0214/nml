@@ -7,7 +7,7 @@ from nml.callbacks.abc import EventCallback
 from nml.data.batches.container.base import BatchABC
 from nml.models.container.base import ModelABC
 from nml.utils.typing.eval.metrics import MetricStep
-from nml.utils.typing.events import BatchID, EpochID
+from nml.utils.typing.events import TrainingStepID
 
 __all__ = ["EvaluatorABC", "Evaluator"]
 
@@ -19,9 +19,7 @@ class EvaluatorABC[ResultsT: Mapping[str, Any]](ABC):
     # TODO: pass prediction/model output so that it does not have to be repeated
     def evaluate_batch[IpT, OutT, TgT](
         self,
-        eid_max: EpochID,
-        eid: EpochID,
-        bid: BatchID,
+        step_id: TrainingStepID,
         pred: OutT,
         model: ModelABC[IpT, OutT, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],
@@ -50,9 +48,7 @@ class Evaluator(EvaluatorABC[dict[str, Any]]):
 
     def evaluate_batch[IpT, OutT, TgT](
         self,
-        eid_max: EpochID,
-        eid: EpochID,
-        bid: BatchID,
+        step_id: TrainingStepID,
         pred: OutT,
         model: ModelABC[IpT, OutT, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],

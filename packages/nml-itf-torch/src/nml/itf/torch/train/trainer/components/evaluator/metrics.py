@@ -11,7 +11,7 @@ from nml.tools.utils.frequencer.standard import Every
 from nml.train.trainer.components.evaluator.metrics import MetricsEvaluator
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
 from nml.utils.typing.eval.metrics import Metric, MetricID, Metrics
-from nml.utils.typing.events import BatchID, EpochID
+from nml.utils.typing.events import TrainingStepID
 from pydantic import Field
 from torcheval.metrics import Metric as TorchEvalMetric
 
@@ -35,9 +35,7 @@ class TorchEvalEvaluator(RestrictedBaseModel, MetricsEvaluator):
 
     def evaluate_batch[IpT, OutT, TgT](
         self,
-        eid_max: EpochID,
-        eid: EpochID,
-        bid: BatchID,
+        step_id: TrainingStepID,
         pred: OutT,
         model: ModelABC[IpT, OutT, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],
@@ -47,9 +45,7 @@ class TorchEvalEvaluator(RestrictedBaseModel, MetricsEvaluator):
         metrics = Metrics()
         # Evaluate on each metric
         for mid, metric in self.metrics.items():
-            if self.frequency.get(mid, self.default_frequencer)(
-                eid=eid, eid_max=eid_max
-            ):
+            if self.frequency.get(mid, self.default_frequencer)(step_id=step_id):
                 # TODO: add possibility to customize target
                 metric.update(
                     model.interpreter(model_out=pred, tp=self.pred_type[mid]),

@@ -7,7 +7,7 @@ from nml.data.batches.container.base import BatchABC
 from nml.models.container.base import ModelABC
 from nml.train.trainer.components.evaluator.base import EvaluatorABC
 from nml.utils.typing.eval.metrics import Metrics, MetricStep
-from nml.utils.typing.events import BatchID, EpochID
+from nml.utils.typing.events import TrainingStepID
 
 __all__ = ["MetricsEvaluator"]
 
@@ -17,9 +17,7 @@ class MetricsEvaluator(EvaluatorABC[Metrics]):
 
     def evaluate_batch[IpT, OutT, TgT](
         self,
-        eid_max: EpochID,
-        eid: EpochID,
-        bid: BatchID,
+        step_id: TrainingStepID,
         pred: OutT,
         model: ModelABC[IpT, OutT, TgT, Any],
         batch: BatchABC[Any, IpT, TgT],
