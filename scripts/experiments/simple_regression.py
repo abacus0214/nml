@@ -8,6 +8,7 @@ from nml.callbacks.logging.mlflow import MLFlowMetricCallback
 from nml.callbacks.ui.progress import ProgressCallback
 from nml.itf.torch.train.trainer.base import TorchTrainer
 from nml.itf.torch.train.trainer.components.batch_loss.base import TorchBatchLossTrainer
+from nml.itf.torch.train.trainer.components.evaluator.metrics import TorchEvalEvaluator
 from nml.itf.torch.train.trainer.components.optimizer_map.standard import (
     get_standard_optimizer_map,
 )
@@ -23,17 +24,19 @@ from nml.tools.train.trainer.components.evaluator.plots.dataset import (
 from nml.tools.train.trainer.components.evaluator.plots.regression import (
     RegressionPlotGenerator,
 )
-from nml.tools.utils.frequencer.standard import AtEnd, AtStart, Every
+from nml.tools.utils.frequencer.standard import AtEnd, AtStart, Every, For
 from nml.utils.mlflow.client import ExperimentClient
 from torch import nn
 from torch.optim import Adam
+from torch.utils.data import random_split
+from torcheval.metrics.regression import R2Score
 
 if __name__ == "__main__":
     # Set parameters
     num_epochs = 300
     num_inputs = 1
     num_targets = 1
-    hidden_layers = [500, 500, 100, 50]
+    hidden_layers = [500, 100, 50]
     n_samples = 2000
 
     layers = [num_inputs] + hidden_layers + [num_targets]
@@ -47,13 +50,22 @@ if __name__ == "__main__":
     model = ff_regression_model(layers=layers, activations=nn.ReLU())
 
     # Cerate dataset
-    # TODO: add splitting functionality
-    dataset = TensorDataLoader.from_torch_dataset(
-        dataset=generate_regression(
-            n_samples=n_samples,
-            n_features=num_inputs,
-            n_targets=num_targets,
-        ),
+    dataset = generate_regression(
+        n_samples=n_samples,
+        n_features=num_inputs,
+        n_targets=num_targets,
+    )
+
+    # Split in val and test
+    train_dataset, val_dataset = random_split(dataset, [0.8, 0.2])
+
+    # Create loaders
+    train_loader = TensorDataLoader.from_torch_dataset(
+        dataset=train_dataset,
+        batch_size=batch_size,
+    )
+    val_loader = TensorDataLoader.from_torch_dataset(
+        dataset=val_dataset,
         batch_size=batch_size,
     )
 
@@ -79,20 +91,31 @@ if __name__ == "__main__":
         )
     )
 
-    # Create evaluator
+    # Create evaluators
     plot_evaluator = PlotlyEvaluator(
         plots={
             "data": DatasetPlotGenerator(),
             "regression": RegressionPlotGenerator(),
         },
-        frequency={"data": AtStart(), "regression": Every(freq=100) | AtEnd()},
+        frequency={
+            "data": AtStart() & For(dids={"train"}),
+            "regression": (Every(freq=100) | AtEnd()) & For(dids={"val"}),
+        },
+    )
+    torcheval_evaluator = TorchEvalEvaluator(
+        metrics={"r2": R2Score()},
+        frequency={"r2": Every(freq=20)},
     )
 
     # Launch training
     trainer.train(
         model=model,
         loss_runner=MLLossRunner(),
-        train_splits={"train": dataset},
-        evaluators=(plot_evaluator,),
+        train_splits={"train": train_loader},
+        val_splits={"val": val_loader},
+        evaluators=(
+            plot_evaluator,
+            torcheval_evaluator,
+        ),
         callback=callback,
     )
