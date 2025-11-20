@@ -16,7 +16,6 @@ from nml.loss.runner.standard.ml import MLLossRunner
 from nml.tools.torch.data.dataset.linear import generate_regression
 from nml.tools.torch.data.loader.container.tensor import TensorDataLoader
 from nml.tools.torch.models.modules.ff import ff_regression_model
-from nml.tools.train.trainer.components import evaluator
 from nml.tools.train.trainer.components.evaluator.plots.base import PlotlyEvaluator
 from nml.tools.train.trainer.components.evaluator.plots.dataset import (
     DatasetPlotGenerator,
@@ -81,7 +80,7 @@ if __name__ == "__main__":
     )
 
     # Create evaluator
-    evaluator = PlotlyEvaluator(
+    plot_evaluator = PlotlyEvaluator(
         plots={
             "data": DatasetPlotGenerator(),
             "regression": RegressionPlotGenerator(),
@@ -94,6 +93,6 @@ if __name__ == "__main__":
         model=model,
         loss_runner=MLLossRunner(),
         train_splits={"train": dataset},
-        evaluator=evaluator,
+        evaluators=(plot_evaluator,),
         callback=callback,
     )

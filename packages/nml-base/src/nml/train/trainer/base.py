@@ -9,7 +9,7 @@ from nml.data.loader.container.base import DataLoaderABC
 from nml.loss.runner.base import LossRunnerABC
 from nml.models.container.base import ModelABC
 from nml.train.trainer.components.batch_loss.base import BatchLossTrainerABC
-from nml.train.trainer.components.evaluator.base import Evaluator, EvaluatorABC
+from nml.train.trainer.components.evaluator.base import EvaluatorABC
 from nml.utils.dicts.remap import add_prefix
 from nml.utils.loss.aggregators.base import LossAggregatorABC
 from nml.utils.loss.aggregators.mean import NPMeanAggregator
@@ -34,7 +34,7 @@ class TrainerABC[LossT](ABC):
         loss_runner: LossRunnerABC,
         train_splits: SplitsDict[Any, IpT, TgT],
         val_splits: None | SplitsDict[Any, IpT, TgT] = None,
-        evaluator: EvaluatorABC[Any] = Evaluator(),
+        evaluators: tuple[EvaluatorABC[Any], ...] = tuple(),
         callback: EventCallback = EventCallback(),
     ) -> None:
         """Update the given model."""
@@ -60,7 +60,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         loss_runner: LossRunnerABC,
         train_splits: SplitsDict[Any, IpT, TgT],
         val_splits: None | SplitsDict[Any, IpT, TgT] = None,
-        evaluator: EvaluatorABC[Any] = Evaluator(),
+        evaluators: tuple[EvaluatorABC[Any], ...] = tuple(),
         callback: EventCallback = EventCallback(),
     ) -> None:
         """Perform training loop."""
@@ -78,7 +78,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
                     dataset=train_split,
                     loss_runner=loss_runner,
                     update_model=True,
-                    evaluator=evaluator,
+                    evaluators=evaluators,
                     callback=callback,
                 )
 
@@ -88,6 +88,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
                 model=model,
                 val_splits=val_splits or {},
                 loss_runner=loss_runner,
+                evaluators=evaluators,
                 callback=callback,
             )
 
@@ -101,7 +102,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         dataset: DataLoaderABC[Any, IpT, TgT],
         loss_runner: LossRunnerABC,
         update_model: bool = True,
-        evaluator: EvaluatorABC[Any] = Evaluator(),
+        evaluators: tuple[EvaluatorABC[Any], ...] = tuple(),
         callback: EventCallback = EventCallback(),
     ) -> None:
         """Train for a single epoch."""
@@ -116,7 +117,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
             dataset=dataset,
             loss_runner=loss_runner,
             update_model=update_model,
-            evaluator=evaluator,
+            evaluators=evaluators,
             callback=callback,
         )
 
@@ -124,13 +125,14 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         loss_metric_id = f"{split_id}/{self.loss_metric_name}"
         callback.log_metric(mid=loss_metric_id, metric=agg_loss, step=eid)
         # Log epoch metrics
-        evaluator.log(
-            step=eid, results=add_prefix(results, split_id), callback=callback
-        )
+        for result_dict, evaluator in zip(results, evaluators):
+            evaluator.log(
+                step=eid, results=add_prefix(result_dict, split_id), callback=callback
+            )
         # Communicate epoch end
         callback.log_epoch_end(eid=eid)
 
-    def epoch_loss[IpT, TgT, ResultsT: Mapping[str, Any]](
+    def epoch_loss[IpT, TgT](
         self,
         split_id: DatasetID,
         eid: EpochID,
@@ -138,10 +140,9 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         dataset: DataLoaderABC[Any, IpT, TgT],
         loss_runner: LossRunnerABC,
         update_model: bool = False,
-        # TODO: fix default value
-        evaluator: EvaluatorABC[ResultsT] = Evaluator(),  # type: ignore
+        evaluators: tuple[EvaluatorABC[Any], ...] = tuple(),
         callback: EventCallback = EventCallback(),
-    ) -> tuple[float, ResultsT]:
+    ) -> tuple[float, tuple[Mapping[str, Any], ...]]:
         """Compute the loss for a single epoch and update model (if specified)."""
         # Compute loss and metrics for each batch
         batches_results = [
@@ -153,33 +154,38 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
                 batch=batch,
                 loss_runner=loss_runner,
                 update_model=update_model,
-                evaluator=evaluator,
+                evaluators=evaluators,
                 callback=callback,
             )
             for bid, batch in dataset.epoch_iterator
         ]
 
         # Split losses and metrics
-        losses, results = zip(*batches_results)
+        losses, results_per_batch = zip(*batches_results)
+        results_per_evaluator = zip(*results_per_batch)
 
         # Aggregate losses
         epoch_loss = self.loss_aggregator.aggregate_f(losses=losses)
         # Aggregate metrics
-        epoch_metrics = evaluator.aggregate_f(results=results)
+        epoch_metrics = tuple(
+            (
+                evaluator.aggregate_f(results=results_chunk)
+                for results_chunk, evaluator in zip(results_per_evaluator, evaluators)
+            )
+        )
 
         return epoch_loss, epoch_metrics
 
-    def batch_step[IpT, TgT, ResultsT: Mapping[str, Any]](
+    def batch_step[IpT, TgT](
         self,
         step_id: TrainingStepID,
         model: ModelABC[IpT, Any, TgT, LossT],
         batch: BatchABC[Any, IpT, TgT],
         loss_runner: LossRunnerABC,
         update_model: bool = False,
-        # TODO: fix default value
-        evaluator: EvaluatorABC[ResultsT] = Evaluator(),  # type: ignore
+        evaluators: tuple[EvaluatorABC[Any], ...] = tuple(),
         callback: EventCallback = EventCallback(),
-    ) -> tuple[LossT, ResultsT]:
+    ) -> tuple[LossT, tuple[Mapping[str, Any], ...]]:
         """Train for a single batch."""
         # Communicate batch update start
         callback.log_batch_start(bid=step_id.bid)
@@ -193,11 +199,16 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         )
 
         # Evaluate batch
-        results = evaluator.evaluate_batch(
-            step_id=step_id,
-            pred=model.inference(batch.ipt),
-            model=model,
-            batch=batch,
+        results = tuple(
+            (
+                evaluator.evaluate_batch(
+                    step_id=step_id,
+                    pred=model.inference(batch.ipt),
+                    model=model,
+                    batch=batch,
+                )
+                for evaluator in evaluators
+            )
         )
 
         # Communicte batch update end
@@ -210,7 +221,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         model: ModelABC[IpT, Any, TgT, Any],
         val_splits: SplitsDict[Any, IpT, TgT],
         loss_runner: LossRunnerABC,
-        evaluator: EvaluatorABC[Any] = Evaluator(),
+        evaluators: tuple[EvaluatorABC[Any], ...] = tuple(),
         callback: EventCallback = EventCallback(),
     ) -> None:
         """Evaluate on each dataset."""
@@ -224,7 +235,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
                 dataset=dataset,
                 loss_runner=loss_runner,
                 update_model=False,
-                evaluator=evaluator,
+                evaluators=evaluators,
                 callback=callback,
             )
             # Log validation loss
@@ -234,8 +245,9 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
                 step=eid,
             )
             # Log metrics
-            evaluator.log(
-                step=eid,
-                results=add_prefix(results, split_id),
-                callback=callback,
-            )
+            for result_dict, evaluator in zip(results, evaluators):
+                evaluator.log(
+                    step=eid,
+                    results=add_prefix(result_dict, split_id),
+                    callback=callback,
+                )
