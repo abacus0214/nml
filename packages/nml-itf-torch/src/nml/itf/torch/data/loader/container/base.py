@@ -14,7 +14,6 @@ class TorchDataLoader[BatchT, IpT: Tensor, TgT: None | Tensor = None](
 ):
     """Base data loader container."""
 
-    name: str
     torch_loader: TorchDataLoaderAux[Any]  # TODO: fix this type hint
 
     batch_interpreter: BatchInterpreter[BatchT, IpT, TgT]

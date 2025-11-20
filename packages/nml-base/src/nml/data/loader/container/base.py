@@ -13,7 +13,6 @@ __all__ = ["DataLoaderABC"]
 class DataLoaderABC[BatchT, IpT = Any, TgT = None](ABC):
     """Base data loader container."""
 
-    name: str
     batch_interpreter: BatchInterpreter[BatchT, IpT, TgT]
 
     @property

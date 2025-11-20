@@ -50,7 +50,6 @@ if __name__ == "__main__":
     # Cerate dataset
     # TODO: add splitting functionality
     dataset = TensorDataLoader.from_torch_dataset(
-        name="train",
         dataset=generate_regression(
             n_samples=n_samples,
             n_features=num_inputs,
@@ -94,7 +93,7 @@ if __name__ == "__main__":
     trainer.train(
         model=model,
         loss_runner=MLLossRunner(),
-        dataset_splits=(dataset,),
+        train_splits={"train": dataset},
         evaluator=evaluator,
         callback=callback,
     )

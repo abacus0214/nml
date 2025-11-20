@@ -20,11 +20,10 @@ class TensorDataLoader(TorchDataLoader[tuple[Tensor, Tensor], Tensor, Tensor]):
 
     @staticmethod
     def from_torch_dataset(
-        name: str, dataset: TensorDataset, batch_size: int = 1, shuffle: bool = True
+        dataset: TensorDataset, batch_size: int = 1, shuffle: bool = True
     ) -> "TensorDataLoader":
         """Construct from a dataset instead of a given dataloader."""
         return TensorDataLoader(
-            name=name,
             torch_loader=DataLoader[tuple[Tensor, Tensor]](
                 dataset,  # type: ignore
                 batch_size=batch_size,

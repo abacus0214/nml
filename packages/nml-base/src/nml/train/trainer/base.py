@@ -14,11 +14,14 @@ from nml.utils.dicts.remap import add_prefix
 from nml.utils.loss.aggregators.base import LossAggregatorABC
 from nml.utils.loss.aggregators.mean import NPMeanAggregator
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
+from nml.utils.typing.data.dataset import DatasetID
 from nml.utils.typing.events import EpochID, TrainingStepID
 
 __all__ = ["Trainer"]
 
 DEFAULT_LOSS_METRIC_NAME = "loss"
+
+type SplitsDict[BatchT, IpT, TgT] = dict[DatasetID, DataLoaderABC[BatchT, IpT, TgT]]
 
 
 class TrainerABC[LossT](ABC):
@@ -29,7 +32,8 @@ class TrainerABC[LossT](ABC):
         self,
         model: ModelABC[IpT, Any, TgT, LossT],
         loss_runner: LossRunnerABC,
-        dataset_splits: tuple[DataLoaderABC[Any, IpT, TgT], ...],
+        train_splits: SplitsDict[Any, IpT, TgT],
+        val_splits: None | SplitsDict[Any, IpT, TgT] = None,
         evaluator: EvaluatorABC[Any] = Evaluator(),
         callback: EventCallback = EventCallback(),
     ) -> None:
@@ -46,20 +50,16 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
 
     # Settings
     num_epochs: int
-    training_splits: tuple[bool, ...] = (True,)
 
     # UI Settings
     loss_metric_name: str = DEFAULT_LOSS_METRIC_NAME
-
-    def is_training_split(self, split_idx: int) -> bool:
-        """Return true if split is training split."""
-        return split_idx < len(self.training_splits) and self.training_splits[split_idx]
 
     def train[IpT, TgT](
         self,
         model: ModelABC[IpT, Any, TgT, LossT],
         loss_runner: LossRunnerABC,
-        dataset_splits: tuple[DataLoaderABC[Any, IpT, TgT], ...],
+        train_splits: SplitsDict[Any, IpT, TgT],
+        val_splits: None | SplitsDict[Any, IpT, TgT] = None,
         evaluator: EvaluatorABC[Any] = Evaluator(),
         callback: EventCallback = EventCallback(),
     ) -> None:
@@ -70,23 +70,23 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         # Perofrm a training epoch for `num_epochs` times
         for eid in range(self.num_epochs):
             # Trian on the entire epoch for each training split
-            for split_idx, train_split in enumerate(dataset_splits):
-                if self.is_training_split(split_idx):
-                    self.epoch_step(
-                        eid=eid,
-                        model=model,
-                        dataset=train_split,
-                        loss_runner=loss_runner,
-                        update_model=True,
-                        evaluator=evaluator,
-                        callback=callback,
-                    )
+            for split_id, train_split in train_splits.items():
+                self.epoch_step(
+                    split_id=split_id,
+                    eid=eid,
+                    model=model,
+                    dataset=train_split,
+                    loss_runner=loss_runner,
+                    update_model=True,
+                    evaluator=evaluator,
+                    callback=callback,
+                )
 
             # Evaluate model
             self.evaluation(
                 eid=eid,
                 model=model,
-                dataset_splits=dataset_splits,
+                val_splits=val_splits or {},
                 loss_runner=loss_runner,
                 callback=callback,
             )
@@ -95,6 +95,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
 
     def epoch_step[IpT, TgT](
         self,
+        split_id: DatasetID,
         eid: EpochID,
         model: ModelABC[IpT, Any, TgT, LossT],
         dataset: DataLoaderABC[Any, IpT, TgT],
@@ -109,6 +110,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
 
         # Compute loss for each batch
         agg_loss, results = self.epoch_loss(
+            split_id=split_id,
             eid=eid,
             model=model,
             dataset=dataset,
@@ -119,17 +121,18 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         )
 
         # Communicate aggregated loss across batches
-        loss_metric_id = f"{dataset.name}/{self.loss_metric_name}"
+        loss_metric_id = f"{split_id}/{self.loss_metric_name}"
         callback.log_metric(mid=loss_metric_id, metric=agg_loss, step=eid)
         # Log epoch metrics
         evaluator.log(
-            step=eid, results=add_prefix(results, dataset.name), callback=callback
+            step=eid, results=add_prefix(results, split_id), callback=callback
         )
         # Communicate epoch end
         callback.log_epoch_end(eid=eid)
 
     def epoch_loss[IpT, TgT, ResultsT: Mapping[str, Any]](
         self,
+        split_id: DatasetID,
         eid: EpochID,
         model: ModelABC[IpT, Any, TgT, LossT],
         dataset: DataLoaderABC[Any, IpT, TgT],
@@ -144,7 +147,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         batches_results = [
             self.batch_step(
                 step_id=TrainingStepID(
-                    eid_max=self.num_epochs - 1, eid=eid, bid=bid, did=dataset.name
+                    eid_max=self.num_epochs - 1, eid=eid, bid=bid, did=split_id
                 ),
                 model=model,
                 batch=batch,
@@ -205,34 +208,34 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         self,
         eid: EpochID,
         model: ModelABC[IpT, Any, TgT, Any],
-        dataset_splits: tuple[DataLoaderABC[Any, IpT, TgT], ...],
+        val_splits: SplitsDict[Any, IpT, TgT],
         loss_runner: LossRunnerABC,
         evaluator: EvaluatorABC[Any] = Evaluator(),
         callback: EventCallback = EventCallback(),
     ) -> None:
         """Evaluate on each dataset."""
         # Go through all splits
-        for split_idx, dataset in enumerate(dataset_splits):
-            if not self.is_training_split(split_idx):
-                # Compute loss on each validation set
-                val_loss, results = self.epoch_loss(
-                    eid=eid,
-                    model=model,
-                    dataset=dataset,
-                    loss_runner=loss_runner,
-                    update_model=False,
-                    evaluator=evaluator,
-                    callback=callback,
-                )
-                # Log validation loss
-                callback.log_metric(
-                    mid=f"{dataset.name}/{self.loss_metric_name}",
-                    metric=val_loss,
-                    step=eid,
-                )
-                # Log metrics
-                evaluator.log(
-                    step=eid,
-                    results=add_prefix(results, dataset.name),
-                    callback=callback,
-                )
+        for split_id, dataset in val_splits.items():
+            # Compute loss on each validation set
+            val_loss, results = self.epoch_loss(
+                split_id=split_id,
+                eid=eid,
+                model=model,
+                dataset=dataset,
+                loss_runner=loss_runner,
+                update_model=False,
+                evaluator=evaluator,
+                callback=callback,
+            )
+            # Log validation loss
+            callback.log_metric(
+                mid=f"{split_id}/{self.loss_metric_name}",
+                metric=val_loss,
+                step=eid,
+            )
+            # Log metrics
+            evaluator.log(
+                step=eid,
+                results=add_prefix(results, split_id),
+                callback=callback,
+            )
