@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from enum import StrEnum, auto
+from types import TracebackType
 from typing import Any
 
 from nml.callbacks.stack import CallbackStack
@@ -199,10 +200,21 @@ class CallbackBuffer(RestrictedBaseModel, CallbackStack):
             )
         )
 
-    def close_aux(self) -> None:
+    def close_aux(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_val: BaseException | None = None,
+        exc_tb: TracebackType | None = None,
+    ) -> None | bool:
         """Call at the end of the process."""
         self.events_buffer.add(
             CallbackEvent(
                 event_type=CallbackEventType.CLOSE,
+                extra_args={
+                    "exc_type": exc_type,
+                    "exc_val": exc_val,
+                    "exc_tb": exc_tb,
+                },
             )
         )
+        return False

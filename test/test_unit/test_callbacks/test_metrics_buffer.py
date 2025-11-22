@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from hypothesis import given, settings
 from nml.callbacks.buffers.metrics_buffer import MetricsBufferCallback
-from nml.utils.typing.eval.metrics import MetricsBatch
+from nml.utils.typing.eval.metrics import Metrics, MetricsBatch
 
 from .strategies import (
     ExampleMetrics,
@@ -26,11 +26,10 @@ class TestMetricsBufferCallback:
         callback = MetricsBufferCallback()
 
         # Log some metrics
-        callback.start()
-        for metric_key, metric_vals in metrics.items():
-            for step, metric_val in metric_vals.items():
-                callback.log_metric(mid=metric_key, metric=metric_val, step=step)
-        callback.close()
+        with callback.start_context():
+            for metric_key, metric_vals in metrics.items():
+                for step, metric_val in metric_vals.items():
+                    callback.log_metric(mid=metric_key, metric=metric_val, step=step)
 
         # Check that they match what mlflow sees
         for metric_key, metric_vals in metrics.items():
@@ -54,10 +53,9 @@ class TestMetricsBufferCallback:
                 metrics_per_step[step][metric_key] = metric_val
 
         # Log some metrics
-        callback.start()
-        for step, metrics_vals in metrics_per_step.items():
-            callback.log_metrics(metrics=metrics_vals, step=step)
-        callback.close()
+        with callback.start_context():
+            for step, metrics_vals in metrics_per_step.items():
+                callback.log_metrics(metrics=Metrics(metrics_vals), step=step)
 
         # Check that they match what mlflow sees
         for metric_key, metric_vals in metrics.items():
@@ -81,9 +79,8 @@ class TestMetricsBufferCallback:
                 metrics_batch[(metric_key, step)] = metric_val
 
         # Log some metrics
-        callback.start()
-        callback.log_metrics_batch(batch=metrics_batch)
-        callback.close()
+        with callback.start_context():
+            callback.log_metrics_batch(batch=metrics_batch)
 
         # Check that they match what mlflow sees
         for metric_key, metric_vals in metrics.items():

@@ -1,6 +1,7 @@
 """MLFlow metric callback."""
 
 from itertools import groupby
+from types import TracebackType
 
 from mlflow.entities import RunStatus
 from nml.callbacks.abc import EventCallback
@@ -83,7 +84,17 @@ class MLFlowMetricCallback(StandardBaseModel, EventCallback):
             artifact_name = f"{step}_{artifact_name}"
         self.current_run.log_figure(figure=figure, artifact_file=artifact_name)
 
-    def close(self) -> None:
+    def close(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_val: BaseException | None = None,
+        exc_tb: TracebackType | None = None,
+    ) -> None | bool:
         """Call at the end of the process."""
         if self.current_run is not None:
-            self.current_run.set_status(RunStatus.FINISHED)
+            if exc_type is None:
+                self.current_run.set_status(RunStatus.FINISHED)
+            else:
+                self.current_run.set_status(RunStatus.FAILED)
+
+        return False

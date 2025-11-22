@@ -8,7 +8,7 @@ from hypothesis import given, settings
 from mlflow.client import MlflowClient
 from nml.callbacks.logging.mlflow import MLFlowMetricCallback
 from nml.utils.mlflow.client import ExperimentClient
-from nml.utils.typing.eval.metrics import MetricsBatch
+from nml.utils.typing.eval.metrics import Metrics, MetricsBatch
 from pytest import fixture
 
 from .strategies import (
@@ -81,11 +81,10 @@ class TestMlflowCallback:
         )
 
         # Log some metrics
-        callback.start()
-        for metric_key, metric_vals in metrics.items():
-            for step, metric_val in metric_vals.items():
-                callback.log_metric(mid=metric_key, metric=metric_val, step=step)
-        callback.close()
+        with callback.start_context():
+            for metric_key, metric_vals in metrics.items():
+                for step, metric_val in metric_vals.items():
+                    callback.log_metric(mid=metric_key, metric=metric_val, step=step)
 
         # Try to retrieve run id
         assert callback.current_run
@@ -121,10 +120,9 @@ class TestMlflowCallback:
                 metrics_per_step[step][metric_key] = metric_val
 
         # Log some metrics
-        callback.start()
-        for step, metrics_vals in metrics_per_step.items():
-            callback.log_metrics(metrics=metrics_vals, step=step)
-        callback.close()
+        with callback.start_context():
+            for step, metrics_vals in metrics_per_step.items():
+                callback.log_metrics(metrics=Metrics(metrics_vals), step=step)
 
         # Try to retrieve run id
         assert callback.current_run
@@ -160,9 +158,8 @@ class TestMlflowCallback:
                 metrics_batch[(metric_key, step)] = metric_val
 
         # Log some metrics
-        callback.start()
-        callback.log_metrics_batch(batch=metrics_batch)
-        callback.close()
+        with callback.start_context():
+            callback.log_metrics_batch(batch=metrics_batch)
 
         # Try to retrieve run id
         assert callback.current_run

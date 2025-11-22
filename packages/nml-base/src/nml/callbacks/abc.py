@@ -1,5 +1,6 @@
 """Interface for evaluation callback."""
 
+from types import TracebackType
 from typing import Any
 
 from nml.models.container.base import ModelABC
@@ -23,7 +24,25 @@ __all__ = ["EventCallback"]
 class EventCallback:
     """Callback to be executed when metric(s) is/are computed."""
 
-    # TODO: turn into context manager to be able to catch exception (e.g. set mlflow run as failed)
+    def __enter__(self) -> None:
+        """Callbacks are context managers.
+
+        This is done to be able to catch exceptions within the context.
+        """
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None | bool:
+        """Close the context."""
+        return self.close(exc_type=exc_type, exc_val=exc_val, exc_tb=exc_tb)
+
+    def start_context(self, num_epochs: None | int = None) -> "EventCallback":
+        """Call at the start of process while creating context."""
+        self.start(num_epochs=num_epochs)
+        return self
 
     def start(self, num_epochs: None | int = None) -> None:
         """Call at the start of process."""
@@ -75,5 +94,10 @@ class EventCallback:
         for (fid, step), figure in batch.items():
             self.log_figure(fid=fid, figure=figure, step=step)
 
-    def close(self) -> None:
+    def close(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_val: BaseException | None = None,
+        exc_tb: TracebackType | None = None,
+    ) -> None | bool:
         """Call at the end of the process."""

@@ -1,5 +1,7 @@
 """Stack callbacks that lags metrics logging."""
 
+from types import TracebackType
+
 from nml.callbacks.stack import CallbackStack
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
 from nml.utils.typing.eval.metrics import (
@@ -55,6 +57,12 @@ class StaggerMetricsStack(RestrictedBaseModel, CallbackStack):
         self.buffer.update(batch)
         self.check_buffer_flush()
 
-    def close_aux(self) -> None:
+    def close_aux(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_val: BaseException | None = None,
+        exc_tb: TracebackType | None = None,
+    ) -> None | bool:
         """Call at the end of the process."""
         self.flush_buffer()
+        return False

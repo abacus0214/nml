@@ -1,5 +1,6 @@
 """Useful interface for stacking callbacks."""
 
+from types import TracebackType
 from typing import Any
 
 from nml.callbacks.abc import EventCallback
@@ -137,10 +138,20 @@ class CallbackStack(EventCallback):
     def log_figure_batch_aux(self, batch: FiguresBatch) -> None:
         """Log multiple figures samples at arbitrary timesteps at once, by default iterate."""
 
-    def close(self) -> None:
+    def close(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_val: BaseException | None = None,
+        exc_tb: TracebackType | None = None,
+    ) -> None | bool:
         """Call at the end of the process."""
-        self.close_aux()
-        self.callback.close()
+        suppress = self.close_aux(exc_type, exc_val, exc_tb)
+        return suppress or self.callback.close(exc_type, exc_val, exc_tb)
 
-    def close_aux(self) -> None:
-        """Call at the end of the process."""
+    def close_aux(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_val: BaseException | None = None,
+        exc_tb: TracebackType | None = None,
+    ) -> None | bool:
+        """Auxiliary function called before closing decorated callback."""

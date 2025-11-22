@@ -65,34 +65,31 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
     ) -> None:
         """Perform training loop."""
         # Initialize callback
-        callback.start(num_epochs=self.num_epochs)
+        with callback.start_context(num_epochs=self.num_epochs):
+            # Perofrm a training epoch for `num_epochs` times
+            for eid in range(self.num_epochs):
+                # Trian on the entire epoch for each training split
+                for split_id, train_split in train_splits.items():
+                    self.epoch_step(
+                        split_id=split_id,
+                        eid=eid,
+                        model=model,
+                        dataset=train_split,
+                        loss_runner=loss_runner,
+                        update_model=True,
+                        evaluators=evaluators,
+                        callback=callback,
+                    )
 
-        # Perofrm a training epoch for `num_epochs` times
-        for eid in range(self.num_epochs):
-            # Trian on the entire epoch for each training split
-            for split_id, train_split in train_splits.items():
-                self.epoch_step(
-                    split_id=split_id,
+                # Evaluate model
+                self.evaluation(
                     eid=eid,
                     model=model,
-                    dataset=train_split,
+                    val_splits=val_splits or {},
                     loss_runner=loss_runner,
-                    update_model=True,
                     evaluators=evaluators,
                     callback=callback,
                 )
-
-            # Evaluate model
-            self.evaluation(
-                eid=eid,
-                model=model,
-                val_splits=val_splits or {},
-                loss_runner=loss_runner,
-                evaluators=evaluators,
-                callback=callback,
-            )
-
-        callback.close()
 
     def epoch_step[IpT, TgT](
         self,

@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 from operator import gt
+from types import TracebackType
 from typing import Any, Callable
 
 from nml.callbacks.abc import EventCallback
@@ -85,7 +86,13 @@ class CheckpointCallback(RestrictedBaseModel, CallbackStack):
                 self.checkpoint_step = step
                 self.checkpoint_metric = metric
 
-    def close_aux(self) -> None:
+    def close_aux(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_val: BaseException | None = None,
+        exc_tb: TracebackType | None = None,
+    ) -> None | bool:
         """Call at the end of the process."""
         if self.checkpoint is not None:
             self.callback.log_model(self.checkpoint, step=self.checkpoint_step)
+        return False

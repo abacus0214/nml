@@ -1,5 +1,6 @@
 """Callbacks that compose/stack multiple callbkacs on top of each other."""
 
+from types import TracebackType
 from typing import Any
 
 from nml.callbacks.abc import EventCallback
@@ -93,7 +94,13 @@ class CallbackCat(RestrictedBaseModel, EventCallback):
         for callback in self.callbacks:
             callback.log_figure_batch(batch)
 
-    def close(self) -> None:
+    def close(
+        self,
+        exc_type: type[BaseException] | None = None,
+        exc_val: BaseException | None = None,
+        exc_tb: TracebackType | None = None,
+    ) -> None | bool:
         """Call at the end of the process."""
-        for callback in self.callbacks:
-            callback.close()
+        return any(
+            (callback.close(exc_type, exc_val, exc_tb) for callback in self.callbacks)
+        )
