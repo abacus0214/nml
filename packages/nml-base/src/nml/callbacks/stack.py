@@ -1,6 +1,9 @@
 """Useful interface for stacking callbacks."""
 
+from typing import Any
+
 from nml.callbacks.abc import EventCallback
+from nml.models.container.base import ModelABC
 from nml.utils.typing.eval.metrics import (
     Figure,
     FigureID,
@@ -65,6 +68,18 @@ class CallbackStack(EventCallback):
 
     def log_batch_end_aux(self, bid: BatchID) -> None:
         """Call this callback when batch ends."""
+
+    def log_model(
+        self, model: ModelABC[Any, Any, Any, Any], step: MetricStep = None
+    ) -> None:
+        """Log a model."""
+        self.log_model_aux(model=model, step=step)
+        self.callback.log_model(model=model, step=step)
+
+    def log_model_aux(
+        self, model: ModelABC[Any, Any, Any, Any], step: MetricStep = None
+    ) -> None:
+        """Log a model."""
 
     def log_metric(
         self, mid: MetricID, metric: Metric, step: MetricStep = None

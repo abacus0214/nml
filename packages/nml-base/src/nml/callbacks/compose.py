@@ -1,6 +1,9 @@
 """Callbacks that compose/stack multiple callbkacs on top of each other."""
 
+from typing import Any
+
 from nml.callbacks.abc import EventCallback
+from nml.models.container.base import ModelABC
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
 from nml.utils.typing.eval.metrics import (
     Figure,
@@ -48,6 +51,13 @@ class CallbackCat(RestrictedBaseModel, EventCallback):
         """Call this callback when batch ends."""
         for callback in self.callbacks:
             callback.log_batch_end(bid=bid)
+
+    def log_model(
+        self, model: ModelABC[Any, Any, Any, Any], step: MetricStep = None
+    ) -> None:
+        """Log a model."""
+        for callback in self.callbacks:
+            callback.log_model(model=model, step=step)
 
     def log_metric(
         self, mid: MetricID, metric: Metric, step: MetricStep = None

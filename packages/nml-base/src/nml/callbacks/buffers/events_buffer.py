@@ -5,6 +5,7 @@ from enum import StrEnum, auto
 from typing import Any
 
 from nml.callbacks.stack import CallbackStack
+from nml.models.container.base import ModelABC
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
 from nml.utils.typing.eval.metrics import (
     Figure,
@@ -39,6 +40,7 @@ class CallbackEventType(StrEnum):
     FIGURES = auto()
     FIGURE_BATCH = auto()
     CLOSE = auto()
+    MODEL = auto()
 
 
 class CallbackEvent(RestrictedBaseModel):
@@ -106,6 +108,18 @@ class CallbackBuffer(RestrictedBaseModel, CallbackStack):
             CallbackEvent(
                 event_type=CallbackEventType.BATCH_END,
                 input_id=bid,
+            )
+        )
+
+    def log_model_aux(
+        self, model: ModelABC[Any, Any, Any, Any], step: MetricStep = None
+    ) -> None:
+        """Log a model."""
+        self.events_buffer.add(
+            CallbackEvent(
+                event_type=CallbackEventType.MODEL,
+                step=step,
+                extra_args={"model": model},
             )
         )
 

@@ -1,5 +1,8 @@
 """Interface for evaluation callback."""
 
+from typing import Any
+
+from nml.models.container.base import ModelABC
 from nml.utils.typing.eval.metrics import (
     Figure,
     FigureID,
@@ -36,6 +39,11 @@ class EventCallback:
 
     def log_batch_end(self, bid: BatchID) -> None:
         """Call this callback when batch ends."""
+
+    def log_model(
+        self, model: ModelABC[Any, Any, Any, Any], step: MetricStep = None
+    ) -> None:
+        """Log a model."""
 
     def log_metric(
         self, mid: MetricID, metric: Metric, step: MetricStep = None
