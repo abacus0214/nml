@@ -46,9 +46,16 @@ class ProgressCallback(StandardBaseModel, EventCallback):
         if epoch_size is None:
             raise ValueError(f"Must provide valid epoch size, isntead got {epoch_size}")
 
-        self.current_epoch_inner_id = self.progress.add_task(
-            self.epoch_inner_bar_title.format(eid=eid), total=epoch_size
-        )
+        # Update inner bar
+        inner_desc = self.epoch_inner_bar_title.format(eid=eid)
+        if not self.current_epoch_inner_id:
+            self.current_epoch_inner_id = self.progress.add_task(
+                description=inner_desc, total=epoch_size
+            )
+        else:
+            self.progress.reset(
+                self.current_epoch_inner_id, description=inner_desc, total=epoch_size
+            )
 
     def log_epoch_end(self, eid: EpochID) -> None:
         """Call this callback when epoch ends."""
