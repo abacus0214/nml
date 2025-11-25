@@ -16,6 +16,7 @@ from nml.utils.typing.eval.metrics import (
     MetricsBatch,
     MetricStep,
 )
+from nml.utils.typing.models.container.base import ModelID
 from pydantic import Field
 
 __all__ = ["CheckpointCallback"]
@@ -46,15 +47,20 @@ class CheckpointCallback(RestrictedBaseModel, CallbackStack):
     allow_backdating: bool = False
 
     checkpoint: None | ModelABC[Any, Any, Any, Any] = Field(init=False, default=None)
+    checkpoint_name: None | ModelID = Field(init=False, default=None)
     checkpoint_metric: None | Metric = Field(init=False, default=None)
     checkpoint_step: None | MetricStep = Field(init=False, default=None)
 
     def log_model(
-        self, model: ModelABC[Any, Any, Any, Any], step: MetricStep = None
+        self,
+        model: ModelABC[Any, Any, Any, Any],
+        name: None | ModelID = None,
+        step: MetricStep = None,
     ) -> None:
         """Log a model."""
         if step == self.checkpoint_step:
             self.checkpoint = deepcopy(model)
+            self.checkpoint_name = deepcopy(name)
 
     def log_metric_aux(
         self, mid: MetricID, metric: Metric, step: MetricStep = None
@@ -94,5 +100,9 @@ class CheckpointCallback(RestrictedBaseModel, CallbackStack):
     ) -> None | bool:
         """Call at the end of the process."""
         if self.checkpoint is not None:
-            self.callback.log_model(self.checkpoint, step=self.checkpoint_step)
+            self.callback.log_model(
+                model=self.checkpoint,
+                name=self.checkpoint_name,
+                step=self.checkpoint_step,
+            )
         return False

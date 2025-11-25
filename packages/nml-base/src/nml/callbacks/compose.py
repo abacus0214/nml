@@ -19,6 +19,7 @@ from nml.utils.typing.eval.metrics import (
     MetricStep,
 )
 from nml.utils.typing.events import BatchID, EpochID
+from nml.utils.typing.models.container.base import ModelID
 
 __all__ = ["CallbackCat"]
 
@@ -54,11 +55,14 @@ class CallbackCat(RestrictedBaseModel, EventCallback):
             callback.log_batch_end(bid=bid)
 
     def log_model(
-        self, model: ModelABC[Any, Any, Any, Any], step: MetricStep = None
+        self,
+        model: ModelABC[Any, Any, Any, Any],
+        name: None | ModelID = None,
+        step: MetricStep = None,
     ) -> None:
         """Log a model."""
         for callback in self.callbacks:
-            callback.log_model(model=model, step=step)
+            callback.log_model(model=model, name=name, step=step)
 
     def log_metric(
         self, mid: MetricID, metric: Metric, step: MetricStep = None

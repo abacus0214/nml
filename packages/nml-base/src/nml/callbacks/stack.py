@@ -18,6 +18,7 @@ from nml.utils.typing.eval.metrics import (
     MetricStep,
 )
 from nml.utils.typing.events import BatchID, EpochID
+from nml.utils.typing.models.container.base import ModelID
 
 __all__ = ["CallbackStack"]
 
@@ -71,14 +72,20 @@ class CallbackStack(EventCallback):
         """Call this callback when batch ends."""
 
     def log_model(
-        self, model: ModelABC[Any, Any, Any, Any], step: MetricStep = None
+        self,
+        model: ModelABC[Any, Any, Any, Any],
+        name: None | ModelID = None,
+        step: MetricStep = None,
     ) -> None:
         """Log a model."""
-        self.log_model_aux(model=model, step=step)
-        self.callback.log_model(model=model, step=step)
+        self.log_model_aux(model=model, name=name, step=step)
+        self.callback.log_model(model=model, name=name, step=step)
 
     def log_model_aux(
-        self, model: ModelABC[Any, Any, Any, Any], step: MetricStep = None
+        self,
+        model: ModelABC[Any, Any, Any, Any],
+        name: None | ModelID = None,
+        step: MetricStep = None,
     ) -> None:
         """Log a model."""
 

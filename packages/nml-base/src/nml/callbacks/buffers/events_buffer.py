@@ -21,6 +21,7 @@ from nml.utils.typing.eval.metrics import (
     MetricStep,
 )
 from nml.utils.typing.events import BatchID, EpochID
+from nml.utils.typing.models.container.base import ModelID
 from pydantic import Field
 
 __all__ = ["CallbackStack", "CallbackEventType", "CallbackEvent", "EventsBuffer"]
@@ -113,7 +114,10 @@ class CallbackBuffer(RestrictedBaseModel, CallbackStack):
         )
 
     def log_model_aux(
-        self, model: ModelABC[Any, Any, Any, Any], step: MetricStep = None
+        self,
+        model: ModelABC[Any, Any, Any, Any],
+        name: None | ModelID = None,
+        step: MetricStep = None,
     ) -> None:
         """Log a model."""
         self.events_buffer.add(
