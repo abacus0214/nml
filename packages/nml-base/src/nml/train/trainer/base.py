@@ -16,6 +16,7 @@ from nml.utils.loss.aggregators.mean import NPMeanAggregator
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
 from nml.utils.typing.data.dataset import DatasetID
 from nml.utils.typing.events import EpochID, TrainingStepID
+from nml.utils.typing.logging.parameters import ParamsDict
 
 __all__ = ["Trainer"]
 
@@ -39,6 +40,11 @@ class TrainerABC[LossT](ABC):
     ) -> None:
         """Update the given model."""
 
+    @property
+    @abstractmethod
+    def params(self) -> ParamsDict:
+        """Return parameters for this trainer in ParamsDict format."""
+
 
 class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
     """Pre made implementation that uses nml interfaces to do most of the work."""
@@ -53,6 +59,13 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
 
     # UI Settings
     loss_metric_name: str = DEFAULT_LOSS_METRIC_NAME
+
+    @property
+    def params(self) -> ParamsDict:
+        """Return parameters for this trainer in ParamsDict format."""
+        return {
+            "num_epochs": self.num_epochs,
+        }
 
     def train[IpT, TgT](
         self,
