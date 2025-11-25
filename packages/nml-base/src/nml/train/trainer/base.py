@@ -79,6 +79,10 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         """Perform training loop."""
         # Initialize callback
         with callback.start_context(num_epochs=self.num_epochs):
+            # Log parameters
+            callback.log_params(dict(add_prefix(self.params, "trainer")))
+            callback.log_params(dict(add_prefix(model.params, "model")))
+
             # Perofrm a training epoch for `num_epochs` times
             for eid in range(self.num_epochs):
                 # Trian on the entire epoch for each training split
