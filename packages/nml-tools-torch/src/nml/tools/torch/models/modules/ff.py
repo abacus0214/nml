@@ -94,4 +94,10 @@ def ff_regression_model(
                 )
             )
         ),
+        extra_params={
+            "layers": layers,
+            "activations": {
+                layer_id: str(module) for layer_id, module in activations_dict.items()
+            },
+        },
     )

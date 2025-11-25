@@ -6,6 +6,8 @@ from typing import Any, Hashable
 from nml.models.container.base import ModelABC
 from nml.models.interpreter.base import ModelInterpreter
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
+from nml.utils.typing.logging.parameters import ParamsDict
+from pydantic import Field
 from torch import Tensor
 from torch.nn import Module
 from torch.optim import Optimizer
@@ -28,9 +30,16 @@ class TorchModel[InT, OutT, SampleT](
     module: Module
     optimizer: None | Optimizer = None
 
+    extra_params: ParamsDict = Field(default_factory=dict)
+
     def forward(self, ipt: InT) -> OutT:
         """Run model prediction."""
         return self.module.forward(ipt)  # type: ignore
+
+    @property
+    def params(self) -> ParamsDict:
+        """Parameters of model in ParamsDict format."""
+        return self.extra_params
 
     @property
     def hash(self) -> Hashable:

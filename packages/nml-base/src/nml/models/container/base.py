@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Hashable
 
 from nml.models.interpreter.base import ModelInterpreter, PredictionType
+from nml.utils.typing.logging.parameters import ParamsDict
 
 __all__ = ["ModelABC"]
 
@@ -58,6 +59,11 @@ class ModelABC[InT, OutT, SampleT, LikelihoodT](ABC):
         return self.interpreter.nll(
             model_out=self.forward(ipt), target_samples=target_samples
         )
+
+    @property
+    @abstractmethod
+    def params(self) -> ParamsDict:
+        """Parameters of model in ParamsDict format."""
 
     @property
     @abstractmethod
