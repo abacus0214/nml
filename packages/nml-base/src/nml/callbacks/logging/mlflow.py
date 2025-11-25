@@ -17,6 +17,7 @@ from nml.utils.typing.eval.metrics import (
     MetricsBatch,
     MetricStep,
 )
+from nml.utils.typing.logging.parameters import ParamsDict
 from pydantic import Field
 
 
@@ -39,6 +40,15 @@ class MLFlowMetricCallback(StandardBaseModel, EventCallback):
         # to reload the run no matter what
         if self.ephimeral_run or self.current_run is None:
             self.current_run = self.client.create_run_client(run_name=self.run_name)
+
+    def log_params(
+        self,
+        params: ParamsDict,
+    ) -> None:
+        """Call this callback to log a parameter."""
+        if self.current_run is None:
+            raise RuntimeError(f"Did you forget to start the mlflow callback?")
+        self.current_run.log_params(params)
 
     def log_metric(
         self, mid: MetricID, metric: Metric, step: MetricStep = None

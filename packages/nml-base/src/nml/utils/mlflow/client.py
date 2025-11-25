@@ -112,6 +112,19 @@ class RunClient(ExperimentClient):
         """Set the run status."""
         self.client.update_run(self.run_id, RunStatus.to_string(run_status))
 
+    def log_params(
+        self, params: dict[str, Any], synchronous: bool | None = None
+    ) -> None:
+        """Log a single parameter to current run."""
+        for key, value in params.items():
+            self.log_param(key=key, value=value, synchronous=synchronous)
+
+    def log_param(self, key: str, value: Any, synchronous: bool | None = None) -> Any:
+        """Log a single parameter to current run."""
+        return self.client.log_param(
+            run_id=self.run_id, key=key, value=value, synchronous=synchronous
+        )
+
     def log_metric(
         self,
         key: str,

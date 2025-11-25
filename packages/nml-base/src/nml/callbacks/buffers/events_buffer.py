@@ -21,6 +21,7 @@ from nml.utils.typing.eval.metrics import (
     MetricStep,
 )
 from nml.utils.typing.events import BatchID, EpochID
+from nml.utils.typing.logging.parameters import ParamsDict
 from nml.utils.typing.models.container.base import ModelID
 from pydantic import Field
 
@@ -43,6 +44,7 @@ class CallbackEventType(StrEnum):
     FIGURE_BATCH = auto()
     CLOSE = auto()
     MODEL = auto()
+    PARAMS = auto()
 
 
 class CallbackEvent(RestrictedBaseModel):
@@ -127,6 +129,12 @@ class CallbackBuffer(RestrictedBaseModel, CallbackStack):
                 extra_args={"model": model},
             )
         )
+
+    def log_params_aux(
+        self,
+        params: ParamsDict,
+    ) -> None:
+        """Call this callback to log a parameter."""
 
     def log_metric_aux(
         self, mid: MetricID, metric: Metric, step: MetricStep = None

@@ -17,6 +17,7 @@ from nml.utils.typing.eval.metrics import (
     MetricStep,
 )
 from nml.utils.typing.events import BatchID, EpochID
+from nml.utils.typing.logging.parameters import ParamsDict
 from nml.utils.typing.models.container.base import ModelID
 
 __all__ = ["EventCallback"]
@@ -67,6 +68,12 @@ class EventCallback:
         step: MetricStep = None,
     ) -> None:
         """Log a model."""
+
+    def log_params(
+        self,
+        params: ParamsDict,
+    ) -> None:
+        """Call this callback to log a parameter."""
 
     def log_metric(
         self, mid: MetricID, metric: Metric, step: MetricStep = None
