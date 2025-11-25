@@ -66,7 +66,8 @@ class ActivationsDict(UserDict[int, nn.Module]):
     def __missing__(self, key: int) -> nn.Module:
         """Set default activation value."""
         if key >= 0 or self.default_output_activation:
-            return self.default_activation
+            self[key] = self.default_activation
+            return self[key]
         return nn.Identity()
 
 
