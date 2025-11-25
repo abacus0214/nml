@@ -46,6 +46,10 @@ class TorchModel[InT, OutT, SampleT](
         """Return hash for model."""
         return hash(id(self.module))
 
+    def __hash__(self) -> int:
+        """Return hash for model."""
+        return hash(self.hash)
+
     def __deepcopy__(
         self, memo: dict[int, Any] | None = None
     ) -> "TorchModel[InT, OutT, SampleT]":
