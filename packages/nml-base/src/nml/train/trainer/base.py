@@ -32,7 +32,6 @@ class TrainerABC[LossT](ABC):
     def train[IpT, TgT](
         self,
         model: ModelABC[IpT, Any, TgT, LossT],
-        loss_runner: LossRunnerABC,
         train_splits: SplitsDict[Any, IpT, TgT],
         val_splits: None | SplitsDict[Any, IpT, TgT] = None,
         evaluators: tuple[EvaluatorABC[Any], ...] = tuple(),
@@ -52,6 +51,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
     # Parameters
     batch_loss_trainer: BatchLossTrainerABC[LossT]
 
+    loss_runner: LossRunnerABC
     loss_aggregator: LossAggregatorABC[LossT] = NPMeanAggregator[Any]()
 
     # Settings
@@ -70,7 +70,6 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
     def train[IpT, TgT](
         self,
         model: ModelABC[IpT, Any, TgT, LossT],
-        loss_runner: LossRunnerABC,
         train_splits: SplitsDict[Any, IpT, TgT],
         val_splits: None | SplitsDict[Any, IpT, TgT] = None,
         evaluators: tuple[EvaluatorABC[Any], ...] = tuple(),
@@ -92,7 +91,6 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
                         eid=eid,
                         model=model,
                         dataset=train_split,
-                        loss_runner=loss_runner,
                         update_model=True,
                         evaluators=evaluators,
                         callback=callback,
@@ -103,7 +101,6 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
                     eid=eid,
                     model=model,
                     val_splits=val_splits or {},
-                    loss_runner=loss_runner,
                     evaluators=evaluators,
                     callback=callback,
                 )
@@ -114,7 +111,6 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         eid: EpochID,
         model: ModelABC[IpT, Any, TgT, LossT],
         dataset: DataLoaderABC[Any, IpT, TgT],
-        loss_runner: LossRunnerABC,
         update_model: bool = True,
         evaluators: tuple[EvaluatorABC[Any], ...] = tuple(),
         callback: EventCallback = EventCallback(),
@@ -129,7 +125,6 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
             eid=eid,
             model=model,
             dataset=dataset,
-            loss_runner=loss_runner,
             update_model=update_model,
             evaluators=evaluators,
             callback=callback,
@@ -152,7 +147,6 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         eid: EpochID,
         model: ModelABC[IpT, Any, TgT, LossT],
         dataset: DataLoaderABC[Any, IpT, TgT],
-        loss_runner: LossRunnerABC,
         update_model: bool = False,
         evaluators: tuple[EvaluatorABC[Any], ...] = tuple(),
         callback: EventCallback = EventCallback(),
@@ -166,7 +160,6 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
                 ),
                 model=model,
                 batch=batch,
-                loss_runner=loss_runner,
                 update_model=update_model,
                 evaluators=evaluators,
                 callback=callback,
@@ -195,7 +188,6 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         step_id: TrainingStepID,
         model: ModelABC[IpT, Any, TgT, LossT],
         batch: BatchABC[Any, IpT, TgT],
-        loss_runner: LossRunnerABC,
         update_model: bool = False,
         evaluators: tuple[EvaluatorABC[Any], ...] = tuple(),
         callback: EventCallback = EventCallback(),
@@ -206,7 +198,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
 
         # Update model
         loss = self.batch_loss_trainer.batch_loss(
-            loss_runner=loss_runner,
+            loss_runner=self.loss_runner,
             model=model,
             batch=batch,
             update_model=update_model,
@@ -234,7 +226,6 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         eid: EpochID,
         model: ModelABC[IpT, Any, TgT, Any],
         val_splits: SplitsDict[Any, IpT, TgT],
-        loss_runner: LossRunnerABC,
         evaluators: tuple[EvaluatorABC[Any], ...] = tuple(),
         callback: EventCallback = EventCallback(),
     ) -> None:
@@ -247,7 +238,6 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
                 eid=eid,
                 model=model,
                 dataset=dataset,
-                loss_runner=loss_runner,
                 update_model=False,
                 evaluators=evaluators,
                 callback=callback,

@@ -90,6 +90,7 @@ def trainer(num_epochs: int, lr: float) -> TorchTrainer:
         batch_loss_trainer=TorchBatchLossTrainer(
             optimizer_map=get_standard_optimizer_map(Adam, lr=lr)
         ),
+        loss_runner=MLLossRunner(),
         loss_aggregator=TorchMeanAggregator(),
     )
 
@@ -141,7 +142,6 @@ def training_run(
 
     trainer.train(
         model=model,
-        loss_runner=MLLossRunner(),
         train_splits={"train": train_loader},
         val_splits={"val": val_loader},
         evaluators=evaluators,
