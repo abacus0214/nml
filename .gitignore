@@ -13,9 +13,10 @@
 !README.md
 
 # Adding source directory
-!src
+!packages
 !scripts
 !test
+!stubs
 
 *egg-info
 __pycache__

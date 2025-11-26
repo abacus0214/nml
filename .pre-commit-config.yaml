@@ -7,54 +7,86 @@ repos:
       - id: check-case-conflict
         name: check-case-conflict
         entry: check-case-conflict
-        files: "^(src|test|scripts|configs)"
+        files: "^(packages|test|scripts)"
         language: python
         types: [python]
       - id: check-merge-conflict
         name: check-merge-conflict
         entry: check-merge-conflict
-        files: "^(src|test|scripts|configs)"
+        files: "^(packages|test|scripts)"
         language: python
         types: [python]
       - id: end-of-file-fixer
         name: end-of-file-fixer
         entry: end-of-file-fixer
-        files: "^(src|test|scripts|configs)"
+        files: "^(packages|test|scripts)"
         language: python
         types: [python]
       - id: fix-byte-order-marker
         name: fix-byte-order-marker
         entry: fix-byte-order-marker
-        files: "^(src|test|scripts|configs)"
+        files: "^(packages|test|scripts)"
         language: python
         types: [python]
       - id: trailing-whitespace-fixer
         name: trailing-whitespace-fixer
         entry: trailing-whitespace-fixer
-        files: "^(src|test|scripts|configs)"
+        files: "^(packages|test|scripts)"
         language: python
         types: [python]
-      - id: ruff-commit
-        name: lint-checking-ruff-commit
+      - id: ruff-files
+        name: lint-checking-ruff-staged
         entry: ruff check --fix
+        exclude: "^(packages)"
         pass_filenames: true
         language: python
         types: [python]
       - id: ruff-pkg
         name: lint-checking-ruff-package
-        entry: ruff check --fix src
+        entry: ruff check --fix packages
+        files: "^(packages)"
         pass_filenames: false
         language: python
         types: [python]
-      - id: mypy-commit
-        name: type-checking-commit
-        entry: mypy
-        pass_filenames: true
+      - id: mypy-test
+        name: type-checking-test
+        entry: mypy test
+        files: "^(test)"
+        pass_filenames: false
         language: python
         types: [python]
-      - id: mypy-pkg
-        name: type-checking-package
-        entry: mypy -p bkd
+      - id: mypy-pkg-base
+        name: type-checking-base
+        entry: mypy -p nml.callbacks -p nml.data -p nml.loss -p nml.models -p nml.train -p nml.utils
+        files: "^(packages/nml-base)"
+        pass_filenames: false
+        language: python
+        types: [python]
+      - id: mypy-pkg-itf-torch
+        name: type-checking-itf-torch
+        entry: mypy -p nml.itf.torch
+        files: "^(packages/nml-itf-torch|packages/nml-base|packages/nml-tools-base)"
+        pass_filenames: false
+        language: python
+        types: [python]
+      - id: mypy-pkg-tool-base
+        name: type-checking-tools-base
+        entry: mypy -p nml.tools.train -p nml.tools.utils
+        files: "^(packages/nml-tools-base|packages/nml-base)"
+        pass_filenames: false
+        language: python
+        types: [python]
+      - id: mypy-pkg-tool-torch
+        name: type-checking-tools-torch
+        entry: mypy -p nml.tools.torch
+        files: "^(packages/nml-tools-torch|packages/nml-base|packages/nml-itf-torch)"
+        pass_filenames: false
+        language: python
+        types: [python]
+      - id: mypy-pkg-config
+        name: type-checking-config
+        entry: mypy -p nml.config.shards
+        files: "^(packages/nml-config-base|packages/nml-base)"
         pass_filenames: false
         language: python
         types: [python]

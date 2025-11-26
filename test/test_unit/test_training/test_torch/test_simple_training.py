@@ -1,0 +1,261 @@
+"""Test checking a simple regression."""
+
+from datetime import timedelta
+from typing import Any
+
+import numpy as np
+import pytest
+from hypothesis import given, settings
+from hypothesis import strategies as st
+from hypothesis.extra.numpy import arrays
+from nml.data.batches.interpreter.standard import TupleBatchInterpreter
+from nml.itf.torch.data.loader.container.base import TorchDataLoader
+from nml.itf.torch.models.container.base import TorchModel
+from nml.itf.torch.train.trainer.base import TorchTrainer
+from nml.itf.torch.train.trainer.components.batch_loss.base import TorchBatchLossTrainer
+from nml.itf.torch.train.trainer.components.optimizer_map.standard import (
+    get_standard_optimizer_map,
+)
+from nml.itf.torch.utils.loss.aggregators.mean import TorchMeanAggregator
+from nml.loss.runner.standard.ml import MLLossRunner
+from nml.tools.torch.data.dataset.linear import generate_regression
+from nml.tools.torch.data.loader.container.tensor import TensorDataLoader
+from nml.tools.torch.models.interpreter.normal import (
+    NormalOutType,
+    TorchNormalInterpeter,
+)
+from nml.tools.torch.models.modules.ff import ff_regression_model
+from pytest import fixture
+from torch import Tensor, nn
+from torch.optim import Adam
+from torch.utils.data import DataLoader, TensorDataset
+
+
+@fixture(scope="class")
+def min_num_samples() -> int:
+    """Minimum numnber of datapoints."""
+    return 50
+
+
+@fixture(scope="class")
+def max_num_samples() -> int:
+    """Minimum numnber of datapoints."""
+    return 150
+
+
+@fixture(scope="class")
+def lr() -> float:
+    """Learning rate to be used."""
+    return 1e-5
+
+
+@fixture(scope="class")
+def layers(num_inputs: int, num_hidden: int, num_out: int) -> list[int]:
+    """Generate the layer structure for the model."""
+    return [num_inputs, num_hidden, num_out]
+
+
+@fixture(scope="class")
+def model(
+    layers: list[int], manual_model_construction: bool
+) -> TorchModel[Tensor, NormalOutType, Tensor]:
+    """Manually generate torch model for regression."""
+    if manual_model_construction:
+        return TorchModel[Tensor, NormalOutType, Tensor](
+            interpreter=TorchNormalInterpeter(),
+            module=nn.Sequential(
+                *(
+                    nn.Linear(in_ft, out_ft)
+                    for in_ft, out_ft in zip(layers[:-1], layers[1:])
+                )
+            ),
+        )
+
+    return ff_regression_model(
+        layers=layers,
+    )
+
+
+@fixture(scope="class")
+def trainer(num_epochs: int, lr: float) -> TorchTrainer:
+    """Create torch trainer."""
+    return TorchTrainer(
+        num_epochs=num_epochs,
+        batch_loss_trainer=TorchBatchLossTrainer(
+            optimizer_map=get_standard_optimizer_map(Adam, lr=lr)
+        ),
+        loss_runner=MLLossRunner(),
+        loss_aggregator=TorchMeanAggregator(),
+    )
+
+
+@st.composite
+def tensor_dataset(
+    draw: st.DrawFn,
+    num_inputs: int,
+    min_num_samples: int,
+    max_num_samples: int,
+    num_out: int,
+) -> TensorDataset:
+    """Strategy to generate ArrayDataset."""
+    return generate_regression(
+        n_samples=draw(
+            st.integers(min_value=min_num_samples, max_value=max_num_samples)
+        ),
+        n_features=num_inputs,
+        n_targets=num_out,
+    )
+
+
+@st.composite
+def torch_dataset(
+    draw: st.DrawFn,
+    num_inputs: int,
+    min_num_samples: int,
+    max_num_samples: int,
+    num_out: int,
+    manual: bool = True,
+) -> TorchDataLoader[tuple[Tensor, Tensor], Tensor, Tensor]:
+    """Fixture for torch dataset."""
+    if manual:
+        return TensorDataLoader.from_torch_dataset(
+            dataset=draw(
+                tensor_dataset(
+                    num_inputs=num_inputs,
+                    min_num_samples=min_num_samples,
+                    max_num_samples=max_num_samples,
+                    num_out=num_out,
+                )
+            ),
+        )
+
+    return TorchDataLoader[tuple[Tensor, Tensor], Tensor, Tensor](
+        torch_loader=DataLoader[tuple[Tensor, Tensor]](
+            draw(
+                tensor_dataset(  # type: ignore
+                    num_inputs=num_inputs,
+                    min_num_samples=min_num_samples,
+                    max_num_samples=max_num_samples,
+                    num_out=num_out,
+                )
+            )
+        ),
+        batch_interpreter=TupleBatchInterpreter[Tensor, Tensor](),
+    )
+
+
+@pytest.mark.parametrize(
+    "manual_model_construction",
+    [True, False],
+    ids=["manual_model", "tool_model"],
+    scope="class",
+)
+@pytest.mark.parametrize(
+    ["num_inputs", "num_hidden", "num_out"],
+    [
+        (5, 20, 1),
+    ],
+    ids=["toy_training"],
+    scope="class",
+)
+class TestSimpleRegressor:
+    """Test suite for simple regression model."""
+
+    def test_model_construction(self, model: TorchModel[Any, Any, Any]) -> None:
+        """Try to run trainer."""
+        # Check contents of the model
+        assert model.interpreter is not None
+        assert isinstance(model.module, nn.Module)
+
+    @given(data=st.data())
+    def test_model_nll(
+        self,
+        data: st.DataObject,
+        num_inputs: int,
+        num_out: int,
+        model: TorchModel[Any, Any, Any],
+    ) -> None:
+        """Try to run trainer."""
+        # Generate random input
+        input_t = Tensor(data.draw(arrays(dtype=np.float32, shape=num_inputs)))
+        target = Tensor(data.draw(arrays(dtype=np.float32, shape=num_out)))
+
+        # Try to compute loss
+        model.nll(ipt=input_t, target_samples=target)
+
+    @pytest.mark.parametrize(
+        "manual", [False, True], ids=["manual_loader", "tool_loader"]
+    )
+    @given(data=st.data())
+    def test_data_reading(
+        self,
+        data: st.DataObject,
+        num_inputs: int,
+        min_num_samples: int,
+        max_num_samples: int,
+        num_out: int,
+        manual: bool,
+        model: TorchModel[Any, Any, Any],
+    ) -> None:
+        """Try to run trainer."""
+        # Generate dataset
+        loader = data.draw(
+            torch_dataset(
+                num_inputs=num_inputs,
+                min_num_samples=min_num_samples,
+                max_num_samples=max_num_samples,
+                num_out=num_out,
+                manual=manual,
+            )
+        )
+
+        # Loop through loader and use reader
+        for _, batch in loader.epoch_iterator:
+            ipt_manual = loader.batch_interpreter.get_ipt(batch.batch)
+            tgt_manual = loader.batch_interpreter.get_tgt(batch.batch)
+
+            ipt = batch.ipt
+            tgt = batch.tgt
+
+            assert (ipt == ipt_manual).all()
+            assert (tgt == tgt_manual).all()
+
+            assert isinstance(ipt, Tensor)
+            assert isinstance(tgt, Tensor)
+            assert ipt.shape[-1] == num_inputs
+            assert tgt.shape[-1] == num_out
+
+    @pytest.mark.parametrize(
+        "manual", [False, True], ids=["manual_loader", "tool_loader"]
+    )
+    @pytest.mark.parametrize("num_epochs", [10], ids=["short"], scope="class")
+    @given(data=st.data())
+    @settings(deadline=timedelta(minutes=5), max_examples=3)
+    def test_training(
+        self,
+        data: st.DataObject,
+        trainer: TorchTrainer,
+        model: TorchModel[Any, Any, Any],
+        num_inputs: int,
+        min_num_samples: int,
+        max_num_samples: int,
+        num_out: int,
+        manual: bool,
+    ) -> None:
+        """Try to run trainer."""
+        # Generate dataset
+        loader = data.draw(
+            torch_dataset(
+                num_inputs=num_inputs,
+                min_num_samples=min_num_samples,
+                max_num_samples=max_num_samples,
+                num_out=num_out,
+                manual=manual,
+            )
+        )
+
+        # Training loop
+        trainer.train(
+            model=model,
+            train_splits={"train": loader},
+        )
