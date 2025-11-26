@@ -65,13 +65,13 @@ class CallbackBuffer(RestrictedBaseModel, CallbackStack):
 
     events_buffer: EventsBuffer = Field(default_factory=set)
 
-    def start_aux(self, num_epochs: None | int = None) -> None:
+    def start_aux(self, params: None | ParamsDict = None) -> None:
         """Call at the start of the process."""
         self.events_buffer.add(
             CallbackEvent(
                 event_type=CallbackEventType.START,
                 extra_args={
-                    "num_epochs": num_epochs,
+                    "params": params,
                 },
             )
         )

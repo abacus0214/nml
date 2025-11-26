@@ -34,7 +34,7 @@ class MLFlowMetricCallback(StandardBaseModel, EventCallback):
     # State
     current_run: None | RunClient = Field(init=False, default=None)
 
-    def start(self, num_epochs: None | int = None) -> None:
+    def start(self, params: None | ParamsDict = None) -> None:
         """Call at the start of process."""
         # Ephimeral run setting means that we have
         # to reload the run no matter what

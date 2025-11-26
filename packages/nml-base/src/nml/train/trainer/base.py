@@ -78,7 +78,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
     ) -> None:
         """Perform training loop."""
         # Initialize callback
-        with callback.start_context(num_epochs=self.num_epochs):
+        with callback.start_context(params=self.params):
             # Log parameters
             callback.log_params(dict(add_prefix(self.params, "trainer")))
             callback.log_params(dict(add_prefix(model.params, "model")))

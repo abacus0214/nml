@@ -11,6 +11,7 @@ from nml.utils.typing.eval.metrics import (
     MetricsBatch,
     MetricStep,
 )
+from nml.utils.typing.logging.parameters import ParamsDict
 from pydantic import Field
 
 
@@ -38,7 +39,7 @@ class StaggerMetricsStack(RestrictedBaseModel, CallbackStack):
         """Delete the contents of the buffer."""
         self.buffer.clear()
 
-    def start_aux(self, num_epochs: None | int = None) -> None:
+    def start_aux(self, params: None | ParamsDict = None) -> None:
         """Call at the start of process."""
         self.clear_buffer()
 

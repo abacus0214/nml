@@ -3,6 +3,7 @@
 from nml.callbacks.abc import EventCallback
 from nml.utils.typing.base.pydantic import StandardBaseModel
 from nml.utils.typing.events import BatchID, EpochID
+from nml.utils.typing.logging.parameters import ParamsDict
 from pydantic import Field
 from rich.progress import Progress, TaskID
 
@@ -24,9 +25,16 @@ class ProgressCallback(StandardBaseModel, EventCallback):
     epoch_task_id: None | TaskID = Field(init=False, default=None)
     current_epoch_inner_id: None | TaskID = Field(init=False, default=None)
 
-    def start(self, num_epochs: None | int = None) -> None:
+    def start(self, params: None | ParamsDict = None) -> None:
         """Log number of epochs."""
-        self.num_epochs = num_epochs
+        if (
+            params is None
+            or "num_epochs" not in params.keys()
+            or not isinstance(params["num_epochs"], int)
+        ):
+            raise ValueError("Could not find valid num epochs in parameters")
+        # Store number of epochs
+        self.num_epochs = params["num_epochs"]
 
     def log_epoch_start(self, eid: EpochID, epoch_size: None | int = None) -> None:
         """Call this callback when epoch ends."""

@@ -30,10 +30,10 @@ class CallbackCat(RestrictedBaseModel, EventCallback):
 
     callbacks: tuple[EventCallback, ...]
 
-    def start(self, num_epochs: None | int = None) -> None:
+    def start(self, params: None | ParamsDict = None) -> None:
         """Forward start of process."""
         for callback in self.callbacks:
-            callback.start(num_epochs=num_epochs)
+            callback.start(params=params)
 
     def log_epoch_start(self, eid: EpochID, epoch_size: None | int = None) -> None:
         """Call this callback when epoch ends."""

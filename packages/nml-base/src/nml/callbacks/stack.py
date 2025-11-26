@@ -32,12 +32,12 @@ class CallbackStack(EventCallback):
 
     callback: EventCallback = EventCallback()
 
-    def start(self, num_epochs: None | int = None) -> None:
+    def start(self, params: None | ParamsDict = None) -> None:
         """Call at the start of the process."""
-        self.start_aux(num_epochs=num_epochs)
-        self.callback.start(num_epochs=num_epochs)
+        self.start_aux(params=params)
+        self.callback.start(params=params)
 
-    def start_aux(self, num_epochs: None | int = None) -> None:
+    def start_aux(self, params: None | ParamsDict = None) -> None:
         """Call at the start of the process."""
 
     def log_epoch_start(self, eid: EpochID, epoch_size: None | int = None) -> None:

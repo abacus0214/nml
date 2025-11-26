@@ -41,12 +41,12 @@ class EventCallback:
         """Close the context."""
         return self.close(exc_type=exc_type, exc_val=exc_val, exc_tb=exc_tb)
 
-    def start_context(self, num_epochs: None | int = None) -> "EventCallback":
+    def start_context(self, params: None | ParamsDict = None) -> "EventCallback":
         """Call at the start of process while creating context."""
-        self.start(num_epochs=num_epochs)
+        self.start(params=params)
         return self
 
-    def start(self, num_epochs: None | int = None) -> None:
+    def start(self, params: None | ParamsDict = None) -> None:
         """Call at the start of process."""
 
     def log_epoch_start(self, eid: EpochID, epoch_size: None | int = None) -> None:
