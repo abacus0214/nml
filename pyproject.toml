@@ -68,11 +68,11 @@ dev = [
 ]
 nvim = ["debugpy>=1.8.17", "pynvim>=0.6.0"]
 torch = [
-    "nml-itf-torch",
-    "nml-tools-base",
-    "nml-tools-torch",
-    "torch>=2.9.0",
-    "torcheval>=0.0.7",
+  "nml-itf-torch",
+  "nml-tools-base",
+  "nml-tools-torch",
+  "torch>=2.9.0",
+  "torcheval>=0.0.7",
 ]
 
 # Worskapce settings
@@ -110,6 +110,7 @@ explicit_package_bases = true
 mypy_path = [
   "packages/nml-base/src",
   "packages/nml-itf-torch/src",
+  "packages/nml-rl-base/src",
   "packages/nml-tools-base/src",
   "packages/nml-tools-torch/src",
   "packages/nml-config-base/src",
@@ -119,6 +120,7 @@ mypy_path = [
 extraPaths = [
   "packages/nml-base/src",
   "packages/nml-itf-torch/src",
+  "packages/nml-rl-base/src",
   "packages/nml-tools-base/src",
   "packages/nml-tools-torch/src",
   "packages/nml-config-base/src",
