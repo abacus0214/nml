@@ -13,15 +13,18 @@ from nml.utils.typing.base.pydantic import RestrictedBaseModel
 from nml.utils.typing.eval.metrics import Metric, MetricID, Metrics
 from nml.utils.typing.events import TrainingStepID
 from pydantic import Field
+from torch import Tensor
 from torcheval.metrics import Metric as TorchEvalMetric
 
 __all__ = ["TorchEvalEvaluator"]
+
+type TorchEvalMetricType = TorchEvalMetric[Metric] | TorchEvalMetric[Tensor]
 
 
 class TorchEvalEvaluator(RestrictedBaseModel, MetricsEvaluator):
     """Base class for running evaluation on a split."""
 
-    metrics: dict[MetricID, TorchEvalMetric[Metric]] = Field(default_factory=dict)
+    metrics: dict[MetricID, TorchEvalMetricType] = Field(default_factory=dict)
 
     # Dictionary that can be used to customize which metric uses which method
     # to compute its input from the model output
@@ -55,9 +58,9 @@ class TorchEvalEvaluator(RestrictedBaseModel, MetricsEvaluator):
         return metrics
 
     @staticmethod
-    def extract_metric(metric: TorchEvalMetric[Metric]) -> Metric:
+    def extract_metric(metric: TorchEvalMetricType) -> Metric:
         """Compute and reset metric."""
-        ret = metric.compute()
+        ret = float(metric.compute())
         metric.reset()
         return ret
 
