@@ -9,7 +9,8 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
 from nml.data.batches.interpreter.standard import TupleBatchInterpreter
-from nml.itf.torch.data.loader.container.base import TorchDataLoader
+from nml.data.loader.container.base import LoaderContainer, LoaderContainerABC
+from nml.itf.torch.data.loader.interpreter.base import TorchLoaderInterpreter
 from nml.itf.torch.models.container.base import TorchModel
 from nml.itf.torch.train.trainer.base import TorchTrainer
 from nml.itf.torch.train.trainer.components.batch_loss.base import TorchBatchLossTrainer
@@ -19,7 +20,7 @@ from nml.itf.torch.train.trainer.components.optimizer_map.standard import (
 from nml.itf.torch.utils.loss.aggregators.mean import TorchMeanAggregator
 from nml.loss.runner.standard.ml import MLLossRunner
 from nml.tools.torch.data.dataset.linear import generate_regression
-from nml.tools.torch.data.loader.container.tensor import TensorDataLoader
+from nml.tools.torch.data.loader.container.tensor import TensorLoaderContainer
 from nml.tools.torch.models.interpreter.normal import (
     NormalOutType,
     TorchNormalInterpeter,
@@ -115,10 +116,12 @@ def torch_dataset(
     max_num_samples: int,
     num_out: int,
     manual: bool = True,
-) -> TorchDataLoader[tuple[Tensor, Tensor], Tensor, Tensor]:
+) -> LoaderContainerABC[
+    DataLoader[tuple[Tensor, Tensor]], tuple[Tensor, Tensor], Tensor, Tensor
+]:
     """Fixture for torch dataset."""
     if manual:
-        return TensorDataLoader.from_torch_dataset(
+        return TensorLoaderContainer.from_torch_dataset(
             dataset=draw(
                 tensor_dataset(
                     num_inputs=num_inputs,
@@ -129,8 +132,10 @@ def torch_dataset(
             ),
         )
 
-    return TorchDataLoader[tuple[Tensor, Tensor], Tensor, Tensor](
-        torch_loader=DataLoader[tuple[Tensor, Tensor]](
+    return LoaderContainer[
+        DataLoader[tuple[Tensor, Tensor]], tuple[Tensor, Tensor], Tensor, Tensor
+    ](
+        loader=DataLoader[tuple[Tensor, Tensor]](
             draw(
                 tensor_dataset(  # type: ignore
                     num_inputs=num_inputs,
@@ -140,7 +145,9 @@ def torch_dataset(
                 )
             )
         ),
-        batch_interpreter=TupleBatchInterpreter[Tensor, Tensor](),
+        loader_interpreter=TorchLoaderInterpreter(
+            batch_interpreter=TupleBatchInterpreter[Tensor, Tensor]()
+        ),
     )
 
 

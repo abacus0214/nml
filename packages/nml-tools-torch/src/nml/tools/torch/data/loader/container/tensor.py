@@ -1,30 +1,35 @@
-"""Base class for data container."""
+"""Routines to build dataset loader containers for torch datasets."""
 
-from nml.data.batches.interpreter.base import BatchInterpreter
-from nml.data.batches.interpreter.standard import TupleBatchInterpreter
-from nml.itf.torch.data.loader.container.base import TorchDataLoader
+from nml.data.loader.container.base import LoaderContainer
+from nml.data.loader.interpreter.base import DataLoaderInterpreter
+from nml.tools.torch.data.loader.interpreter.tensor import TensorLoaderInterpreter
 from pydantic import Field
 
 from torch import Tensor
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader as TorchDataLoader
+from torch.utils.data import TensorDataset
 
-__all__ = ["TensorDataLoader"]
+__all__ = ["TensorLoaderContainer"]
 
 
-class TensorDataLoader(TorchDataLoader[tuple[Tensor, Tensor], Tensor, Tensor]):
-    """Premade data loader container for array dataeset."""
+class TensorLoaderContainer(
+    LoaderContainer[
+        TorchDataLoader[tuple[Tensor, Tensor]], tuple[Tensor, Tensor], Tensor, Tensor
+    ]
+):
+    """Container for Tensor datasets."""
 
-    batch_interpreter: BatchInterpreter[tuple[Tensor, Tensor], Tensor, Tensor] = Field(
-        default_factory=TupleBatchInterpreter[Tensor, Tensor]
-    )
+    loader_interpreter: DataLoaderInterpreter[
+        TorchDataLoader[tuple[Tensor, Tensor]], tuple[Tensor, Tensor], Tensor, Tensor
+    ] = Field(default_factory=TensorLoaderInterpreter)
 
     @staticmethod
     def from_torch_dataset(
         dataset: TensorDataset, batch_size: int = 1, shuffle: bool = True
-    ) -> "TensorDataLoader":
+    ) -> "TensorLoaderContainer":
         """Construct from a dataset instead of a given dataloader."""
-        return TensorDataLoader(
-            torch_loader=DataLoader[tuple[Tensor, Tensor]](
+        return TensorLoaderContainer(
+            loader=TorchDataLoader[tuple[Tensor, Tensor]](
                 dataset,  # type: ignore
                 batch_size=batch_size,
                 shuffle=shuffle,

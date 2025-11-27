@@ -15,7 +15,7 @@ from nml.itf.torch.train.trainer.components.optimizer_map.standard import (
 from nml.itf.torch.utils.loss.aggregators.mean import TorchMeanAggregator
 from nml.loss.runner.standard.ml import MLLossRunner
 from nml.tools.torch.data.dataset.linear import generate_regression
-from nml.tools.torch.data.loader.container.tensor import TensorDataLoader
+from nml.tools.torch.data.loader.container.tensor import TensorLoaderContainer
 from nml.tools.torch.models.modules.ff import ff_regression_model
 from nml.tools.train.trainer.components.evaluator.plots.base import PlotlyEvaluator
 from nml.tools.train.trainer.components.evaluator.plots.dataset import (
@@ -60,11 +60,11 @@ if __name__ == "__main__":
     train_dataset, val_dataset = random_split(dataset, [0.8, 0.2])
 
     # Create loaders
-    train_loader = TensorDataLoader.from_torch_dataset(
+    train_loader = TensorLoaderContainer.from_torch_dataset(
         dataset=train_dataset,
         batch_size=batch_size,
     )
-    val_loader = TensorDataLoader.from_torch_dataset(
+    val_loader = TensorLoaderContainer.from_torch_dataset(
         dataset=val_dataset,
         batch_size=batch_size,
     )

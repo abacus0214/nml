@@ -5,7 +5,7 @@ from typing import Any, Mapping
 
 from nml.callbacks.abc import EventCallback
 from nml.data.batches.container.base import BatchABC
-from nml.data.loader.container.base import DataLoaderABC
+from nml.data.loader.container.base import LoaderContainerABC
 from nml.loss.runner.base import LossRunnerABC
 from nml.models.container.base import ModelABC
 from nml.train.trainer.components.batch_loss.base import BatchLossTrainerABC
@@ -22,7 +22,9 @@ __all__ = ["Trainer"]
 
 DEFAULT_LOSS_METRIC_NAME = "loss"
 
-type SplitsDict[BatchT, IpT, TgT] = dict[DatasetID, DataLoaderABC[BatchT, IpT, TgT]]
+type SplitsDict[BatchT, IpT, TgT] = dict[
+    DatasetID, LoaderContainerABC[Any, BatchT, IpT, TgT]
+]
 
 
 class TrainerABC[LossT](ABC):
@@ -110,7 +112,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         split_id: DatasetID,
         eid: EpochID,
         model: ModelABC[IpT, Any, TgT, LossT],
-        dataset: DataLoaderABC[Any, IpT, TgT],
+        dataset: LoaderContainerABC[Any, Any, IpT, TgT],
         update_model: bool = True,
         evaluators: tuple[EvaluatorABC[Any], ...] = tuple(),
         callback: EventCallback = EventCallback(),
@@ -146,7 +148,7 @@ class Trainer[LossT](RestrictedBaseModel, TrainerABC[LossT]):
         split_id: DatasetID,
         eid: EpochID,
         model: ModelABC[IpT, Any, TgT, LossT],
-        dataset: DataLoaderABC[Any, IpT, TgT],
+        dataset: LoaderContainerABC[Any, Any, IpT, TgT],
         update_model: bool = False,
         evaluators: tuple[EvaluatorABC[Any], ...] = tuple(),
         callback: EventCallback = EventCallback(),

@@ -17,7 +17,7 @@ from nml.itf.torch.train.trainer.components.optimizer_map.standard import (
 from nml.itf.torch.utils.loss.aggregators.mean import TorchMeanAggregator
 from nml.loss.runner.standard.ml import MLLossRunner
 from nml.tools.torch.data.dataset.linear import generate_regression
-from nml.tools.torch.data.loader.container.tensor import TensorDataLoader
+from nml.tools.torch.data.loader.container.tensor import TensorLoaderContainer
 from nml.tools.torch.models.interpreter.normal import NormalOutType
 from nml.tools.torch.models.modules.ff import ff_regression_model
 from nml.tools.train.trainer.components.evaluator.plots.base import PlotlyEvaluator
@@ -58,7 +58,7 @@ def model(layers: list[int]) -> TorchModel[Tensor, NormalOutType, Tensor]:
 @fixture(scope="class")
 def dataset_loaders(
     n_samples: int, num_inputs: int, num_targets: int, batch_size: int
-) -> tuple[TensorDataLoader, TensorDataLoader]:
+) -> tuple[TensorLoaderContainer, TensorLoaderContainer]:
     """Create trian and val data loaders."""
     # Cerate dataset
     dataset = generate_regression(
@@ -71,11 +71,11 @@ def dataset_loaders(
     train_dataset, val_dataset = random_split(dataset, [0.8, 0.2])
 
     # Create loaders
-    train_loader = TensorDataLoader.from_torch_dataset(
+    train_loader = TensorLoaderContainer.from_torch_dataset(
         dataset=train_dataset,  # type: ignore
         batch_size=batch_size,
     )
-    val_loader = TensorDataLoader.from_torch_dataset(
+    val_loader = TensorLoaderContainer.from_torch_dataset(
         dataset=val_dataset,  # type: ignore
         batch_size=batch_size,
     )
@@ -121,7 +121,7 @@ def evaluators() -> tuple[EvaluatorABC[Any], ...]:
         },
     )
     torcheval_evaluator = TorchEvalEvaluator(
-        metrics={"r2": R2Score()},  # type: ignore
+        metrics={"r2": R2Score()},
         frequency={"r2": Every(freq=5)},
     )
 
@@ -132,7 +132,7 @@ def evaluators() -> tuple[EvaluatorABC[Any], ...]:
 def training_run(
     trainer: TorchTrainer,
     model: TorchModel[Tensor, NormalOutType, Tensor],
-    dataset_loaders: tuple[TensorDataLoader, TensorDataLoader],
+    dataset_loaders: tuple[TensorLoaderContainer, TensorLoaderContainer],
     evaluators: tuple[EvaluatorABC[Any], ...],
     callbacks: tuple[EventCallback, MLFlowMetricCallback],
 ) -> RunClient:
