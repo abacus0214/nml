@@ -7,10 +7,10 @@ from nml.data.batches.container.base import Batch, BatchABC
 from nml.data.batches.interpreter.base import BatchInterpreter
 from nml.utils.typing.events import BatchID
 
-__all__ = ["DataLoaderInterpreter"]
+__all__ = ["LoaderInterpreter"]
 
 
-class DataLoaderInterpreter[DataseT, BatchT, IpT = Any, TgT = None](ABC):
+class LoaderInterpreter[DataseT, BatchT, IpT = Any, TgT = None](ABC):
     """Base data loader container."""
 
     batch_interpreter: BatchInterpreter[BatchT, IpT, TgT]

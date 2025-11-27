@@ -1,7 +1,7 @@
 """Routines to build dataset loader containers for torch datasets."""
 
 from nml.data.loader.container.base import LoaderContainer
-from nml.data.loader.interpreter.base import DataLoaderInterpreter
+from nml.data.loader.interpreter.base import LoaderInterpreter
 from nml.tools.torch.data.loader.interpreter.tensor import TensorLoaderInterpreter
 from pydantic import Field
 
@@ -19,7 +19,7 @@ class TensorLoaderContainer(
 ):
     """Container for Tensor datasets."""
 
-    loader_interpreter: DataLoaderInterpreter[
+    loader_interpreter: LoaderInterpreter[
         TorchDataLoader[tuple[Tensor, Tensor]], tuple[Tensor, Tensor], Tensor, Tensor
     ] = Field(default_factory=TensorLoaderInterpreter)
 

@@ -5,7 +5,7 @@ from typing import Any, Iterator
 
 from nml.data.batches.container.base import BatchABC
 from nml.data.batches.interpreter.base import BatchInterpreter
-from nml.data.loader.interpreter.base import DataLoaderInterpreter
+from nml.data.loader.interpreter.base import LoaderInterpreter
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
 from nml.utils.typing.events import BatchID
 
@@ -16,7 +16,7 @@ class LoaderContainerABC[DatasetT, BatchT, IpT = Any, TgT = None](ABC):
     """Base data loader container."""
 
     loader: DatasetT
-    loader_interpreter: DataLoaderInterpreter[DatasetT, BatchT, IpT, TgT]
+    loader_interpreter: LoaderInterpreter[DatasetT, BatchT, IpT, TgT]
 
     @property
     @abstractmethod
@@ -51,7 +51,7 @@ class LoaderContainer[DatasetT, BatchT, IpT = Any, TgT = None](
     """Base data loader container."""
 
     loader: DatasetT
-    loader_interpreter: DataLoaderInterpreter[DatasetT, BatchT, IpT, TgT]
+    loader_interpreter: LoaderInterpreter[DatasetT, BatchT, IpT, TgT]
 
     @property
     def batch_interpreter(self) -> BatchInterpreter[BatchT, IpT, TgT]:

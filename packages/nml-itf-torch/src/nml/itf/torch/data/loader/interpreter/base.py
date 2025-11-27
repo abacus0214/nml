@@ -3,7 +3,7 @@
 from typing import Any, Iterator
 
 from nml.data.batches.interpreter.base import BatchInterpreter
-from nml.data.loader.interpreter.base import DataLoaderInterpreter
+from nml.data.loader.interpreter.base import LoaderInterpreter
 from nml.utils.typing.base.pydantic import RestrictedBaseModel
 from torch import Tensor
 from torch.utils.data import DataLoader as TorchDataLoader
@@ -12,7 +12,7 @@ __all__ = ["TorchLoaderInterpreter"]
 
 
 class TorchLoaderInterpreter[BatchT, IpT: Tensor, TgT: None | Tensor = None](
-    RestrictedBaseModel, DataLoaderInterpreter[TorchDataLoader[Any], BatchT, IpT, TgT]
+    RestrictedBaseModel, LoaderInterpreter[TorchDataLoader[Any], BatchT, IpT, TgT]
 ):
     """Base data loader container."""
 

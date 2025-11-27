@@ -78,7 +78,7 @@ repos:
         types: [python]
       - id: mypy-pkg-rl-base
         name: type-checking-tools-base
-        entry: mypy -p nml.rl.buffer
+        entry: mypy -p nml.rl.data -p nml.rl.utils.types.samples -p nml.rl.utils.types.events
         files: "^(packages/nml-rl-base|packages/nml-base)"
         pass_filenames: false
         language: python

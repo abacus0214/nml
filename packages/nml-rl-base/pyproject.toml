@@ -1,11 +1,15 @@
 [tool.setuptools.packages.find]
 where = ["src/"]
-include = ["nml.rl.buffer"]
+include = [
+  "nml.rl.data",
+  "nml.rl.utils.types.samples",
+  "nml.rl.utils.types.events",
+]
 
 [project]
 
 # Main info
-name = "nml-tools-base"
+name = "nml-rl-base"
 version = "0.1.0"
 
 description = "General Reinforcement Learning for NML"
