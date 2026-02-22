@@ -1,4 +1,4 @@
-from typing import Any, Callable, Self
+from typing import Any, Callable, Self, Type
 from functools import wraps
 from collections import UserDict
 
@@ -15,7 +15,14 @@ class InstanceRegistry(UserDict[int, object]):
     @staticmethod
     def get_registry(obj: object) -> "InstanceRegistry":
         """Extract registry from obejct."""
-        return getattr(obj, REGISTRY_ATTR_NAME)
+        registry = getattr(obj, REGISTRY_ATTR_NAME)
+
+        if not isinstance(registry, InstanceRegistry):
+            raise TypeError(
+                f"Object has attribute {REGISTRY_ATTR_NAME} but it is of type {type(registry)} not InstanceRegistry"
+            )
+
+        return registry
 
 
 class LinkToRegistry:
@@ -31,7 +38,7 @@ class LinkToRegistry:
         """Run init as is, register new instance."""
 
         @wraps(init_fun)
-        def new_init(obj, *args: Any, **kwargs: Any) -> None:
+        def new_init(obj: object, *args: Any, **kwargs: Any) -> None:
             """Run init as is, register new instance."""
             init_fun(obj, *args, **kwargs)
             self.registry.register(obj)
@@ -39,21 +46,29 @@ class LinkToRegistry:
         return new_init
 
 
-def make_registry[T](cls: type[T]) -> type[T]:
-    """Make the decorated class a registry."""
-    # Create registry for the decorated class
-    registry = InstanceRegistry()
+class RegistryMeta(type):
+    """Make classes a registry."""
 
-    # Add registry field to the class
-    setattr(cls, REGISTRY_ATTR_NAME, registry)
-    # Make it so init registers new instances
-    setattr(cls, "__init__", LinkToRegistry(registry)(getattr(cls, "__init__")))
+    __instances__: InstanceRegistry
 
-    return cls
+    def __init__(
+        self,
+        name: str,
+        bases: tuple[type[Any], ...],
+        namspace: dict[str, Any],
+        **kwargs: Any,
+    ) -> None:
+        """Make the decorated class a registry."""
+        # Create registry for the decorated class
+        registry = InstanceRegistry()
+
+        # Add registry field to the class
+        setattr(self, REGISTRY_ATTR_NAME, registry)
+        # Make it so init registers new instances
+        setattr(self, "__init__", LinkToRegistry(registry)(getattr(self, "__init__")))
 
 
-@make_registry
-class Test:
+class Test(metaclass=RegistryMeta):
     """Test class."""
 
     x: int
