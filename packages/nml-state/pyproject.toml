@@ -1,0 +1,35 @@
+[tool.setuptools.packages.find]
+where = ["src/"]
+include = ["nml.state"]
+
+[project]
+
+# Main info
+name = "nml-state"
+version = "0.1.0"
+
+description = "NML objects to deal with statefulness (also in distributed environments)."
+readme = "README.md"
+
+authors = [{ name = "Davide Barbieri", email = "davidebarbieri97@gmail.com" }]
+
+# Tags
+keywords = ["interface", "rl", "ml"]
+
+classifiers = ["Programming Language :: Python :: 3.13"]
+
+# Repeating settings of pyright and mypy for typechecking
+[tool.mypy]
+namespace_packages = true
+strict = true
+install_types = true
+
+disallow_untyped_calls = false
+
+files = ["packages/"]
+explicit_package_bases = true
+
+mypy_path = ["src"]
+
+[tool.pyright]
+extraPaths = ["src"]

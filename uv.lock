@@ -13,6 +13,7 @@ members = [
     "nml-config-base",
     "nml-itf-torch",
     "nml-rl-base",
+    "nml-state",
     "nml-tools-base",
     "nml-tools-torch",
 ]
@@ -1549,6 +1550,11 @@ source = { editable = "packages/nml-itf-torch" }
 name = "nml-rl-base"
 version = "0.1.0"
 source = { virtual = "packages/nml-rl-base" }
+
+[[package]]
+name = "nml-state"
+version = "0.1.0"
+source = { virtual = "packages/nml-state" }
 
 [[package]]
 name = "nml-tools-base"
