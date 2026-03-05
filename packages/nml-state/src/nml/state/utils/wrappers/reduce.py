@@ -57,6 +57,7 @@ class ReduceFromRegistry:
                 raise RuntimeError(f"Incorrect reduce output {std_reduce_out}")
 
             # TODO: currently this only holds for reconstructor schema
+            # TODO fails if the class has no fields
             _, (cls, _, _), kwargs = std_reduce_out
 
             # Recreate new positional arguments (skip first argument 'self')
@@ -66,6 +67,7 @@ class ReduceFromRegistry:
             # TODO: here by editing the IDs in the same way one could make it so that unpickling
             # within the same runtime rebuilds the object the first time. Right now unpickling
             # within the same runtime will just do object lookup, which may not be expected.
+            # TODO improve this to work with the reconstructor schema
             return (partial(cls, _id=self.registry.get_id(obj)), args, {})  # type: ignore[return-value]
 
         return new_reduce

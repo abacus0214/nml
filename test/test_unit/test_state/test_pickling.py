@@ -11,8 +11,9 @@ from pytest import fixture
 class Test(metaclass=RegistryMeta):
     """Test class."""
 
-    def __init__(self) -> None:
+    def __init__(self, x: int = 1) -> None:
         """Do nothing."""
+        self.x = x
 
 
 @fixture(scope="package")
