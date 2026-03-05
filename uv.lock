@@ -1460,6 +1460,9 @@ nvim = [
     { name = "debugpy" },
     { name = "pynvim" },
 ]
+system = [
+    { name = "nml-state" },
+]
 torch = [
     { name = "nml-itf-torch" },
     { name = "nml-tools-base" },
@@ -1523,6 +1526,7 @@ nvim = [
     { name = "debugpy", specifier = ">=1.8.17" },
     { name = "pynvim", specifier = ">=0.6.0" },
 ]
+system = [{ name = "nml-state", editable = "packages/nml-state" }]
 torch = [
     { name = "nml-itf-torch", editable = "packages/nml-itf-torch" },
     { name = "nml-tools-base", editable = "packages/nml-tools-base" },
@@ -1554,7 +1558,7 @@ source = { virtual = "packages/nml-rl-base" }
 [[package]]
 name = "nml-state"
 version = "0.1.0"
-source = { virtual = "packages/nml-state" }
+source = { editable = "packages/nml-state" }
 
 [[package]]
 name = "nml-tools-base"

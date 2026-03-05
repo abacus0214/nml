@@ -74,10 +74,12 @@ torch = [
   "torch>=2.9.0",
   "torcheval>=0.0.7",
 ]
+system = ["nml-state"]
 
 # Worskapce settings
 [tool.uv.sources]
 nml-base = { workspace = true }
+nml-state = { workspace = true }
 nml-itf-torch = { workspace = true }
 nml-tools-torch = { workspace = true }
 nml-config-base = { workspace = true }
